@@ -1,0 +1,17 @@
+package it.unibs.ingsoft.presentation.view.contract;
+
+import it.unibs.ingsoft.domain.Proposta;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Validatore di un singolo campo nel contesto della proposta in fase di compilazione.
+ * Usato dalla view per il feedback inline (business rules, vincoli di data).
+ *
+ * @return lista di messaggi di errore; vuota se il valore è valido
+ */
+@FunctionalInterface
+public interface ProposalFieldValidator {
+    List<String> validate(Proposta proposta, Map<String, String> valoriCorrenti, String nomeCampo, String valore);
+}

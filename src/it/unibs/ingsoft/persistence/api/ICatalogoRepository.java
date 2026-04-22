@@ -1,0 +1,23 @@
+package it.unibs.ingsoft.persistence.api;
+
+import it.unibs.ingsoft.domain.Catalogo;
+
+/**
+ * Astrazione del repository per il catalogo.
+ * Implementazioni alternative (JSON, in-memory per i test) sono sostituibili
+ * senza modificare i service.
+ */
+public interface ICatalogoRepository {
+    /**
+     * Carica il catalogo dal file, o restituisce un catalogo vuoto se non esiste ancora.
+     *
+     * @return il catalogo corrente; mai {@code null}
+     */
+    Catalogo get();
+
+    /**
+     * Persiste lo stato corrente del catalogo.
+     */
+    void save();
+
+}
