@@ -1,7 +1,6 @@
 package it.unibs.ingsoft.presentation.view.cli;
 
 import it.unibs.ingsoft.domain.*;
-import it.unibs.ingsoft.v5.domain.*;
 import it.unibs.ingsoft.presentation.view.contract.IAppView;
 import it.unibs.ingsoft.presentation.view.contract.OperationCancelledException;
 import it.unibs.ingsoft.presentation.view.contract.ProposalFieldValidator;

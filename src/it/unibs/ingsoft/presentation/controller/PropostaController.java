@@ -2,7 +2,6 @@ package it.unibs.ingsoft.presentation.controller;
 
 import it.unibs.ingsoft.application.PropostaService;
 import it.unibs.ingsoft.domain.*;
-import it.unibs.ingsoft.v5.domain.*;
 import it.unibs.ingsoft.presentation.view.contract.IAppView;
 import it.unibs.ingsoft.presentation.view.contract.OperationCancelledException;
 

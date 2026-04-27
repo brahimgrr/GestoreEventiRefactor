@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.application;
 
 import it.unibs.ingsoft.domain.*;
-import it.unibs.ingsoft.v5.domain.*;
+import it.unibs.ingsoft.domain.*;
 import it.unibs.ingsoft.persistence.api.ICatalogoRepository;
 
 import java.util.Arrays;

@@ -14,7 +14,6 @@ import it.unibs.ingsoft.persistence.impl.FileBachecaRepository;
 import it.unibs.ingsoft.persistence.impl.FileCatalogoRepository;
 import it.unibs.ingsoft.persistence.impl.FileCredenzialiRepository;
 import it.unibs.ingsoft.persistence.impl.FileSpazioPersonaleRepository;
-import it.unibs.ingsoft.v5.presentation.controller.*;
 import it.unibs.ingsoft.presentation.view.cli.ConsoleUI;
 import it.unibs.ingsoft.presentation.view.contract.IAppView;
 

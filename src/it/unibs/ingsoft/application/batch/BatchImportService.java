@@ -6,8 +6,6 @@ import it.unibs.ingsoft.application.CatalogoService;
 import it.unibs.ingsoft.application.PropostaService;
 import it.unibs.ingsoft.application.batch.dto.*;
 import it.unibs.ingsoft.domain.*;
-import it.unibs.ingsoft.v5.application.batch.dto.*;
-import it.unibs.ingsoft.v5.domain.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
