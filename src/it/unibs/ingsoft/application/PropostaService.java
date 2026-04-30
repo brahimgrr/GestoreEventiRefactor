@@ -321,6 +321,19 @@ public final class PropostaService {
     }
 
     /**
+     * Restituisce le proposte che il configuratore puo ritirare: APERTE e CONFERMATE.
+     */
+    public List<Proposta> getProposteRitirabili() {
+        List<Proposta> ritirabili = new ArrayList<>(getBacheca());
+        for (Proposta p : getTutteLeProposte()) {
+            if (p.getStato() == StatoProposta.CONFERMATA && !ritirabili.contains(p)) {
+                ritirabili.add(p);
+            }
+        }
+        return Collections.unmodifiableList(ritirabili);
+    }
+
+    /**
      * Restituisce tutte le proposte (in qualsiasi stato) raggruppate per il loro stato attuale.
      */
     public Map<StatoProposta, List<Proposta>> getPropostePerStato() {
@@ -356,6 +369,19 @@ public final class PropostaService {
                     return errori.stream().anyMatch(e -> e.contains(quoted));
                 })
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Applica i valori raccolti dalla UI e valida la proposta.
+     */
+    public PropostaValidationResult applicaValoriEValida(Proposta proposta, Map<String, String> valori) {
+        proposta.putAllValoriCampi(valori);
+        List<String> errori = validaProposta(proposta);
+        return new PropostaValidationResult(
+                errori.isEmpty(),
+                errori,
+                getCampiConErrore(proposta, errori)
+        );
     }
 
 }

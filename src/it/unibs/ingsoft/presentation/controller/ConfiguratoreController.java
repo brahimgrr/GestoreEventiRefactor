@@ -1,441 +1,220 @@
 package it.unibs.ingsoft.presentation.controller;
 
+import it.unibs.ingsoft.application.CatalogoOperationResult;
 import it.unibs.ingsoft.application.CatalogoService;
 import it.unibs.ingsoft.application.PropostaService;
+import it.unibs.ingsoft.application.PropostaValidationResult;
 import it.unibs.ingsoft.application.StateTransitionService;
-import it.unibs.ingsoft.domain.*;
-import it.unibs.ingsoft.presentation.view.contract.IAppView;
-import it.unibs.ingsoft.presentation.view.contract.OperationCancelledException;
+import it.unibs.ingsoft.application.batch.BatchImportService;
+import it.unibs.ingsoft.domain.Campo;
+import it.unibs.ingsoft.domain.Categoria;
+import it.unibs.ingsoft.domain.Proposta;
+import it.unibs.ingsoft.presentation.view.contract.ConfiguratoreView;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.OptionalInt;
+import java.io.IOException;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
-/**
- * Gestisce i menu di gestione dei campi e delle categorie per il Configuratore.
- */
 public final class ConfiguratoreController {
-    private static final String[] MENU_PRINCIPALE = {
-            "Gestire campi COMUNI",
-            "Gestire CATEGORIE e campi SPECIFICI",
-            "Visualizzare categorie e campi",
-            "Creare una proposta di iniziativa",
-            "Pubblicare una proposta di iniziativa",
-            "Visualizzare la bacheca",
-            "Ritirare una proposta",
-            "Visualizzare archivio proposte",
-            "Importa dati da file"
-    };
-
-    private static final String[] MENU_CAMPI = {
-            "Aggiungi campo",
-            "Rimuovi campo",
-            "Cambia obbligatorietà campo"
-    };
-
-    private static final String[] MENU_CATEGORIE = {
-            "Crea categoria",
-            "Rimuovi categoria",
-            "Gestisci campi specifici di una categoria"
-    };
-
-    private static final String[] MENU_CAMPI_SPECIFICI = {
-            "Aggiungi campo specifico",
-            "Rimuovi campo specifico",
-            "Cambia obbligatorietà campo specifico"
-    };
-
-    private final Configuratore configuratore;
-    private final IAppView ui;
+    private final ConfiguratoreView view;
     private final CatalogoService catalogoService;
-    private final PropostaController propostaController;
     private final PropostaService propostaService;
     private final StateTransitionService stateTransitionService;
-    private final BatchImportController batchImportController;
+    private final BatchImportService batchImportService;
 
-    public ConfiguratoreController(Configuratore configuratore, IAppView ui, CatalogoService catalogoService,
-                                   PropostaController propostaController, PropostaService propostaService,
-                                   StateTransitionService stateTransitionService,
-                                   BatchImportController batchImportController) {
-        this.configuratore = configuratore;
-        this.ui = ui;
-        this.catalogoService = catalogoService;
-        this.propostaController = propostaController;
-        this.propostaService = propostaService;
-        this.stateTransitionService = stateTransitionService;
-        this.batchImportController = batchImportController;
+    public ConfiguratoreController(
+            ConfiguratoreView view,
+            CatalogoService catalogoService,
+            PropostaService propostaService,
+            StateTransitionService stateTransitionService,
+            BatchImportService batchImportService) {
+        this.view = Objects.requireNonNull(view);
+        this.catalogoService = Objects.requireNonNull(catalogoService);
+        this.propostaService = Objects.requireNonNull(propostaService);
+        this.stateTransitionService = Objects.requireNonNull(stateTransitionService);
+        this.batchImportService = Objects.requireNonNull(batchImportService);
     }
 
-    /**
-     * Avvia la sessione del configuratore: impone la configurazione iniziale dei campi base (non saltabile),
-     * poi esegue il loop del menu principale fino al logout.
-     */
     public void run() {
-        while (catalogoService.getCampiBase().isEmpty()) {
-            ui.header("PRIMA CONFIGURAZIONE");
-            ui.stampaInfo("Non sono ancora stati definiti i campi base.");
-            ui.stampaInfo("Il primo configuratore deve inserirli prima di procedere.");
-            menuCampiBaseExtra();
+        while (catalogoService.isPrimaConfigurazioneNecessaria()) {
+            view.mostraPrimaConfigurazioneRichiesta();
+            configuraCampiBase();
         }
-
-        mainMenu();
+        menuPrincipale();
     }
 
-    private void mainMenu() {
+    private void menuPrincipale() {
         while (true) {
-            ui.stampaMenu("MENU PRINCIPALE CONFIGURATORE", MENU_PRINCIPALE, "Logout");
-            int choice = ui.acquisisciIntero("Scelta: ", 0, MENU_PRINCIPALE.length);
-            ui.newLine();
-
-            switch (choice) {
-                case 1:
-                    menuCampiComuni();
-                    break;
-                case 2:
-                    menuCategorie();
-                    break;
-                case 3:
-                    menuVisualizza();
-                    break;
-                case 4:
-                    avviaCreazioneProposta();
-                    break;
-                case 5:
-                    propostaController.pubblicaPropostaSalvata();
-                    break;
-                case 6:
-                    propostaController.mostraBacheca();
-                    break;
-                case 7:
-                    ritiraProposta();
-                    break;
-                case 8:
-                    propostaController.visualizzaArchivioProposte();
-                    break;
-                case 9:
-                    batchImportController.avviaImportazione();
-                    break;
-                case 0:
+            switch (view.scegliAzionePrincipale()) {
+                case CAMPI_COMUNI -> gestisciCampiComuni();
+                case CATEGORIE -> gestisciCategorie();
+                case VISUALIZZA -> view.mostraCatalogo(
+                        catalogoService.getCampiBase(),
+                        catalogoService.getCampiComuni(),
+                        catalogoService.getCategorie());
+                case CREA_PROPOSTA -> creaProposta();
+                case PUBBLICA_PROPOSTA -> pubblicaProposta();
+                case BACHECA -> view.mostraBacheca(propostaService.getBachecaPerCategoria());
+                case RITIRA_PROPOSTA -> ritiraProposta();
+                case ARCHIVIO -> view.mostraArchivioProposte(propostaService.getPropostePerStato());
+                case IMPORTA -> importaDati();
+                case LOGOUT -> {
                     return;
+                }
             }
         }
     }
 
-    private void menuCampiBaseExtra() {
-        ui.header("PRIMA CONFIGURAZIONE - Campi base");
-        ui.newLine();
-        ui.stampa("I seguenti campi base sono già presenti (definiti dalla traccia):");
-        ui.stampaCampi(Arrays.stream(CampoBaseDefinito.values()).map(CampoBaseDefinito::toCampo).toList());
-        ui.newLine();
-        ui.stampaAvviso("Puoi aggiungere campi base EXTRA (obbligatori e immutabili).");
-        ui.stampaAvviso("Questi campi NON potranno essere modificati o rimossi in futuro.");
-        ui.newLine();
-
-        List<String> nomi = null;
-        List<TipoDato> tipi = null;
-        while (true) {
-            try {
-                if (!ui.acquisisciSiNo("Vuoi aggiungere campi base extra?")) {
-                    catalogoService.initiateCampiBase();
-                    ui.stampaInfo("Nessun campo base extra aggiunto.");
-                    ui.newLine();
-                    ui.pausa();
-                    return;
-                }
-
-                nomi = new ArrayList<>();
-                tipi = new ArrayList<>();
-
-                ui.stampa("Inserisci i nomi dei campi extra (riga vuota per terminare):");
-                List<String> nomiInput = ui.acquisisciListaNomi("Campi base extra");
-
-                for (String nome : nomiInput) {
-                    TipoDato td = ui.acquisisciTipoDato("Tipo per \"" + nome + "\":");
-                    nomi.add(nome);
-                    tipi.add(td);
-                }
-                break;
-            } catch (OperationCancelledException e) {
-                ui.stampaErrore(e.getMessage());
-            }
-        }
-
-        try {
-            catalogoService.addCampiBaseConExtra(nomi, tipi);
-            ui.stampaSuccesso("Campi base extra aggiunti e fissati.");
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            ui.stampaErrore(e.getMessage());
-            catalogoService.initiateCampiBase();
-        }
-
-        ui.newLine();
-        ui.pausa();
+    private void configuraCampiBase() {
+        view.acquisisciCampiBaseExtra(catalogoService.getCampiBasePredefiniti())
+                .ifPresentOrElse(
+                        extra -> esegui(
+                                () -> catalogoService.configuraCampiBase(extra),
+                                () -> view.mostraEsitoCatalogo(CatalogoOperationResult.SUCCESSO)),
+                        view::mostraOperazioneAnnullata);
     }
 
-    private void menuCategorie() {
+    private void gestisciCategorie() {
         while (true) {
-            ui.header("CATEGORIE");
-            ui.stampaCategorie(catalogoService.getCategorie());
-            ui.newLine();
-            ui.stampaMenu("", MENU_CATEGORIE, "Torna");
-            int choice = ui.acquisisciIntero("Scelta: ", 0, MENU_CATEGORIE.length);
-            ui.newLine();
+            switch (view.scegliAzioneCategorie(catalogoService.getCategorie())) {
+                case CREA -> view.acquisisciNomeCategoria()
+                        .ifPresent(nome -> esegui(
+                                () -> catalogoService.createCategoria(nome),
+                                () -> view.mostraEsitoCatalogo(CatalogoOperationResult.SUCCESSO)));
+                case RIMUOVI -> rimuoviCategoria();
+                case CAMPI_SPECIFICI -> view.selezionaCategoriaPerCampiSpecifici(catalogoService.getCategorie())
+                        .ifPresent(this::gestisciCampiSpecifici);
+                case TORNA -> {
+                    return;
+                }
+            }
+        }
+    }
 
-            switch (choice) {
-                case 1:
-                    try {
-                        ui.stampaInfo(IAppView.HINT_ANNULLA);
-                        String nome = ui.acquisisciStringaConValidazione(
-                                "Nome nuova categoria: ",
-                                n -> !n.isBlank(),
-                                "Il nome non può essere vuoto."
-                        );
-                        catalogoService.createCategoria(nome);
-                        ui.stampaSuccesso("Categoria creata.");
-                    } catch (OperationCancelledException e) {
-                        ui.stampaInfo("Operazione annullata.");
-                    } catch (IllegalArgumentException e) {
-                        ui.stampaErrore(e.getMessage());
-                    }
-                    break;
+    private void rimuoviCategoria() {
+        view.selezionaCategoriaDaRimuovere(catalogoService.getCategorie())
+                .filter(view::confermaRimozioneCategoria)
+                .ifPresent(categoria -> view.mostraEsitoCatalogo(
+                        catalogoService.rimuoviCategoria(categoria.getNome())));
+    }
 
-                case 2:
-                    ui.selezionaElemento("Seleziona categoria da rimuovere:", catalogoService.getCategorie())
-                            .ifPresentOrElse(c -> {
-                                if (!ui.acquisisciSiNo("Rimuovere '" + c.getNome() + "' e tutti i suoi campi specifici?")) {
-                                    ui.stampaInfo("Operazione annullata.");
-                                    return;
-                                }
-                                if (catalogoService.removeCategoria(c.getNome()))
-                                    ui.stampaSuccesso("Categoria rimossa.");
-                                else
-                                    ui.stampaErrore("Categoria non trovata.");
-                            }, () -> ui.stampaInfo("Operazione annullata."));
-                    break;
+    private void gestisciCampiComuni() {
+        while (true) {
+            switch (view.scegliAzioneCampiComuni(catalogoService.getCampiComuni())) {
+                case AGGIUNGI -> view.acquisisciNuovoCampo()
+                        .ifPresent(request -> esegui(
+                                () -> catalogoService.addCampoComune(request),
+                                () -> view.mostraEsitoCatalogo(CatalogoOperationResult.SUCCESSO)));
+                case RIMUOVI -> rimuoviCampoComune();
+                case CAMBIA_OBBLIGATORIETA -> view.acquisisciObbligatorietaCampo(catalogoService.getCampiComuni())
+                        .ifPresent(request -> view.mostraEsitoCatalogo(
+                                catalogoService.setObbligatorietaCampoComune(request)));
+                case TORNA -> {
+                    return;
+                }
+            }
+        }
+    }
 
-                case 3:
-                    ui.selezionaElemento("Seleziona categoria:", catalogoService.getCategorie())
+    private void gestisciCampiSpecifici(Categoria categoria) {
+        while (true) {
+            switch (view.scegliAzioneCampiSpecifici(categoria)) {
+                case AGGIUNGI -> view.acquisisciNuovoCampo()
+                        .ifPresent(request -> esegui(
+                                () -> catalogoService.addCampoSpecifico(categoria.getNome(), request),
+                                () -> view.mostraEsitoCatalogo(CatalogoOperationResult.SUCCESSO)));
+                case RIMUOVI -> rimuoviCampoSpecifico(categoria);
+                case CAMBIA_OBBLIGATORIETA -> view.acquisisciObbligatorietaCampo(categoria.getCampiSpecifici())
+                        .ifPresent(request -> view.mostraEsitoCatalogo(
+                                catalogoService.setObbligatorietaCampoSpecifico(categoria.getNome(), request)));
+                case TORNA -> {
+                    return;
+                }
+            }
+        }
+    }
+
+    private void rimuoviCampoComune() {
+        view.selezionaCampoDaRimuovere(catalogoService.getCampiComuni())
+                .filter(view::confermaRimozioneCampo)
+                .map(Campo::getNome)
+                .ifPresent(nome -> view.mostraEsitoCatalogo(catalogoService.rimuoviCampoComune(nome)));
+    }
+
+    private void rimuoviCampoSpecifico(Categoria categoria) {
+        view.selezionaCampoDaRimuovere(categoria.getCampiSpecifici())
+                .filter(view::confermaRimozioneCampo)
+                .map(Campo::getNome)
+                .ifPresent(nome -> view.mostraEsitoCatalogo(
+                        catalogoService.rimuoviCampoSpecifico(categoria.getNome(), nome)));
+    }
+
+    private void creaProposta() {
+        view.selezionaCategoriaPerProposta(catalogoService.getCategorie())
+                .ifPresent(categoria -> {
+                    Proposta proposta = propostaService.creaProposta(
+                            categoria,
+                            catalogoService.getCampiBase(),
+                            catalogoService.getCampiComuni());
+                    view.acquisisciValoriProposta(proposta, propostaService::validaCampo)
                             .ifPresentOrElse(
-                                    c -> menuCampiSpecifici(c),
-                                    () -> ui.stampaInfo("Operazione annullata.")
-                            );
-                    break;
+                                    valori -> validaESalvaProposta(proposta, valori),
+                                    view::mostraOperazioneAnnullata);
+                });
+    }
 
-                case 0:
-                    return;
+    private void validaESalvaProposta(Proposta proposta, Map<String, String> valori) {
+        PropostaValidationResult result = propostaService.applicaValoriEValida(proposta, valori);
+        while (!result.valida()) {
+            Optional<Map<String, String>> correzioni =
+                    view.correggiValoriProposta(proposta, result, propostaService::validaCampo);
+            if (correzioni.isEmpty()) {
+                return;
             }
+            result = propostaService.applicaValoriEValida(proposta, correzioni.get());
         }
+        esegui(
+                () -> propostaService.salvaProposta(proposta),
+                () -> view.mostraPropostaSalvata(proposta));
     }
 
-    private void menuVisualizza() {
-        ui.header("VISUALIZZAZIONE");
-        ui.stampaSezione("Campi BASE");
-        ui.stampaCampi(catalogoService.getCampiBase());
-        ui.stampaSezione("Campi COMUNI");
-        ui.stampaCampi(catalogoService.getCampiComuni());
-        ui.stampaSezione("Categorie");
-        ui.stampaCategorie(catalogoService.getCategorie());
-        ui.newLine();
-        ui.pausaConSpaziatura();
-    }
-
-    private void menuCampiGenerico(String titolo, GestioneCampi ops) {
-        while (true) {
-            ui.header(titolo);
-            ui.stampaCampi(ops.getCampi());
-            ui.newLine();
-            ui.stampaMenu("", MENU_CAMPI, "Torna");
-            int choice = ui.acquisisciIntero("Scelta: ", 0, MENU_CAMPI.length);
-            ui.newLine();
-
-            switch (choice) {
-                case 1: // ADD
-                    try {
-                        ui.stampaInfo(IAppView.HINT_ANNULLA);
-                        String nome = ui.acquisisciStringaConValidazione(
-                                "Nome campo: ",
-                                n -> !n.isBlank() && !catalogoService.nomeEsistente(n),
-                                "Nome non valido o già esistente."
-                        );
-
-                        TipoDato tipo = ui.acquisisciTipoDato("Tipo di dato:");
-                        boolean obbl = ui.acquisisciSiNo("Obbligatorio?");
-
-                        if (!ui.acquisisciSiNo(
-                                "Aggiungere '" + nome + "' [" + tipo + ", " +
-                                        (obbl ? "obbligatorio" : "facoltativo") + "]?")) {
-                            ui.stampaInfo("Operazione annullata.");
-                            break;
-                        }
-
-                        ops.add(nome, tipo, obbl);
-                        ui.stampaSuccesso("Campo aggiunto.");
-                    } catch (OperationCancelledException e) {
-                        ui.stampaInfo("Operazione annullata.");
-                    } catch (IllegalArgumentException e) {
-                        ui.stampaErrore(e.getMessage());
-                    }
-                    ui.pausaConSpaziatura();
-                    break;
-
-                case 2: // REMOVE
-                    ui.selezionaElemento("Seleziona campo da rimuovere:", ops.getCampi())
-                            .ifPresentOrElse(c -> {
-                                if (!ui.acquisisciSiNo("Rimuovere '" + c.getNome() + "'?")) {
-                                    ui.stampaInfo("Operazione annullata.");
-                                    return;
-                                }
-                                if (ops.remove(c.getNome()))
-                                    ui.stampaSuccesso("Campo rimosso.");
-                                else
-                                    ui.stampaErrore("Campo non trovato.");
-                            }, () -> ui.stampaInfo("Operazione annullata."));
-                    ui.pausaConSpaziatura();
-                    break;
-
-                case 3: // TOGGLE
-                    ui.selezionaElemento(
-                            "Seleziona campo:",
-                            ops.getCampi()
-                    ).ifPresentOrElse(c -> {
-                        boolean nuovo = ui.acquisisciSiNo("Impostare come obbligatorio?");
-                        if (nuovo == c.isObbligatorio()) {
-                            ui.stampaAvviso("Nessuna modifica.");
-                            return;
-                        }
-
-                        if (ops.setObbl(c.getNome(), nuovo))
-                            ui.stampaSuccesso("Aggiornato.");
-                        else
-                            ui.stampaErrore("Campo non trovato.");
-                    }, () -> ui.stampaInfo("Operazione annullata."));
-                    ui.pausaConSpaziatura();
-                    break;
-
-                case 0:
-                    return;
-            }
-        }
-    }
-
-    private void menuCampiComuni() {
-        menuCampiGenerico("CAMPI COMUNI", new GestioneCampi() {
-            public List<Campo> getCampi() {
-                return catalogoService.getCampiComuni();
-            }
-
-            public void add(String nome, TipoDato tipo, boolean obbl) {
-                catalogoService.addCampoComune(nome, tipo, obbl);
-            }
-
-            public boolean remove(String nome) {
-                return catalogoService.removeCampoComune(nome);
-            }
-
-            public boolean setObbl(String nome, boolean obbl) {
-                return catalogoService.setObbligatorietaCampoComune(nome, obbl);
-            }
-        });
-    }
-
-    private void menuCampiSpecifici(Categoria categoria) {
-        menuCampiGenerico("CAMPI SPECIFICI", new GestioneCampi() {
-            public List<Campo> getCampi() {
-                return categoria.getCampiSpecifici();
-            }
-
-            public void add(String nome, TipoDato tipo, boolean obbl) {
-                catalogoService.addCampoSpecifico(categoria.getNome(), nome, tipo, obbl);
-            }
-
-            public boolean remove(String nome) {
-                return catalogoService.removeCampoSpecifico(categoria.getNome(), nome);
-            }
-
-            public boolean setObbl(String nome, boolean obbl) {
-                return catalogoService.setObbligatorietaCampoSpecifico(categoria.getNome(), nome, obbl);
-            }
-        });
+    private void pubblicaProposta() {
+        view.selezionaPropostaDaPubblicare(propostaService.getProposteValide())
+                .filter(view::confermaPubblicazione)
+                .ifPresent(proposta -> esegui(
+                        () -> {
+                            propostaService.pubblicaProposta(proposta);
+                            propostaService.rimuoviPropostaValida(proposta);
+                        },
+                        () -> view.mostraPropostaPubblicata(proposta)));
     }
 
     private void ritiraProposta() {
-        List<Proposta> ritirabili = new ArrayList<>();
-        for (Proposta p : propostaService.getBacheca()) {
-            ritirabili.add(p);
-        }
-        // Aggiungi anche le proposte CONFERMATE (non visibili in bacheca ma ritirabili)
-        for (Proposta p : propostaService.getTutteLeProposte()) {
-            if (p.getStato() == StatoProposta.CONFERMATA && !ritirabili.contains(p)) {
-                ritirabili.add(p);
-            }
-        }
-
-        if (ritirabili.isEmpty()) {
-            ui.stampa("Nessuna proposta aperta o confermata disponibile per il ritiro.");
-            ui.pausaConSpaziatura();
-            return;
-        }
-
-        ui.header("RITIRO PROPOSTA");
-        int indice = 1;
-        for (Proposta p : ritirabili) {
-            String titolo = p.getValoriCampi().getOrDefault(PropostaService.CAMPO_TITOLO, "Senza Titolo");
-            String stato = p.getStato().name();
-            ui.stampa(String.format(" %d) %s [%s] (Data evento: %s)", indice++, titolo, stato, p.getDataEvento()));
-        }
-        ui.newLine();
-
-        ui.stampa("Seleziona la proposta da ritirare (0 per tornare indietro).");
-        int subChoice = ui.acquisisciIntero("Scelta: ", 0, ritirabili.size());
-
-        if (subChoice == 0) return;
-
-        Proposta selezionata = ritirabili.get(subChoice - 1);
-        ui.mostraRiepilogoProposta(selezionata);
-        ui.newLine();
-
-        ui.stampaAvviso("Il ritiro è una misura eccezionale, da adottare solo per cause di forza maggiore.");
-        if (ui.acquisisciSiNo("Vuoi davvero ritirare questa proposta?")) {
-            try {
-                stateTransitionService.ritiraProposta(selezionata);
-                ui.stampaSuccesso("Proposta ritirata. Tutti gli aderenti sono stati notificati.");
-            } catch (IllegalStateException e) {
-                ui.stampaErrore("Errore durante il ritiro: " + e.getMessage());
-            }
-        }
-        ui.pausaConSpaziatura();
+        view.selezionaPropostaDaRitirare(propostaService.getProposteRitirabili())
+                .filter(view::confermaRitiro)
+                .ifPresent(proposta -> esegui(
+                        () -> stateTransitionService.ritiraProposta(proposta),
+                        () -> view.mostraEsitoCatalogo(CatalogoOperationResult.SUCCESSO)));
     }
 
-    /**
-     * Fa scegliere una categoria all'utente, poi delega a {@link PropostaController}.
-     */
-    private void avviaCreazioneProposta() {
-        List<Categoria> categorie = catalogoService.getCategorie();
-        if (categorie.isEmpty()) {
-            ui.stampa("Nessuna categoria disponibile. Crea almeno una categoria prima.");
-            ui.newLine();
-            ui.pausa();
-            return;
-        }
-
-        ui.stampaSezione("Categorie disponibili");
-        OptionalInt idxOpt = ui.selezionaCategoria(categorie);
-        if (idxOpt.isEmpty()) return;
-
-        Categoria categoriaSelezionata = categorie.get(idxOpt.getAsInt());
-        propostaController.avviaCreazione(categoriaSelezionata,
-                catalogoService.getCampiBase(),
-                catalogoService.getCampiComuni());
+    private void importaDati() {
+        view.acquisisciPercorsoImportazione()
+                .ifPresent(path -> {
+                    try {
+                        view.mostraRisultatoImportazione(batchImportService.importa(path));
+                    } catch (IOException e) {
+                        view.mostraErrore(e);
+                    }
+                });
     }
 
-    private interface GestioneCampi {
-        List<Campo> getCampi();
-
-        void add(String nome, TipoDato tipo, boolean obbl);
-
-        boolean remove(String nome);
-
-        boolean setObbl(String nome, boolean obbl);
+    private void esegui(Runnable action, Runnable onSuccess) {
+        try {
+            action.run();
+            onSuccess.run();
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            view.mostraErrore(e);
+        }
     }
 }

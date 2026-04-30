@@ -14,7 +14,9 @@ import it.unibs.ingsoft.persistence.impl.FileBachecaRepository;
 import it.unibs.ingsoft.persistence.impl.FileCatalogoRepository;
 import it.unibs.ingsoft.persistence.impl.FileCredenzialiRepository;
 import it.unibs.ingsoft.persistence.impl.FileSpazioPersonaleRepository;
+import it.unibs.ingsoft.presentation.view.cli.ConfiguratoreViewImpl;
 import it.unibs.ingsoft.presentation.view.cli.ConsoleUI;
+import it.unibs.ingsoft.presentation.view.contract.ConfiguratoreView;
 import it.unibs.ingsoft.presentation.view.contract.IAppView;
 
 import java.nio.file.Path;
@@ -56,9 +58,8 @@ public final class Application {
         BatchImportService batchImportService = new BatchImportService(catalogoService, propostaService);
 
         IAppView ui = new ConsoleUI(new Scanner(System.in));
+        ConfiguratoreView configuratoreView = new ConfiguratoreViewImpl(ui);
         AuthController authCtrl = new AuthController(ui, authService);
-        PropostaController propostaController = new PropostaController(ui, propostaService);
-        BatchImportController batchImportController = new BatchImportController(ui, batchImportService);
 
         ui.header("Gestore Eventi - Versione 5");
 
@@ -80,7 +81,7 @@ public final class Application {
                 if (configuratore != null) {
                     ui.stampa("Benvenuto Configuratore, " + configuratore.getUsername() + "!");
                     ui.newLine();
-                    new ConfiguratoreController(configuratore, ui, catalogoService, propostaController, propostaService, stateService, batchImportController).run();
+                    new ConfiguratoreController(configuratoreView, catalogoService, propostaService, stateService, batchImportService).run();
 
                     // Scarta le proposte valide non pubblicate al logout
                     propostaService.clearProposteValide();
