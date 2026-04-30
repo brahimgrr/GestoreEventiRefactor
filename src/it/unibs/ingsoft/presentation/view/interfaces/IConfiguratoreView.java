@@ -1,11 +1,11 @@
-package it.unibs.ingsoft.presentation.view.contract;
+package it.unibs.ingsoft.presentation.view.interfaces;
 
-import it.unibs.ingsoft.application.CampoBaseExtraRequest;
-import it.unibs.ingsoft.application.CampoDefinitionRequest;
-import it.unibs.ingsoft.application.CampoObbligatorietaRequest;
-import it.unibs.ingsoft.application.CatalogoOperationResult;
 import it.unibs.ingsoft.application.PropostaValidationResult;
 import it.unibs.ingsoft.application.batch.ImportResult;
+import it.unibs.ingsoft.application.catalogo.dto.CampoBaseExtraRequest;
+import it.unibs.ingsoft.application.catalogo.dto.CampoDefinitionRequest;
+import it.unibs.ingsoft.application.catalogo.dto.CampoObbligatorietaRequest;
+import it.unibs.ingsoft.application.catalogo.dto.CatalogoOperationResult;
 import it.unibs.ingsoft.domain.Campo;
 import it.unibs.ingsoft.domain.Categoria;
 import it.unibs.ingsoft.domain.Proposta;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public interface ConfiguratoreView {
+public interface IConfiguratoreView {
     enum MainAction {
         CAMPI_COMUNI,
         CATEGORIE,

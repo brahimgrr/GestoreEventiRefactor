@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.application.batch;
 
-import it.unibs.ingsoft.application.CatalogoService;
+import it.unibs.ingsoft.application.catalogo.CatalogoService;
 import it.unibs.ingsoft.application.PropostaService;
 import it.unibs.ingsoft.testsupport.DomainFixtures;
 import it.unibs.ingsoft.testsupport.InMemoryBachecaRepository;

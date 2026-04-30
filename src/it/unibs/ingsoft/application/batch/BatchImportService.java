@@ -2,9 +2,9 @@ package it.unibs.ingsoft.application.batch;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.unibs.ingsoft.application.CatalogoService;
 import it.unibs.ingsoft.application.PropostaService;
 import it.unibs.ingsoft.application.batch.dto.*;
+import it.unibs.ingsoft.application.catalogo.CatalogoService;
 import it.unibs.ingsoft.domain.*;
 
 import java.io.IOException;

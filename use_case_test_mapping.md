@@ -53,16 +53,16 @@ The test names intentionally start with the use-case identifiers where practical
 | Included: Aggiungi Campo | `ConsoleUI.acquisisciTipoDato`, `CatalogoService.addCampoComune`, `addCampoSpecifico`, `Campo` | `CatalogoServiceTest` | `UC03_UC12_CatalogoManagementIT` |
 | Included: Rimuovi Campo | `IInputView.selezionaElemento`, service removal methods | `CatalogoServiceTest` | `UC03_UC12_CatalogoManagementIT` |
 | Included: Modifica Obbligatorieta Campo | service mandatory update methods | `CatalogoServiceTest` | `UC03_UC12_CatalogoManagementIT` |
-| UC13 Creare Proposta | `PropostaController.avviaCreazione`, `PropostaService.creaProposta`, `validaCampo`, `validaProposta`, `DefaultTypeValidator`, `Proposta.putAllValoriCampi` | `PropostaServiceTest`, `PropostaDomainTest` | `UC13_UC15_ProposalPublicationIT` |
-| UC14 Pubblicare Proposta | `PropostaController.pubblicaPropostaSalvata`, `PropostaService.salvaProposta`, `pubblicaProposta`, `Bacheca.addProposta` | `PropostaServiceTest`, `PropostaDomainTest` | `UC13_UC15_ProposalPublicationIT` |
+| UC13 Creare Proposta | `ConfiguratoreController`, `PropostaService.creaProposta`, `validaCampo`, `validaProposta`, `DefaultTypeValidator`, `Proposta.putAllValoriCampi` | `PropostaServiceTest`, `PropostaDomainTest` | `UC13_UC15_ProposalPublicationIT` |
+| UC14 Pubblicare Proposta | `ConfiguratoreController`, `PropostaService.salvaProposta`, `pubblicaProposta`, `Bacheca.addProposta` | `PropostaServiceTest`, `PropostaDomainTest` | `UC13_UC15_ProposalPublicationIT` |
 | UC15 Visualizzare Bacheca | `PropostaService.getBacheca`, `getBachecaPerCategoria`, `ConsoleUI.mostraBacheca` | `PropostaServiceTest` | `UC13_UC15_ProposalPublicationIT` |
 | UC16 Iscriversi | `FruitoreController`, `IscrizioneService.iscrivi`, `Proposta.addAderente`, `StateTransitionService.confermaProposta` | `IscrizioneServiceTest`, `PropostaDomainTest` | `UC16_UC21_FruitoreSubscriptionIT` |
-| UC17 Visualizzare Spazio Personale | `SpazioPersonaleController.run`, `NotificationService.getNotifiche`, `SpazioPersonale.getNotifiche` | `NotificationServiceTest` | `UC17_UC18_SpazioPersonaleIT` |
-| UC18 Eliminare Notifica | `SpazioPersonaleController.run`, `NotificationService.cancellaNotifica`, `SpazioPersonale.removeNotifica` | `NotificationServiceTest` | `UC17_UC18_SpazioPersonaleIT` |
-| UC19 Visualizzare Archivio Proposte | `PropostaController.visualizzaArchivioProposte`, `PropostaService.getPropostePerStato`, `Proposta.getStateHistory` | Covered indirectly by proposal state tests | `UC19_ArchivioProposteIT` disabled to document manual/code mismatch |
+| UC17 Visualizzare Spazio Personale | `FruitoreController`, `NotificationService.getNotifiche`, `SpazioPersonale.getNotifiche` | `NotificationServiceTest` | `UC17_UC18_SpazioPersonaleIT` |
+| UC18 Eliminare Notifica | `FruitoreController`, `NotificationService.cancellaNotifica`, `SpazioPersonale.removeNotifica` | `NotificationServiceTest` | `UC17_UC18_SpazioPersonaleIT` |
+| UC19 Visualizzare Archivio Proposte | `ConfiguratoreController`, `PropostaService.getPropostePerStato`, `Proposta.getStateHistory` | Covered indirectly by proposal state tests | `UC19_ArchivioProposteIT` disabled to document manual/code mismatch |
 | UC20 Ritirare Proposta | `ConfiguratoreController.ritiraProposta`, `StateTransitionService.ritiraProposta`, `NotificationService.inviaNotifica` | `StateTransitionServiceTest` | `UC20_RitiroPropostaIT` |
 | UC21 Disdire Iscrizione | `FruitoreController.disdiciIscrizione`, `IscrizioneService.disiscrivi`, `Proposta.removeAderente` | `IscrizioneServiceTest`, `PropostaDomainTest` | `UC16_UC21_FruitoreSubscriptionIT` |
-| UC22 Import Batch | `BatchImportController.avviaImportazione`, `BatchImportService.importa`, import DTOs, catalog/proposal services | `BatchImportServiceTest` | `UC22_BatchImportIT` |
+| UC22 Import Batch | `ConfiguratoreController`, `BatchImportService.importa`, import DTOs, catalog/proposal services | `BatchImportServiceTest` | `UC22_BatchImportIT` |
 
 ## Test Organization
 

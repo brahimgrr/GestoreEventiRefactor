@@ -321,6 +321,18 @@ public final class PropostaService {
     }
 
     /**
+     * Restituisce le proposte aperte a cui il fruitore indicato risulta iscritto.
+     */
+    public List<Proposta> getProposteAperteIscritteDa(String username) {
+        if (username == null) {
+            return List.of();
+        }
+        return getBacheca().stream()
+                .filter(p -> p.getListaAderenti().contains(username))
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    /**
      * Restituisce le proposte che il configuratore puo ritirare: APERTE e CONFERMATE.
      */
     public List<Proposta> getProposteRitirabili() {

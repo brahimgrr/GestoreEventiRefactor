@@ -23,6 +23,7 @@ public final class AppConstants {
     public static final String CAMPO_QUOTA = "Quota individuale";
     public static final String CAMPO_NUM_PARTECIPANTI = "Numero di partecipanti";
     public static Clock clock = Clock.systemDefaultZone();
+
     private AppConstants() {
     }
 

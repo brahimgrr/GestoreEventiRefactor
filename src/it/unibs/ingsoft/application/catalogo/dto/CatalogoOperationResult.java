@@ -1,4 +1,4 @@
-package it.unibs.ingsoft.application;
+package it.unibs.ingsoft.application.catalogo.dto;
 
 /**
  * Esito applicativo delle operazioni di gestione catalogo.

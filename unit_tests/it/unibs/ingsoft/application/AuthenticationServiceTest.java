@@ -1,5 +1,6 @@
 package it.unibs.ingsoft.application;
 
+import it.unibs.ingsoft.application.authentication.AuthenticationService;
 import it.unibs.ingsoft.domain.Configuratore;
 import it.unibs.ingsoft.domain.Fruitore;
 import it.unibs.ingsoft.testsupport.InMemoryCredenzialiRepository;

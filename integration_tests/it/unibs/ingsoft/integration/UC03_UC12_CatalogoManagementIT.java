@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.integration;
 
-import it.unibs.ingsoft.application.CatalogoService;
+import it.unibs.ingsoft.application.catalogo.CatalogoService;
 import it.unibs.ingsoft.domain.TipoDato;
 import it.unibs.ingsoft.persistence.impl.FileCatalogoRepository;
 import org.junit.jupiter.api.Test;

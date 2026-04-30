@@ -1,4 +1,4 @@
-package it.unibs.ingsoft.presentation.view.contract;
+package it.unibs.ingsoft.presentation.view.interfaces;
 
 import it.unibs.ingsoft.domain.Proposta;
 

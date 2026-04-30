@@ -1,15 +1,15 @@
 package it.unibs.ingsoft.presentation.controller;
 
-import it.unibs.ingsoft.application.CatalogoOperationResult;
-import it.unibs.ingsoft.application.CatalogoService;
 import it.unibs.ingsoft.application.PropostaService;
 import it.unibs.ingsoft.application.PropostaValidationResult;
 import it.unibs.ingsoft.application.StateTransitionService;
 import it.unibs.ingsoft.application.batch.BatchImportService;
+import it.unibs.ingsoft.application.catalogo.CatalogoService;
+import it.unibs.ingsoft.application.catalogo.dto.CatalogoOperationResult;
 import it.unibs.ingsoft.domain.Campo;
 import it.unibs.ingsoft.domain.Categoria;
 import it.unibs.ingsoft.domain.Proposta;
-import it.unibs.ingsoft.presentation.view.contract.ConfiguratoreView;
+import it.unibs.ingsoft.presentation.view.interfaces.IConfiguratoreView;
 
 import java.io.IOException;
 import java.util.Map;
@@ -17,14 +17,14 @@ import java.util.Objects;
 import java.util.Optional;
 
 public final class ConfiguratoreController {
-    private final ConfiguratoreView view;
+    private final IConfiguratoreView view;
     private final CatalogoService catalogoService;
     private final PropostaService propostaService;
     private final StateTransitionService stateTransitionService;
     private final BatchImportService batchImportService;
 
     public ConfiguratoreController(
-            ConfiguratoreView view,
+            IConfiguratoreView view,
             CatalogoService catalogoService,
             PropostaService propostaService,
             StateTransitionService stateTransitionService,
@@ -60,6 +60,7 @@ public final class ConfiguratoreController {
                 case ARCHIVIO -> view.mostraArchivioProposte(propostaService.getPropostePerStato());
                 case IMPORTA -> importaDati();
                 case LOGOUT -> {
+                    propostaService.clearProposteValide();
                     return;
                 }
             }

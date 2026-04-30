@@ -1,10 +1,24 @@
 package it.unibs.ingsoft.integration;
 
-import it.unibs.ingsoft.application.AuthenticationService;
+import it.unibs.ingsoft.application.authentication.AuthenticationService;
+import it.unibs.ingsoft.application.catalogo.CatalogoService;
+import it.unibs.ingsoft.application.IscrizioneService;
+import it.unibs.ingsoft.application.NotificationService;
+import it.unibs.ingsoft.application.PropostaService;
+import it.unibs.ingsoft.application.StateTransitionService;
+import it.unibs.ingsoft.application.batch.BatchImportService;
 import it.unibs.ingsoft.domain.Configuratore;
 import it.unibs.ingsoft.domain.Fruitore;
+import it.unibs.ingsoft.persistence.impl.FileBachecaRepository;
+import it.unibs.ingsoft.persistence.impl.FileCatalogoRepository;
 import it.unibs.ingsoft.persistence.impl.FileCredenzialiRepository;
-import it.unibs.ingsoft.presentation.controller.AuthController;
+import it.unibs.ingsoft.persistence.impl.FileSpazioPersonaleRepository;
+import it.unibs.ingsoft.presentation.controller.MainController;
+import it.unibs.ingsoft.presentation.controller.ConfiguratoreController;
+import it.unibs.ingsoft.presentation.controller.FruitoreController;
+import it.unibs.ingsoft.presentation.view.cli.MainCliView;
+import it.unibs.ingsoft.presentation.view.cli.ConfiguratoreCliView;
+import it.unibs.ingsoft.presentation.view.cli.FruitoreCliView;
 import it.unibs.ingsoft.testsupport.ScriptedAppView;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -24,7 +38,7 @@ class UC01_UC02_AuthenticationIT {
         ScriptedAppView view = new ScriptedAppView()
                 .strings("config", "config", "admin", "passw")
                 .booleans(true);
-        AuthController controller = new AuthController(view, service);
+        MainController controller = mainController(view, service);
 
         Configuratore configuratore = controller.loginConfiguratore();
 
@@ -40,12 +54,41 @@ class UC01_UC02_AuthenticationIT {
         ScriptedAppView view = new ScriptedAppView()
                 .strings("mario", "passw")
                 .booleans(true);
-        AuthController controller = new AuthController(view, service);
+        MainController controller = mainController(view, service);
 
         Fruitore fruitore = controller.registraFruitore();
 
         assertEquals("mario", fruitore.getUsername());
         AuthenticationService reloaded = new AuthenticationService(new FileCredenzialiRepository(utenti));
         assertTrue(reloaded.loginFruitore("mario", "passw").isPresent());
+    }
+
+    private MainController mainController(ScriptedAppView view, AuthenticationService service) {
+        FileBachecaRepository bachecaRepo = new FileBachecaRepository(tempDir.resolve("proposte.json"));
+        FileSpazioPersonaleRepository spazioRepo = new FileSpazioPersonaleRepository(tempDir.resolve("notifiche.json"));
+        CatalogoService catalogoService = new CatalogoService(new FileCatalogoRepository(tempDir.resolve("catalogo.json")));
+        PropostaService propostaService = new PropostaService(bachecaRepo);
+        NotificationService notificationService = new NotificationService(spazioRepo);
+        StateTransitionService stateService = new StateTransitionService(bachecaRepo, notificationService);
+        IscrizioneService iscrizioneService = new IscrizioneService(bachecaRepo, stateService);
+        BatchImportService batchImportService = new BatchImportService(catalogoService, propostaService);
+
+        ConfiguratoreController configuratoreController = new ConfiguratoreController(
+                new ConfiguratoreCliView(view),
+                catalogoService,
+                propostaService,
+                stateService,
+                batchImportService);
+        FruitoreController fruitoreController = new FruitoreController(
+                new FruitoreCliView(view),
+                propostaService,
+                iscrizioneService,
+                notificationService);
+
+        return new MainController(
+                new MainCliView(view),
+                service,
+                configuratoreController,
+                fruitoreController);
     }
 }

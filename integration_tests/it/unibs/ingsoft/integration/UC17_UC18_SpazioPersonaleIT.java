@@ -1,10 +1,15 @@
 package it.unibs.ingsoft.integration;
 
+import it.unibs.ingsoft.application.IscrizioneService;
 import it.unibs.ingsoft.application.NotificationService;
+import it.unibs.ingsoft.application.PropostaService;
+import it.unibs.ingsoft.application.StateTransitionService;
 import it.unibs.ingsoft.domain.Fruitore;
 import it.unibs.ingsoft.domain.Notifica;
+import it.unibs.ingsoft.persistence.impl.FileBachecaRepository;
 import it.unibs.ingsoft.persistence.impl.FileSpazioPersonaleRepository;
-import it.unibs.ingsoft.presentation.controller.SpazioPersonaleController;
+import it.unibs.ingsoft.presentation.controller.FruitoreController;
+import it.unibs.ingsoft.presentation.view.cli.FruitoreCliView;
 import it.unibs.ingsoft.testsupport.ScriptedAppView;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -20,15 +25,23 @@ class UC17_UC18_SpazioPersonaleIT {
     @Test
     void UC17_UC18_spazioPersonaleShowsAndDeletesNotificationThroughControllerFlow() {
         Path notificheFile = tempDir.resolve("notifiche.json");
+        Path proposteFile = tempDir.resolve("proposte.json");
+        FileBachecaRepository bachecaRepo = new FileBachecaRepository(proposteFile);
         NotificationService service = new NotificationService(new FileSpazioPersonaleRepository(notificheFile));
+        StateTransitionService stateService = new StateTransitionService(bachecaRepo, service);
+        PropostaService propostaService = new PropostaService(bachecaRepo);
+        IscrizioneService iscrizioneService = new IscrizioneService(bachecaRepo, stateService);
         service.inviaNotifica("mario", new Notifica("La proposta e' stata confermata"));
         ScriptedAppView view = new ScriptedAppView()
-                .integers(1)
+                .integers(3, 1, 0)
                 .booleans(true);
-        SpazioPersonaleController controller =
-                new SpazioPersonaleController(new Fruitore("mario"), view, service);
+        FruitoreController controller = new FruitoreController(
+                new FruitoreCliView(view),
+                propostaService,
+                iscrizioneService,
+                service);
 
-        controller.run();
+        controller.run(new Fruitore("mario"));
 
         NotificationService reloaded = new NotificationService(new FileSpazioPersonaleRepository(notificheFile));
         assertTrue(reloaded.getNotifiche("mario").isEmpty());

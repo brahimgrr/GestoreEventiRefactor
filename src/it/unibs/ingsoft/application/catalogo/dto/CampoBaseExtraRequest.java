@@ -1,12 +1,12 @@
-package it.unibs.ingsoft.application;
+package it.unibs.ingsoft.application.catalogo.dto;
 
 import it.unibs.ingsoft.domain.TipoDato;
 
 /**
- * Dati necessari per creare un campo comune o specifico.
+ * Dati necessari per configurare un campo base extra.
  */
-public record CampoDefinitionRequest(String nome, TipoDato tipoDato, boolean obbligatorio) {
-    public CampoDefinitionRequest {
+public record CampoBaseExtraRequest(String nome, TipoDato tipoDato) {
+    public CampoBaseExtraRequest {
         if (nome == null || nome.isBlank())
             throw new IllegalArgumentException("Il nome del campo non puo essere vuoto.");
         if (tipoDato == null)

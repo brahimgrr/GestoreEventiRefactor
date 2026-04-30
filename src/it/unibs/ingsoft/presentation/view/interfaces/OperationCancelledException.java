@@ -1,4 +1,4 @@
-package it.unibs.ingsoft.presentation.view.contract;
+package it.unibs.ingsoft.presentation.view.interfaces;
 
 /**
  * Lanciata quando l'utente annulla esplicitamente un'operazione in corso.

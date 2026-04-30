@@ -1,8 +1,8 @@
 package it.unibs.ingsoft.testsupport;
 
 import it.unibs.ingsoft.domain.*;
-import it.unibs.ingsoft.presentation.view.contract.IAppView;
-import it.unibs.ingsoft.presentation.view.contract.ProposalFieldValidator;
+import it.unibs.ingsoft.presentation.view.interfaces.IAppView;
+import it.unibs.ingsoft.presentation.view.interfaces.ProposalFieldValidator;
 
 import java.util.*;
 import java.util.function.Function;

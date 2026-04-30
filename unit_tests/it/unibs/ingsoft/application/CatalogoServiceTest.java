@@ -1,5 +1,6 @@
 package it.unibs.ingsoft.application;
 
+import it.unibs.ingsoft.application.catalogo.CatalogoService;
 import it.unibs.ingsoft.domain.*;
 import it.unibs.ingsoft.testsupport.InMemoryCatalogoRepository;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,31 +1,21 @@
 package it.unibs.ingsoft.presentation.view.cli;
 
-import it.unibs.ingsoft.application.CampoBaseExtraRequest;
-import it.unibs.ingsoft.application.CampoDefinitionRequest;
-import it.unibs.ingsoft.application.CampoObbligatorietaRequest;
-import it.unibs.ingsoft.application.CatalogoOperationResult;
 import it.unibs.ingsoft.application.PropostaValidationResult;
 import it.unibs.ingsoft.application.batch.ImportResult;
-import it.unibs.ingsoft.domain.AppConstants;
-import it.unibs.ingsoft.domain.Campo;
-import it.unibs.ingsoft.domain.Categoria;
-import it.unibs.ingsoft.domain.Proposta;
-import it.unibs.ingsoft.domain.StatoProposta;
-import it.unibs.ingsoft.domain.TipoDato;
-import it.unibs.ingsoft.presentation.view.contract.ConfiguratoreView;
-import it.unibs.ingsoft.presentation.view.contract.IAppView;
-import it.unibs.ingsoft.presentation.view.contract.OperationCancelledException;
-import it.unibs.ingsoft.presentation.view.contract.ProposalFieldValidator;
+import it.unibs.ingsoft.application.catalogo.dto.CampoBaseExtraRequest;
+import it.unibs.ingsoft.application.catalogo.dto.CampoDefinitionRequest;
+import it.unibs.ingsoft.application.catalogo.dto.CampoObbligatorietaRequest;
+import it.unibs.ingsoft.application.catalogo.dto.CatalogoOperationResult;
+import it.unibs.ingsoft.domain.*;
+import it.unibs.ingsoft.presentation.view.interfaces.IAppView;
+import it.unibs.ingsoft.presentation.view.interfaces.IConfiguratoreView;
+import it.unibs.ingsoft.presentation.view.interfaces.OperationCancelledException;
+import it.unibs.ingsoft.presentation.view.interfaces.ProposalFieldValidator;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.OptionalInt;
-import java.util.Set;
+import java.util.*;
 
-public final class ConfiguratoreViewImpl implements ConfiguratoreView {
+public final class ConfiguratoreCliView implements IConfiguratoreView {
     private static final String[] MENU_PRINCIPALE = {
             "Gestire campi COMUNI",
             "Gestire CATEGORIE e campi SPECIFICI",
@@ -58,7 +48,7 @@ public final class ConfiguratoreViewImpl implements ConfiguratoreView {
 
     private final IAppView ui;
 
-    public ConfiguratoreViewImpl(IAppView ui) {
+    public ConfiguratoreCliView(IAppView ui) {
         this.ui = ui;
     }
 

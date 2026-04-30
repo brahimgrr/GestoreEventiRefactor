@@ -1,4 +1,4 @@
-package it.unibs.ingsoft.application;
+package it.unibs.ingsoft.application.catalogo.dto;
 
 /**
  * Dati necessari per cambiare l'obbligatorieta di un campo.

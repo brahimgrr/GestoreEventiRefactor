@@ -1,4 +1,4 @@
-package it.unibs.ingsoft.presentation.view.contract;
+package it.unibs.ingsoft.presentation.view.interfaces;
 
 /**
  * Interfaccia di view composita usata dai controller.

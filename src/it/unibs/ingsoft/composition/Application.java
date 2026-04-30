@@ -1,11 +1,13 @@
 package it.unibs.ingsoft.composition;
 
-import it.unibs.ingsoft.application.*;
-import it.unibs.ingsoft.presentation.controller.*;
+import it.unibs.ingsoft.application.IscrizioneService;
+import it.unibs.ingsoft.application.NotificationService;
+import it.unibs.ingsoft.application.PropostaService;
+import it.unibs.ingsoft.application.StateTransitionService;
+import it.unibs.ingsoft.application.authentication.AuthenticationService;
 import it.unibs.ingsoft.application.batch.BatchImportService;
+import it.unibs.ingsoft.application.catalogo.CatalogoService;
 import it.unibs.ingsoft.domain.AppConstants;
-import it.unibs.ingsoft.domain.Configuratore;
-import it.unibs.ingsoft.domain.Fruitore;
 import it.unibs.ingsoft.persistence.api.IBachecaRepository;
 import it.unibs.ingsoft.persistence.api.ICatalogoRepository;
 import it.unibs.ingsoft.persistence.api.ICredenzialiRepository;
@@ -14,10 +16,17 @@ import it.unibs.ingsoft.persistence.impl.FileBachecaRepository;
 import it.unibs.ingsoft.persistence.impl.FileCatalogoRepository;
 import it.unibs.ingsoft.persistence.impl.FileCredenzialiRepository;
 import it.unibs.ingsoft.persistence.impl.FileSpazioPersonaleRepository;
-import it.unibs.ingsoft.presentation.view.cli.ConfiguratoreViewImpl;
+import it.unibs.ingsoft.presentation.controller.ConfiguratoreController;
+import it.unibs.ingsoft.presentation.controller.FruitoreController;
+import it.unibs.ingsoft.presentation.controller.MainController;
+import it.unibs.ingsoft.presentation.view.cli.ConfiguratoreCliView;
 import it.unibs.ingsoft.presentation.view.cli.ConsoleUI;
-import it.unibs.ingsoft.presentation.view.contract.ConfiguratoreView;
-import it.unibs.ingsoft.presentation.view.contract.IAppView;
+import it.unibs.ingsoft.presentation.view.cli.FruitoreCliView;
+import it.unibs.ingsoft.presentation.view.cli.MainCliView;
+import it.unibs.ingsoft.presentation.view.interfaces.IAppView;
+import it.unibs.ingsoft.presentation.view.interfaces.IConfiguratoreView;
+import it.unibs.ingsoft.presentation.view.interfaces.IFruitoreView;
+import it.unibs.ingsoft.presentation.view.interfaces.IMainView;
 
 import java.nio.file.Path;
 import java.time.Duration;
@@ -52,53 +61,38 @@ public final class Application {
         StateTransitionService stateService = new StateTransitionService(propostaRepo, notifService);
         IscrizioneService iscrizioneService = new IscrizioneService(propostaRepo, stateService);
 
-        stateService.controllaScadenze();
-        startMidnightScheduler(stateService);
-
         BatchImportService batchImportService = new BatchImportService(catalogoService, propostaService);
 
         IAppView ui = new ConsoleUI(new Scanner(System.in));
-        ConfiguratoreView configuratoreView = new ConfiguratoreViewImpl(ui);
-        AuthController authCtrl = new AuthController(ui, authService);
+        IMainView mainView = new MainCliView(ui);
+        IConfiguratoreView configuratoreView = new ConfiguratoreCliView(ui);
+        IFruitoreView fruitoreView = new FruitoreCliView(ui);
 
-        ui.header("Gestore Eventi - Versione 5");
+        ConfiguratoreController configuratoreController = new ConfiguratoreController(
+                configuratoreView,
+                catalogoService,
+                propostaService,
+                stateService,
+                batchImportService);
 
-        while (true) {
-            ui.stampaMenu("MENU DI ACCESSO", new String[]{
-                    "Accedi come Configuratore",
-                    "Accedi come Fruitore",
-                    "Registrati come Fruitore"
-            }, "Esci dall'applicazione");
+        FruitoreController fruitoreController = new FruitoreController(
+                fruitoreView,
+                propostaService,
+                iscrizioneService,
+                notifService);
 
-            int choice = ui.acquisisciIntero("Scelta: ", 0, 3);
+        MainController mainController = new MainController(
+                mainView,
+                authService,
+                configuratoreController,
+                fruitoreController);
 
-            if (choice == 0) {
-                ui.stampa("Arrivederci!");
-                stopMidnightScheduler();
-                break;
-            } else if (choice == 1) {
-                Configuratore configuratore = authCtrl.loginConfiguratore();
-                if (configuratore != null) {
-                    ui.stampa("Benvenuto Configuratore, " + configuratore.getUsername() + "!");
-                    ui.newLine();
-                    new ConfiguratoreController(configuratoreView, catalogoService, propostaService, stateService, batchImportService).run();
-
-                    // Scarta le proposte valide non pubblicate al logout
-                    propostaService.clearProposteValide();
-                    ui.stampa("Logout configuratore effettuato.");
-                    ui.newLine();
-                }
-            } else if (choice == 2) {
-                Fruitore fruitore = authCtrl.loginFruitore();
-                if (fruitore != null) {
-                    SpazioPersonaleController spc = new SpazioPersonaleController(fruitore, ui, notifService);
-                    new FruitoreController(fruitore, ui, propostaService, iscrizioneService, spc).run();
-                    ui.stampa("Logout fruitore effettuato.");
-                    ui.newLine();
-                }
-            } else if (choice == 3) {
-                authCtrl.registraFruitore();
-            }
+        try {
+            stateService.controllaScadenze();
+            startMidnightScheduler(stateService);
+            mainController.run();
+        } finally {
+            stopMidnightScheduler();
         }
     }
 

@@ -1,5 +1,9 @@
-package it.unibs.ingsoft.application;
+package it.unibs.ingsoft.application.catalogo;
 
+import it.unibs.ingsoft.application.catalogo.dto.CampoBaseExtraRequest;
+import it.unibs.ingsoft.application.catalogo.dto.CampoDefinitionRequest;
+import it.unibs.ingsoft.application.catalogo.dto.CampoObbligatorietaRequest;
+import it.unibs.ingsoft.application.catalogo.dto.CatalogoOperationResult;
 import it.unibs.ingsoft.domain.*;
 import it.unibs.ingsoft.persistence.api.ICatalogoRepository;
 

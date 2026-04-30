@@ -27,7 +27,7 @@ Note: this workspace currently does not have `mvn` installed on `PATH`, so the s
 
 ## Missing Or Partially Covered Cases
 
-- UC19 is partially covered. The manual says the archive should navigate first by category and show proposal state/history. Current `PropostaController.visualizzaArchivioProposte()` navigates first by state. `UC19_ArchivioProposteIT` is intentionally disabled to document this mismatch instead of hiding it.
+- UC19 is partially covered. The manual says the archive should navigate first by category and show proposal state/history. The current configurator archive flow navigates first by state. `UC19_ArchivioProposteIT` is intentionally disabled to document this mismatch instead of hiding it.
 - Full menu-loop coverage for `ConfiguratoreController` is intentionally limited. The class has large private loops and heavy interactive flow. The tests cover the underlying use-case behavior through services and selected smaller controllers.
 - UI rendering details are not exhaustively asserted. The tests focus on documented behavior and state changes, not exact console formatting.
 

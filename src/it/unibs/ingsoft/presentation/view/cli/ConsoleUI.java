@@ -1,9 +1,9 @@
 package it.unibs.ingsoft.presentation.view.cli;
 
 import it.unibs.ingsoft.domain.*;
-import it.unibs.ingsoft.presentation.view.contract.IAppView;
-import it.unibs.ingsoft.presentation.view.contract.OperationCancelledException;
-import it.unibs.ingsoft.presentation.view.contract.ProposalFieldValidator;
+import it.unibs.ingsoft.presentation.view.interfaces.IAppView;
+import it.unibs.ingsoft.presentation.view.interfaces.OperationCancelledException;
+import it.unibs.ingsoft.presentation.view.interfaces.ProposalFieldValidator;
 
 import java.io.Console;
 import java.util.*;

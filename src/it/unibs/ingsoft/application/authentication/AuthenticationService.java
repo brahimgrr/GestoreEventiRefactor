@@ -1,4 +1,4 @@
-package it.unibs.ingsoft.application;
+package it.unibs.ingsoft.application.authentication;
 
 import it.unibs.ingsoft.domain.Configuratore;
 import it.unibs.ingsoft.domain.Credenziali;
@@ -48,6 +48,27 @@ public final class AuthenticationService {
 
     private Credenziali credenziali() {
         return repo.get();
+    }
+
+    public boolean isConfiguratorePredefinito(Configuratore configuratore) {
+        return configuratore != null &&
+                USERNAME_PREDEFINITO.equals(configuratore.getUsername());
+    }
+
+    public void validaNuovoUsername(String username) {
+        if (username == null || username.isBlank() || username.trim().length() < MIN_USERNAME_LENGTH)
+            throw new IllegalArgumentException("Username troppo corto (minimo " + MIN_USERNAME_LENGTH + " caratteri).");
+
+        if (USERNAME_PREDEFINITO.equalsIgnoreCase(username.trim()))
+            throw new IllegalArgumentException("Username riservato. Scegli un nome diverso.");
+
+        if (esisteUsername(username))
+            throw new IllegalArgumentException("Username gia in uso. Scegli un nome diverso.");
+    }
+
+    public void validaNuovaPassword(String password) {
+        if (password == null || password.isBlank() || password.trim().length() < MIN_PASSWORD_LENGTH)
+            throw new IllegalArgumentException("Password troppo corta (minimo " + MIN_PASSWORD_LENGTH + " caratteri).");
     }
 
     /**
@@ -122,10 +143,10 @@ public final class AuthenticationService {
         validaCredenziali(username, password);
 
         if (USERNAME_PREDEFINITO.equalsIgnoreCase(username))
-            throw new IllegalArgumentException("Lo username \"" + username + "\" è riservato.");
+            throw new IllegalArgumentException("Lo username \"" + username + "\" e riservato.");
 
         if (esisteUsername(username))
-            throw new IllegalArgumentException("Esiste già un utente (configuratore o fruitore) con username \"" + username + "\".");
+            throw new IllegalArgumentException("Esiste gia un utente (configuratore o fruitore) con username \"" + username + "\".");
     }
 
     /**
