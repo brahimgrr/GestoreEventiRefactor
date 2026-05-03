@@ -16,6 +16,17 @@ import java.util.stream.IntStream;
  * Centralizza la creazione delle definizioni di campo del catalogo.
  */
 public final class CampoFactory {
+    private static CampoFactory instance;
+
+    private CampoFactory() {
+    }
+
+    public static CampoFactory getInstance() {
+        if (instance == null) {
+            instance = new CampoFactory();
+        }
+        return instance;
+    }
 
     public List<Campo> creaCampiBase() {
         return Arrays.stream(CampoBaseDefinito.values())

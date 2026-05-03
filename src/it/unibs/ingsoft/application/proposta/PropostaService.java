@@ -33,7 +33,7 @@ public final class PropostaService {
     private final PropostaQueryService queryService;
 
     public PropostaService(IBachecaRepository bachecaRepo) {
-        this(bachecaRepo, new PropostaFactory());
+        this(bachecaRepo, PropostaFactory.getInstance());
     }
 
     public PropostaService(IBachecaRepository bachecaRepo, PropostaFactory propostaFactory) {

@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.presentation.view.interfaces;
 
 import it.unibs.ingsoft.application.proposta.dto.PropostaValidationResult;
-import it.unibs.ingsoft.application.batch.ImportResult;
+import it.unibs.ingsoft.application.batch.dto.ImportResult;
 import it.unibs.ingsoft.application.catalogo.dto.CampoBaseExtraRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CampoDefinitionRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CampoObbligatorietaRequest;

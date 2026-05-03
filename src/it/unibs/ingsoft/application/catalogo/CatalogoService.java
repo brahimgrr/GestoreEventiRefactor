@@ -21,7 +21,7 @@ public final class CatalogoService {
     private final CategoriaCatalogoService categoriaCatalogoService;
 
     public CatalogoService(ICatalogoRepository repo) {
-        this(repo, new CampoFactory());
+        this(repo, CampoFactory.getInstance());
     }
 
     public CatalogoService(ICatalogoRepository repo, CampoFactory campoFactory) {

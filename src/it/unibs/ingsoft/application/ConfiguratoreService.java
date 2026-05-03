@@ -2,7 +2,7 @@ package it.unibs.ingsoft.application;
 
 import it.unibs.ingsoft.application.bacheca.StateTransitionService;
 import it.unibs.ingsoft.application.batch.BatchImportService;
-import it.unibs.ingsoft.application.batch.ImportResult;
+import it.unibs.ingsoft.application.batch.dto.ImportResult;
 import it.unibs.ingsoft.application.catalogo.CatalogoService;
 import it.unibs.ingsoft.application.catalogo.dto.CampoBaseExtraRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CampoDefinitionRequest;

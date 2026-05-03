@@ -30,7 +30,7 @@ public final class AuthenticationService {
      * @pre repo   != null
      */
     public AuthenticationService(ICredenzialiRepository repo) {
-        this(repo, new UtenteFactory());
+        this(repo, UtenteFactory.getInstance());
     }
 
     public AuthenticationService(ICredenzialiRepository repo, UtenteFactory utenteFactory) {

@@ -22,7 +22,7 @@ public final class StateTransitionService {
     private final ReentrantLock lock = new ReentrantLock();
 
     public StateTransitionService(IBachecaRepository bachecaRepo, NotificationService notificationService) {
-        this(bachecaRepo, notificationService, new NotificaFactory());
+        this(bachecaRepo, notificationService, NotificaFactory.getInstance());
     }
 
     public StateTransitionService(IBachecaRepository bachecaRepo,

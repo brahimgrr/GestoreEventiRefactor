@@ -3,7 +3,7 @@ package it.unibs.ingsoft.integration;
 import it.unibs.ingsoft.application.catalogo.CatalogoService;
 import it.unibs.ingsoft.application.proposta.PropostaService;
 import it.unibs.ingsoft.application.batch.BatchImportService;
-import it.unibs.ingsoft.application.batch.ImportResult;
+import it.unibs.ingsoft.application.batch.dto.ImportResult;
 import it.unibs.ingsoft.persistence.file.FileBachecaRepository;
 import it.unibs.ingsoft.persistence.file.FileCatalogoRepository;
 import it.unibs.ingsoft.testsupport.DomainFixtures;

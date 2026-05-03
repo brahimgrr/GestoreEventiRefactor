@@ -1,4 +1,4 @@
-package it.unibs.ingsoft.application.batch;
+package it.unibs.ingsoft.application.batch.dto;
 
 import java.util.ArrayList;
 import java.util.Collections;

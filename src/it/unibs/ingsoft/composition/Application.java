@@ -54,10 +54,10 @@ public final class Application {
     private ScheduledExecutorService midnightScheduler;
 
     public void start() {
-        CampoFactory campoFactory = new CampoFactory();
-        PropostaFactory propostaFactory = new PropostaFactory();
-        NotificaFactory notificaFactory = new NotificaFactory();
-        UtenteFactory utenteFactory = new UtenteFactory();
+        CampoFactory campoFactory = CampoFactory.getInstance();
+        PropostaFactory propostaFactory = PropostaFactory.getInstance();
+        NotificaFactory notificaFactory = NotificaFactory.getInstance();
+        UtenteFactory utenteFactory = UtenteFactory.getInstance();
 
         ICatalogoRepository catalogoRepo = FileRepositoryFactory
                 .getInstance().createCatalogoRepository();
