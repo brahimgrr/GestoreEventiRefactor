@@ -20,11 +20,11 @@ import it.unibs.ingsoft.domain.factory.CampoFactory;
 import it.unibs.ingsoft.domain.factory.NotificaFactory;
 import it.unibs.ingsoft.domain.factory.PropostaFactory;
 import it.unibs.ingsoft.domain.factory.UtenteFactory;
-import it.unibs.ingsoft.persistence.api.IBachecaRepository;
-import it.unibs.ingsoft.persistence.api.ICatalogoRepository;
-import it.unibs.ingsoft.persistence.api.ICredenzialiRepository;
-import it.unibs.ingsoft.persistence.api.ISpazioPersonaleRepository;
-import it.unibs.ingsoft.persistence.impl.FileRepositoryFactory;
+import it.unibs.ingsoft.persistence.interfaces.IBachecaRepository;
+import it.unibs.ingsoft.persistence.interfaces.ICatalogoRepository;
+import it.unibs.ingsoft.persistence.interfaces.ICredenzialiRepository;
+import it.unibs.ingsoft.persistence.interfaces.ISpazioPersonaleRepository;
+import it.unibs.ingsoft.persistence.file.FileRepositoryFactory;
 import it.unibs.ingsoft.presentation.controller.ConfiguratoreController;
 import it.unibs.ingsoft.presentation.controller.FruitoreController;
 import it.unibs.ingsoft.presentation.controller.MainController;
@@ -51,27 +51,22 @@ import java.util.concurrent.TimeUnit;
  * e gestisce lo scheduler notturno per le transizioni automatiche di stato.
  */
 public final class Application {
-    private static final Path DATA_CATALOGO = Path.of("data/v5", "catalogo.json");
-    private static final Path DATA_UTENTI = Path.of("data/v5", "utenti.json");
-    private static final Path DATA_PROPOSTE = Path.of("data/v5", "proposte.json");
-    private static final Path DATA_NOTIFICHE = Path.of("data/v5", "notifiche.json");
     private ScheduledExecutorService midnightScheduler;
 
     public void start() {
-        FileRepositoryFactory repositoryFactory = new FileRepositoryFactory(
-                DATA_CATALOGO,
-                DATA_UTENTI,
-                DATA_PROPOSTE,
-                DATA_NOTIFICHE);
         CampoFactory campoFactory = new CampoFactory();
         PropostaFactory propostaFactory = new PropostaFactory();
         NotificaFactory notificaFactory = new NotificaFactory();
         UtenteFactory utenteFactory = new UtenteFactory();
 
-        ICatalogoRepository catalogoRepo = repositoryFactory.createCatalogoRepository();
-        ICredenzialiRepository credenzialiRepo = repositoryFactory.createCredenzialiRepository();
-        IBachecaRepository propostaRepo = repositoryFactory.createBachecaRepository();
-        ISpazioPersonaleRepository spazioRepo = repositoryFactory.createSpazioPersonaleRepository();
+        ICatalogoRepository catalogoRepo = FileRepositoryFactory
+                .getInstance().createCatalogoRepository();
+        ICredenzialiRepository credenzialiRepo = FileRepositoryFactory
+                .getInstance().createCredenzialiRepository();
+        IBachecaRepository propostaRepo = FileRepositoryFactory
+                .getInstance().createBachecaRepository();
+        ISpazioPersonaleRepository spazioRepo = FileRepositoryFactory
+                .getInstance().createSpazioPersonaleRepository();
 
         CampoCatalogoService campoCatalogoService = new CampoCatalogoService(catalogoRepo, campoFactory);
         CategoriaCatalogoService categoriaCatalogoService = new CategoriaCatalogoService(catalogoRepo);

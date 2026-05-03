@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.testsupport;
 
 import it.unibs.ingsoft.domain.Catalogo;
-import it.unibs.ingsoft.persistence.api.ICatalogoRepository;
+import it.unibs.ingsoft.persistence.interfaces.ICatalogoRepository;
 
 public final class InMemoryCatalogoRepository implements ICatalogoRepository {
     private final Catalogo catalogo;

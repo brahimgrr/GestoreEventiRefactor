@@ -9,7 +9,7 @@ import it.unibs.ingsoft.domain.Catalogo;
 import it.unibs.ingsoft.domain.Categoria;
 import it.unibs.ingsoft.domain.TipoDato;
 import it.unibs.ingsoft.domain.factory.CampoFactory;
-import it.unibs.ingsoft.persistence.api.ICatalogoRepository;
+import it.unibs.ingsoft.persistence.interfaces.ICatalogoRepository;
 
 import java.util.Collections;
 import java.util.List;

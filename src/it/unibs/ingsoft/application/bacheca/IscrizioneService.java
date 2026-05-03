@@ -4,7 +4,7 @@ import it.unibs.ingsoft.domain.AppConstants;
 import it.unibs.ingsoft.domain.Fruitore;
 import it.unibs.ingsoft.domain.Proposta;
 import it.unibs.ingsoft.domain.StatoProposta;
-import it.unibs.ingsoft.persistence.api.IBachecaRepository;
+import it.unibs.ingsoft.persistence.interfaces.IBachecaRepository;
 
 import java.time.LocalDate;
 import java.util.Objects;

@@ -7,7 +7,7 @@ import it.unibs.ingsoft.domain.Categoria;
 import it.unibs.ingsoft.domain.Proposta;
 import it.unibs.ingsoft.domain.StatoProposta;
 import it.unibs.ingsoft.domain.factory.PropostaFactory;
-import it.unibs.ingsoft.persistence.api.IBachecaRepository;
+import it.unibs.ingsoft.persistence.interfaces.IBachecaRepository;
 
 import java.time.LocalDate;
 import java.util.List;

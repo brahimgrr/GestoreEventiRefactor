@@ -1,8 +1,8 @@
-package it.unibs.ingsoft.persistence.impl;
+package it.unibs.ingsoft.persistence.file;
 
 import it.unibs.ingsoft.domain.ArchivioNotifiche;
 import it.unibs.ingsoft.domain.SpazioPersonale;
-import it.unibs.ingsoft.persistence.api.ISpazioPersonaleRepository;
+import it.unibs.ingsoft.persistence.interfaces.ISpazioPersonaleRepository;
 
 import java.nio.file.Path;
 

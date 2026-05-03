@@ -4,7 +4,7 @@ import it.unibs.ingsoft.domain.AppConstants;
 import it.unibs.ingsoft.domain.Bacheca;
 import it.unibs.ingsoft.domain.Proposta;
 import it.unibs.ingsoft.domain.StatoProposta;
-import it.unibs.ingsoft.persistence.api.IBachecaRepository;
+import it.unibs.ingsoft.persistence.interfaces.IBachecaRepository;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ public final class PropostaPublicationService {
 
     public void salvaProposta(Proposta proposta) {
         if (proposta.getStato() != StatoProposta.VALIDA) {
-            throw new IllegalStateException("Solo una proposta VALIDA puÃ² essere salvata.");
+            throw new IllegalStateException("Solo una proposta VALIDA puo' essere salvata.");
         }
         rilevaDuplicatoAlSalvataggio(proposta);
         proposteValide.add(proposta);
@@ -61,8 +61,8 @@ public final class PropostaPublicationService {
         LocalDate oggi = LocalDate.now(AppConstants.clock);
         if (proposta.getTermineIscrizione() != null && !proposta.getTermineIscrizione().isAfter(oggi)) {
             throw new IllegalStateException(
-                    "Non Ã¨ piÃ¹ possibile pubblicare: il termine di iscrizione ("
-                            + proposta.getTermineIscrizione() + ") Ã¨ giÃ  scaduto. Rivalidare la proposta.");
+                    "Non e' piu' possibile pubblicare: il termine di iscrizione ("
+                            + proposta.getTermineIscrizione() + ") E' gia' scaduto. Rivalidare la proposta.");
         }
 
         rilevaDuplicato(proposta);
@@ -83,7 +83,7 @@ public final class PropostaPublicationService {
 
         if (inBacheca || inValide) {
             throw new IllegalStateException(
-                    "Esiste giÃ  una proposta con lo stesso Titolo, Data, Ora e Luogo.");
+                    "Esiste gia' una proposta con lo stesso Titolo, Data, Ora e Luogo.");
         }
     }
 

@@ -3,7 +3,7 @@ package it.unibs.ingsoft.application.proposta;
 import it.unibs.ingsoft.domain.Bacheca;
 import it.unibs.ingsoft.domain.Proposta;
 import it.unibs.ingsoft.domain.StatoProposta;
-import it.unibs.ingsoft.persistence.api.IBachecaRepository;
+import it.unibs.ingsoft.persistence.interfaces.IBachecaRepository;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -1,4 +1,4 @@
-package it.unibs.ingsoft.persistence.impl;
+package it.unibs.ingsoft.persistence.file;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;

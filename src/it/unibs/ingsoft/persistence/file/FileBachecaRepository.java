@@ -1,7 +1,7 @@
-package it.unibs.ingsoft.persistence.impl;
+package it.unibs.ingsoft.persistence.file;
 
 import it.unibs.ingsoft.domain.Bacheca;
-import it.unibs.ingsoft.persistence.api.IBachecaRepository;
+import it.unibs.ingsoft.persistence.interfaces.IBachecaRepository;
 
 import java.nio.file.Path;
 

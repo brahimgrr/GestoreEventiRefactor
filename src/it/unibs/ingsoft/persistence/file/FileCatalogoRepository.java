@@ -1,7 +1,7 @@
-package it.unibs.ingsoft.persistence.impl;
+package it.unibs.ingsoft.persistence.file;
 
 import it.unibs.ingsoft.domain.Catalogo;
-import it.unibs.ingsoft.persistence.api.ICatalogoRepository;
+import it.unibs.ingsoft.persistence.interfaces.ICatalogoRepository;
 
 import java.nio.file.Path;
 

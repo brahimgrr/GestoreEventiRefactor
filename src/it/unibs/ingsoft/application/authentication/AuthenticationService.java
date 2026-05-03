@@ -4,7 +4,7 @@ import it.unibs.ingsoft.domain.Configuratore;
 import it.unibs.ingsoft.domain.Credenziali;
 import it.unibs.ingsoft.domain.Fruitore;
 import it.unibs.ingsoft.domain.factory.UtenteFactory;
-import it.unibs.ingsoft.persistence.api.ICredenzialiRepository;
+import it.unibs.ingsoft.persistence.interfaces.ICredenzialiRepository;
 
 import java.util.Objects;
 import java.util.Optional;

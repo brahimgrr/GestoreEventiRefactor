@@ -3,7 +3,7 @@ package it.unibs.ingsoft.application.bacheca;
 import it.unibs.ingsoft.application.proposta.PropostaService;
 import it.unibs.ingsoft.domain.*;
 import it.unibs.ingsoft.domain.factory.NotificaFactory;
-import it.unibs.ingsoft.persistence.api.IBachecaRepository;
+import it.unibs.ingsoft.persistence.interfaces.IBachecaRepository;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;

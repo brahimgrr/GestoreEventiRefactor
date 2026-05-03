@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.testsupport;
 
 import it.unibs.ingsoft.domain.Credenziali;
-import it.unibs.ingsoft.persistence.api.ICredenzialiRepository;
+import it.unibs.ingsoft.persistence.interfaces.ICredenzialiRepository;
 
 public final class InMemoryCredenzialiRepository implements ICredenzialiRepository {
     private final Credenziali credenziali;

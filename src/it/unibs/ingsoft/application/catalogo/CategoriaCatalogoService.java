@@ -3,7 +3,7 @@ package it.unibs.ingsoft.application.catalogo;
 import it.unibs.ingsoft.application.catalogo.dto.CatalogoOperationResult;
 import it.unibs.ingsoft.domain.Catalogo;
 import it.unibs.ingsoft.domain.Categoria;
-import it.unibs.ingsoft.persistence.api.ICatalogoRepository;
+import it.unibs.ingsoft.persistence.interfaces.ICatalogoRepository;
 
 import java.util.List;
 import java.util.Objects;

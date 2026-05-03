@@ -1,4 +1,4 @@
-package it.unibs.ingsoft.persistence.api;
+package it.unibs.ingsoft.persistence.interfaces;
 
 import it.unibs.ingsoft.domain.SpazioPersonale;
 

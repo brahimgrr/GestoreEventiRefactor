@@ -3,7 +3,7 @@ package it.unibs.ingsoft.integration;
 import it.unibs.ingsoft.application.proposta.PropostaService;
 import it.unibs.ingsoft.domain.Proposta;
 import it.unibs.ingsoft.domain.StatoProposta;
-import it.unibs.ingsoft.persistence.impl.FileBachecaRepository;
+import it.unibs.ingsoft.persistence.file.FileBachecaRepository;
 import it.unibs.ingsoft.testsupport.DomainFixtures;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.testsupport;
 
 import it.unibs.ingsoft.domain.Bacheca;
-import it.unibs.ingsoft.persistence.api.IBachecaRepository;
+import it.unibs.ingsoft.persistence.interfaces.IBachecaRepository;
 
 public final class InMemoryBachecaRepository implements IBachecaRepository {
     private final Bacheca bacheca;
