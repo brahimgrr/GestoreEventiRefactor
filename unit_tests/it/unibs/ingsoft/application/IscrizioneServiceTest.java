@@ -1,5 +1,8 @@
 package it.unibs.ingsoft.application;
 
+import it.unibs.ingsoft.application.bacheca.IscrizioneService;
+import it.unibs.ingsoft.application.bacheca.NotificationService;
+import it.unibs.ingsoft.application.bacheca.StateTransitionService;
 import it.unibs.ingsoft.domain.Fruitore;
 import it.unibs.ingsoft.domain.Proposta;
 import it.unibs.ingsoft.domain.StatoProposta;

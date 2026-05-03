@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.testsupport;
 
-import it.unibs.ingsoft.application.PropostaService;
+import it.unibs.ingsoft.application.proposta.PropostaService;
 import it.unibs.ingsoft.domain.*;
 
 import java.time.Clock;

@@ -1,5 +1,6 @@
 package it.unibs.ingsoft.application;
 
+import it.unibs.ingsoft.application.proposta.PropostaService;
 import it.unibs.ingsoft.domain.*;
 import it.unibs.ingsoft.testsupport.DomainFixtures;
 import it.unibs.ingsoft.testsupport.InMemoryBachecaRepository;

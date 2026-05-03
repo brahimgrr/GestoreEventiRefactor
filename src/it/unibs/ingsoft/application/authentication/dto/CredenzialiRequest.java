@@ -1,4 +1,4 @@
-package it.unibs.ingsoft.application;
+package it.unibs.ingsoft.application.authentication.dto;
 
 /**
  * Dati raccolti dalla UI per login e registrazione.

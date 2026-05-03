@@ -1,8 +1,9 @@
 package it.unibs.ingsoft.presentation.controller;
 
-import it.unibs.ingsoft.application.IscrizioneService;
-import it.unibs.ingsoft.application.NotificationService;
-import it.unibs.ingsoft.application.PropostaService;
+import it.unibs.ingsoft.application.FruitoreService;
+import it.unibs.ingsoft.application.bacheca.IscrizioneService;
+import it.unibs.ingsoft.application.bacheca.NotificationService;
+import it.unibs.ingsoft.application.proposta.PropostaService;
 import it.unibs.ingsoft.domain.Fruitore;
 import it.unibs.ingsoft.presentation.view.interfaces.IFruitoreView;
 
@@ -10,19 +11,22 @@ import java.util.Objects;
 
 public final class FruitoreController {
     private final IFruitoreView view;
-    private final PropostaService propostaService;
-    private final IscrizioneService iscrizioneService;
-    private final NotificationService notificationService;
+    private final FruitoreService fruitoreService;
 
+    public FruitoreController(
+            IFruitoreView view,
+            FruitoreService fruitoreService) {
+        this.view = Objects.requireNonNull(view);
+        this.fruitoreService = Objects.requireNonNull(fruitoreService);
+    }
+
+    @Deprecated
     public FruitoreController(
             IFruitoreView view,
             PropostaService propostaService,
             IscrizioneService iscrizioneService,
             NotificationService notificationService) {
-        this.view = Objects.requireNonNull(view);
-        this.propostaService = Objects.requireNonNull(propostaService);
-        this.iscrizioneService = Objects.requireNonNull(iscrizioneService);
-        this.notificationService = Objects.requireNonNull(notificationService);
+        this(view, new FruitoreService(propostaService, iscrizioneService, notificationService));
     }
 
     public void run(Fruitore fruitore) {
@@ -40,18 +44,18 @@ public final class FruitoreController {
     }
 
     private void iscrizioneDaBacheca(Fruitore fruitore) {
-        view.selezionaPropostaDaBacheca(propostaService.getBachecaPerCategoria())
+        view.selezionaPropostaDaBacheca(fruitoreService.getBachecaPerCategoria())
                 .filter(view::confermaIscrizione)
                 .ifPresent(proposta -> esegui(
-                        () -> iscrizioneService.iscrivi(proposta, fruitore),
+                        () -> fruitoreService.iscrivi(proposta, fruitore),
                         () -> view.mostraIscrizioneEffettuata(proposta)));
     }
 
     private void disdiciIscrizione(Fruitore fruitore) {
-        view.selezionaPropostaDaDisdire(propostaService.getProposteAperteIscritteDa(fruitore.getUsername()))
+        view.selezionaPropostaDaDisdire(fruitoreService.getProposteAperteIscritteDa(fruitore))
                 .filter(view::confermaDisiscrizione)
                 .ifPresent(proposta -> esegui(
-                        () -> iscrizioneService.disiscrivi(proposta, fruitore),
+                        () -> fruitoreService.disiscrivi(proposta, fruitore),
                         () -> view.mostraDisiscrizioneEffettuata(proposta)));
     }
 
@@ -59,14 +63,14 @@ public final class FruitoreController {
         while (true) {
             var scelta = view.selezionaNotificaDaEliminare(
                     fruitore,
-                    notificationService.getNotifiche(fruitore.getUsername()));
+                    fruitoreService.getNotifiche(fruitore));
             if (scelta.isEmpty()) {
                 return;
             }
 
             scelta.filter(view::confermaEliminazioneNotifica)
                     .ifPresent(notifica -> {
-                        notificationService.cancellaNotifica(fruitore.getUsername(), notifica);
+                        fruitoreService.cancellaNotifica(fruitore, notifica);
                         view.mostraNotificaEliminata(notifica);
                     });
         }

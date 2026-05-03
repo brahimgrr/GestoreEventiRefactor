@@ -2,10 +2,10 @@ package it.unibs.ingsoft.integration;
 
 import it.unibs.ingsoft.application.authentication.AuthenticationService;
 import it.unibs.ingsoft.application.catalogo.CatalogoService;
-import it.unibs.ingsoft.application.IscrizioneService;
-import it.unibs.ingsoft.application.NotificationService;
-import it.unibs.ingsoft.application.PropostaService;
-import it.unibs.ingsoft.application.StateTransitionService;
+import it.unibs.ingsoft.application.bacheca.IscrizioneService;
+import it.unibs.ingsoft.application.bacheca.NotificationService;
+import it.unibs.ingsoft.application.proposta.PropostaService;
+import it.unibs.ingsoft.application.bacheca.StateTransitionService;
 import it.unibs.ingsoft.application.batch.BatchImportService;
 import it.unibs.ingsoft.domain.Configuratore;
 import it.unibs.ingsoft.domain.Fruitore;

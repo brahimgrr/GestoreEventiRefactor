@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.presentation.view.cli;
 
-import it.unibs.ingsoft.application.CredenzialiRequest;
+import it.unibs.ingsoft.application.authentication.dto.CredenzialiRequest;
 import it.unibs.ingsoft.domain.Configuratore;
 import it.unibs.ingsoft.domain.Fruitore;
 import it.unibs.ingsoft.presentation.view.interfaces.CredentialFieldValidator;

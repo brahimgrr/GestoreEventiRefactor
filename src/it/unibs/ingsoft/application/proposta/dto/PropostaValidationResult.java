@@ -1,4 +1,4 @@
-package it.unibs.ingsoft.application;
+package it.unibs.ingsoft.application.proposta.dto;
 
 import it.unibs.ingsoft.domain.Campo;
 

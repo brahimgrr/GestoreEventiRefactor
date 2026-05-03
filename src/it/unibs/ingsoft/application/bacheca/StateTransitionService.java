@@ -1,6 +1,8 @@
-package it.unibs.ingsoft.application;
+package it.unibs.ingsoft.application.bacheca;
 
+import it.unibs.ingsoft.application.proposta.PropostaService;
 import it.unibs.ingsoft.domain.*;
+import it.unibs.ingsoft.domain.factory.NotificaFactory;
 import it.unibs.ingsoft.persistence.api.IBachecaRepository;
 
 import java.time.LocalDate;
@@ -16,11 +18,19 @@ public final class StateTransitionService {
 
     private final IBachecaRepository bachecaRepo;
     private final NotificationService notificationService;
+    private final NotificaFactory notificaFactory;
     private final ReentrantLock lock = new ReentrantLock();
 
     public StateTransitionService(IBachecaRepository bachecaRepo, NotificationService notificationService) {
+        this(bachecaRepo, notificationService, new NotificaFactory());
+    }
+
+    public StateTransitionService(IBachecaRepository bachecaRepo,
+                                  NotificationService notificationService,
+                                  NotificaFactory notificaFactory) {
         this.bachecaRepo = Objects.requireNonNull(bachecaRepo);
         this.notificationService = Objects.requireNonNull(notificationService);
+        this.notificaFactory = Objects.requireNonNull(notificaFactory);
     }
 
     /**
@@ -80,7 +90,7 @@ public final class StateTransitionService {
 
             String messaggio = info.trim();
             for (String aderente : p.getListaAderenti()) {
-                notificationService.inviaNotifica(aderente, new Notifica(messaggio));
+                notificationService.inviaNotifica(aderente, notificaFactory.creaNotifica(messaggio));
             }
         } finally {
             lock.unlock();
@@ -116,7 +126,7 @@ public final class StateTransitionService {
             String messaggio = "La proposta \"" + titolo
                     + "\" e' stata RITIRATA dal configuratore.";
             for (String aderente : p.getListaAderenti()) {
-                notificationService.inviaNotifica(aderente, new Notifica(messaggio));
+                notificationService.inviaNotifica(aderente, notificaFactory.creaNotifica(messaggio));
             }
 
             bachecaRepo.save();
@@ -133,7 +143,7 @@ public final class StateTransitionService {
                 + "\" e' stata ANNULLATA per mancato raggiungimento del numero di partecipanti.";
 
         for (String aderente : p.getListaAderenti()) {
-            notificationService.inviaNotifica(aderente, new Notifica(messaggio));
+            notificationService.inviaNotifica(aderente, notificaFactory.creaNotifica(messaggio));
         }
     }
 

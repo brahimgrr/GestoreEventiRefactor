@@ -3,6 +3,7 @@ package it.unibs.ingsoft.application.authentication;
 import it.unibs.ingsoft.domain.Configuratore;
 import it.unibs.ingsoft.domain.Credenziali;
 import it.unibs.ingsoft.domain.Fruitore;
+import it.unibs.ingsoft.domain.factory.UtenteFactory;
 import it.unibs.ingsoft.persistence.api.ICredenzialiRepository;
 
 import java.util.Objects;
@@ -23,12 +24,18 @@ public final class AuthenticationService {
     private static final int MIN_PASSWORD_LENGTH = 4;
 
     private final ICredenzialiRepository repo;
+    private final UtenteFactory utenteFactory;
 
     /**
      * @pre repo   != null
      */
     public AuthenticationService(ICredenzialiRepository repo) {
+        this(repo, new UtenteFactory());
+    }
+
+    public AuthenticationService(ICredenzialiRepository repo, UtenteFactory utenteFactory) {
         this.repo = Objects.requireNonNull(repo);
+        this.utenteFactory = Objects.requireNonNull(utenteFactory);
     }
 
     private static void validaCredenziali(String username, String password) {
@@ -83,12 +90,12 @@ public final class AuthenticationService {
         // Le credenziali predefinite condivise rimangono disponibili per i flussi di primo accesso.
         if (USERNAME_PREDEFINITO.equals(username) &&
                 PASSWORD_PREDEFINITA.equals(password))
-            return Optional.of(new Configuratore(USERNAME_PREDEFINITO));
+            return Optional.of(utenteFactory.creaConfiguratore(USERNAME_PREDEFINITO));
 
         String key = username.trim().toLowerCase();
         String stored = credenziali().getConfiguratori().get(key);
         if (stored != null && stored.equals(password))
-            return Optional.of(new Configuratore(username));
+            return Optional.of(utenteFactory.creaConfiguratore(username));
 
         return Optional.empty();
     }
@@ -105,7 +112,7 @@ public final class AuthenticationService {
         String key = username.trim().toLowerCase();
         String stored = credenziali().getFruitori().get(key);
         if (stored != null && stored.equals(password))
-            return Optional.of(new Fruitore(username));
+            return Optional.of(utenteFactory.creaFruitore(username));
 
         return Optional.empty();
     }
@@ -121,7 +128,7 @@ public final class AuthenticationService {
         String normalized = username.trim();
         credenziali().addConfiguratore(normalized, password);
         repo.save();
-        return new Configuratore(normalized);
+        return utenteFactory.creaConfiguratore(normalized);
     }
 
     /**
@@ -136,7 +143,7 @@ public final class AuthenticationService {
         String normalized = username.trim();
         credenziali().addFruitore(normalized, password);
         repo.save();
-        return new Fruitore(normalized);
+        return utenteFactory.creaFruitore(normalized);
     }
 
     private void validaNuovoAccount(String username, String password) {

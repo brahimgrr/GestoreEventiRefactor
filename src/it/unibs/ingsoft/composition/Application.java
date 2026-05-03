@@ -1,21 +1,30 @@
 package it.unibs.ingsoft.composition;
 
-import it.unibs.ingsoft.application.IscrizioneService;
-import it.unibs.ingsoft.application.NotificationService;
-import it.unibs.ingsoft.application.PropostaService;
-import it.unibs.ingsoft.application.StateTransitionService;
+import it.unibs.ingsoft.application.bacheca.IscrizioneService;
+import it.unibs.ingsoft.application.bacheca.NotificationService;
+import it.unibs.ingsoft.application.proposta.PropostaService;
+import it.unibs.ingsoft.application.bacheca.StateTransitionService;
+import it.unibs.ingsoft.application.ConfiguratoreService;
+import it.unibs.ingsoft.application.FruitoreService;
 import it.unibs.ingsoft.application.authentication.AuthenticationService;
 import it.unibs.ingsoft.application.batch.BatchImportService;
+import it.unibs.ingsoft.application.catalogo.CampoCatalogoService;
 import it.unibs.ingsoft.application.catalogo.CatalogoService;
+import it.unibs.ingsoft.application.catalogo.CategoriaCatalogoService;
+import it.unibs.ingsoft.application.proposta.PropostaCreationService;
+import it.unibs.ingsoft.application.proposta.PropostaPublicationService;
+import it.unibs.ingsoft.application.proposta.PropostaQueryService;
+import it.unibs.ingsoft.application.proposta.PropostaValidationService;
 import it.unibs.ingsoft.domain.AppConstants;
+import it.unibs.ingsoft.domain.factory.CampoFactory;
+import it.unibs.ingsoft.domain.factory.NotificaFactory;
+import it.unibs.ingsoft.domain.factory.PropostaFactory;
+import it.unibs.ingsoft.domain.factory.UtenteFactory;
 import it.unibs.ingsoft.persistence.api.IBachecaRepository;
 import it.unibs.ingsoft.persistence.api.ICatalogoRepository;
 import it.unibs.ingsoft.persistence.api.ICredenzialiRepository;
 import it.unibs.ingsoft.persistence.api.ISpazioPersonaleRepository;
-import it.unibs.ingsoft.persistence.impl.FileBachecaRepository;
-import it.unibs.ingsoft.persistence.impl.FileCatalogoRepository;
-import it.unibs.ingsoft.persistence.impl.FileCredenzialiRepository;
-import it.unibs.ingsoft.persistence.impl.FileSpazioPersonaleRepository;
+import it.unibs.ingsoft.persistence.impl.FileRepositoryFactory;
 import it.unibs.ingsoft.presentation.controller.ConfiguratoreController;
 import it.unibs.ingsoft.presentation.controller.FruitoreController;
 import it.unibs.ingsoft.presentation.controller.MainController;
@@ -49,19 +58,51 @@ public final class Application {
     private ScheduledExecutorService midnightScheduler;
 
     public void start() {
-        ICatalogoRepository catalogoRepo = new FileCatalogoRepository(DATA_CATALOGO);
-        ICredenzialiRepository credenzialiRepo = new FileCredenzialiRepository(DATA_UTENTI);
-        IBachecaRepository propostaRepo = new FileBachecaRepository(DATA_PROPOSTE);
-        ISpazioPersonaleRepository spazioRepo = new FileSpazioPersonaleRepository(DATA_NOTIFICHE);
+        FileRepositoryFactory repositoryFactory = new FileRepositoryFactory(
+                DATA_CATALOGO,
+                DATA_UTENTI,
+                DATA_PROPOSTE,
+                DATA_NOTIFICHE);
+        CampoFactory campoFactory = new CampoFactory();
+        PropostaFactory propostaFactory = new PropostaFactory();
+        NotificaFactory notificaFactory = new NotificaFactory();
+        UtenteFactory utenteFactory = new UtenteFactory();
 
-        AuthenticationService authService = new AuthenticationService(credenzialiRepo);
-        CatalogoService catalogoService = new CatalogoService(catalogoRepo);
-        PropostaService propostaService = new PropostaService(propostaRepo);
+        ICatalogoRepository catalogoRepo = repositoryFactory.createCatalogoRepository();
+        ICredenzialiRepository credenzialiRepo = repositoryFactory.createCredenzialiRepository();
+        IBachecaRepository propostaRepo = repositoryFactory.createBachecaRepository();
+        ISpazioPersonaleRepository spazioRepo = repositoryFactory.createSpazioPersonaleRepository();
+
+        CampoCatalogoService campoCatalogoService = new CampoCatalogoService(catalogoRepo, campoFactory);
+        CategoriaCatalogoService categoriaCatalogoService = new CategoriaCatalogoService(catalogoRepo);
+        CatalogoService catalogoService = new CatalogoService(campoCatalogoService, categoriaCatalogoService);
+
+        PropostaCreationService propostaCreationService = new PropostaCreationService(propostaFactory);
+        PropostaValidationService propostaValidationService = new PropostaValidationService();
+        PropostaQueryService propostaQueryService = new PropostaQueryService(propostaRepo);
+        PropostaPublicationService propostaPublicationService =
+                new PropostaPublicationService(propostaRepo, propostaQueryService);
+        PropostaService propostaService = new PropostaService(
+                propostaCreationService,
+                propostaValidationService,
+                propostaPublicationService,
+                propostaQueryService);
+
+        AuthenticationService authService = new AuthenticationService(credenzialiRepo, utenteFactory);
         NotificationService notifService = new NotificationService(spazioRepo);
-        StateTransitionService stateService = new StateTransitionService(propostaRepo, notifService);
+        StateTransitionService stateService = new StateTransitionService(propostaRepo, notifService, notificaFactory);
         IscrizioneService iscrizioneService = new IscrizioneService(propostaRepo, stateService);
 
         BatchImportService batchImportService = new BatchImportService(catalogoService, propostaService);
+        ConfiguratoreService configuratoreService = new ConfiguratoreService(
+                catalogoService,
+                propostaService,
+                stateService,
+                batchImportService);
+        FruitoreService fruitoreService = new FruitoreService(
+                propostaService,
+                iscrizioneService,
+                notifService);
 
         IAppView ui = new ConsoleUI(new Scanner(System.in));
         IMainView mainView = new MainCliView(ui);
@@ -70,16 +111,11 @@ public final class Application {
 
         ConfiguratoreController configuratoreController = new ConfiguratoreController(
                 configuratoreView,
-                catalogoService,
-                propostaService,
-                stateService,
-                batchImportService);
+                configuratoreService);
 
         FruitoreController fruitoreController = new FruitoreController(
                 fruitoreView,
-                propostaService,
-                iscrizioneService,
-                notifService);
+                fruitoreService);
 
         MainController mainController = new MainController(
                 mainView,

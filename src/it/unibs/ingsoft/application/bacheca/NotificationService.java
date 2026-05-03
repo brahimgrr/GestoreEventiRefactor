@@ -1,4 +1,4 @@
-package it.unibs.ingsoft.application;
+package it.unibs.ingsoft.application.bacheca;
 
 import it.unibs.ingsoft.domain.Notifica;
 import it.unibs.ingsoft.domain.SpazioPersonale;

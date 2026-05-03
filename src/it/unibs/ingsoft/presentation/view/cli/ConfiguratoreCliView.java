@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.presentation.view.cli;
 
-import it.unibs.ingsoft.application.PropostaValidationResult;
+import it.unibs.ingsoft.application.proposta.dto.PropostaValidationResult;
 import it.unibs.ingsoft.application.batch.ImportResult;
 import it.unibs.ingsoft.application.catalogo.dto.CampoBaseExtraRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CampoDefinitionRequest;

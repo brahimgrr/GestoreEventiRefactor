@@ -1,9 +1,9 @@
 package it.unibs.ingsoft.integration;
 
-import it.unibs.ingsoft.application.IscrizioneService;
-import it.unibs.ingsoft.application.NotificationService;
-import it.unibs.ingsoft.application.PropostaService;
-import it.unibs.ingsoft.application.StateTransitionService;
+import it.unibs.ingsoft.application.bacheca.IscrizioneService;
+import it.unibs.ingsoft.application.bacheca.NotificationService;
+import it.unibs.ingsoft.application.proposta.PropostaService;
+import it.unibs.ingsoft.application.bacheca.StateTransitionService;
 import it.unibs.ingsoft.domain.Fruitore;
 import it.unibs.ingsoft.domain.Notifica;
 import it.unibs.ingsoft.persistence.impl.FileBachecaRepository;

@@ -1,5 +1,6 @@
 package it.unibs.ingsoft.application;
 
+import it.unibs.ingsoft.application.bacheca.NotificationService;
 import it.unibs.ingsoft.domain.Notifica;
 import it.unibs.ingsoft.testsupport.InMemorySpazioPersonaleRepository;
 import org.junit.jupiter.api.BeforeEach;

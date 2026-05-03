@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.presentation.controller;
 
-import it.unibs.ingsoft.application.CredenzialiRequest;
+import it.unibs.ingsoft.application.authentication.dto.CredenzialiRequest;
 import it.unibs.ingsoft.application.authentication.AuthenticationService;
 import it.unibs.ingsoft.domain.Configuratore;
 import it.unibs.ingsoft.domain.Fruitore;

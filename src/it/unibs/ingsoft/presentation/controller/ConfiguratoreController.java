@@ -1,11 +1,9 @@
 package it.unibs.ingsoft.presentation.controller;
 
-import it.unibs.ingsoft.application.PropostaService;
-import it.unibs.ingsoft.application.PropostaValidationResult;
-import it.unibs.ingsoft.application.StateTransitionService;
-import it.unibs.ingsoft.application.batch.BatchImportService;
-import it.unibs.ingsoft.application.catalogo.CatalogoService;
+import it.unibs.ingsoft.application.ConfiguratoreService;
+import it.unibs.ingsoft.application.bacheca.StateTransitionService;
 import it.unibs.ingsoft.application.catalogo.dto.CatalogoOperationResult;
+import it.unibs.ingsoft.application.proposta.PropostaService;
 import it.unibs.ingsoft.domain.Campo;
 import it.unibs.ingsoft.domain.Categoria;
 import it.unibs.ingsoft.domain.Proposta;
@@ -18,26 +16,31 @@ import java.util.Optional;
 
 public final class ConfiguratoreController {
     private final IConfiguratoreView view;
-    private final CatalogoService catalogoService;
-    private final PropostaService propostaService;
-    private final StateTransitionService stateTransitionService;
-    private final BatchImportService batchImportService;
+    private final ConfiguratoreService configuratoreService;
 
     public ConfiguratoreController(
             IConfiguratoreView view,
-            CatalogoService catalogoService,
+            ConfiguratoreService configuratoreService) {
+        this.view = Objects.requireNonNull(view);
+        this.configuratoreService = Objects.requireNonNull(configuratoreService);
+    }
+
+    @Deprecated
+    public ConfiguratoreController(
+            IConfiguratoreView view,
+            it.unibs.ingsoft.application.catalogo.CatalogoService catalogoService,
             PropostaService propostaService,
             StateTransitionService stateTransitionService,
-            BatchImportService batchImportService) {
-        this.view = Objects.requireNonNull(view);
-        this.catalogoService = Objects.requireNonNull(catalogoService);
-        this.propostaService = Objects.requireNonNull(propostaService);
-        this.stateTransitionService = Objects.requireNonNull(stateTransitionService);
-        this.batchImportService = Objects.requireNonNull(batchImportService);
+            it.unibs.ingsoft.application.batch.BatchImportService batchImportService) {
+        this(view, new ConfiguratoreService(
+                catalogoService,
+                propostaService,
+                stateTransitionService,
+                batchImportService));
     }
 
     public void run() {
-        while (catalogoService.isPrimaConfigurazioneNecessaria()) {
+        while (configuratoreService.isPrimaConfigurazioneNecessaria()) {
             view.mostraPrimaConfigurazioneRichiesta();
             configuraCampiBase();
         }
@@ -50,17 +53,17 @@ public final class ConfiguratoreController {
                 case CAMPI_COMUNI -> gestisciCampiComuni();
                 case CATEGORIE -> gestisciCategorie();
                 case VISUALIZZA -> view.mostraCatalogo(
-                        catalogoService.getCampiBase(),
-                        catalogoService.getCampiComuni(),
-                        catalogoService.getCategorie());
+                        configuratoreService.getCampiBase(),
+                        configuratoreService.getCampiComuni(),
+                        configuratoreService.getCategorie());
                 case CREA_PROPOSTA -> creaProposta();
                 case PUBBLICA_PROPOSTA -> pubblicaProposta();
-                case BACHECA -> view.mostraBacheca(propostaService.getBachecaPerCategoria());
+                case BACHECA -> view.mostraBacheca(configuratoreService.getBachecaPerCategoria());
                 case RITIRA_PROPOSTA -> ritiraProposta();
-                case ARCHIVIO -> view.mostraArchivioProposte(propostaService.getPropostePerStato());
+                case ARCHIVIO -> view.mostraArchivioProposte(configuratoreService.getPropostePerStato());
                 case IMPORTA -> importaDati();
                 case LOGOUT -> {
-                    propostaService.clearProposteValide();
+                    configuratoreService.clearProposteValide();
                     return;
                 }
             }
@@ -68,23 +71,23 @@ public final class ConfiguratoreController {
     }
 
     private void configuraCampiBase() {
-        view.acquisisciCampiBaseExtra(catalogoService.getCampiBasePredefiniti())
+        view.acquisisciCampiBaseExtra(configuratoreService.getCampiBasePredefiniti())
                 .ifPresentOrElse(
                         extra -> esegui(
-                                () -> catalogoService.configuraCampiBase(extra),
+                                () -> configuratoreService.configuraCampiBase(extra),
                                 () -> view.mostraEsitoCatalogo(CatalogoOperationResult.SUCCESSO)),
                         view::mostraOperazioneAnnullata);
     }
 
     private void gestisciCategorie() {
         while (true) {
-            switch (view.scegliAzioneCategorie(catalogoService.getCategorie())) {
+            switch (view.scegliAzioneCategorie(configuratoreService.getCategorie())) {
                 case CREA -> view.acquisisciNomeCategoria()
                         .ifPresent(nome -> esegui(
-                                () -> catalogoService.createCategoria(nome),
+                                () -> configuratoreService.createCategoria(nome),
                                 () -> view.mostraEsitoCatalogo(CatalogoOperationResult.SUCCESSO)));
                 case RIMUOVI -> rimuoviCategoria();
-                case CAMPI_SPECIFICI -> view.selezionaCategoriaPerCampiSpecifici(catalogoService.getCategorie())
+                case CAMPI_SPECIFICI -> view.selezionaCategoriaPerCampiSpecifici(configuratoreService.getCategorie())
                         .ifPresent(this::gestisciCampiSpecifici);
                 case TORNA -> {
                     return;
@@ -94,23 +97,23 @@ public final class ConfiguratoreController {
     }
 
     private void rimuoviCategoria() {
-        view.selezionaCategoriaDaRimuovere(catalogoService.getCategorie())
+        view.selezionaCategoriaDaRimuovere(configuratoreService.getCategorie())
                 .filter(view::confermaRimozioneCategoria)
                 .ifPresent(categoria -> view.mostraEsitoCatalogo(
-                        catalogoService.rimuoviCategoria(categoria.getNome())));
+                        configuratoreService.rimuoviCategoria(categoria.getNome())));
     }
 
     private void gestisciCampiComuni() {
         while (true) {
-            switch (view.scegliAzioneCampiComuni(catalogoService.getCampiComuni())) {
+            switch (view.scegliAzioneCampiComuni(configuratoreService.getCampiComuni())) {
                 case AGGIUNGI -> view.acquisisciNuovoCampo()
                         .ifPresent(request -> esegui(
-                                () -> catalogoService.addCampoComune(request),
+                                () -> configuratoreService.addCampoComune(request),
                                 () -> view.mostraEsitoCatalogo(CatalogoOperationResult.SUCCESSO)));
                 case RIMUOVI -> rimuoviCampoComune();
-                case CAMBIA_OBBLIGATORIETA -> view.acquisisciObbligatorietaCampo(catalogoService.getCampiComuni())
+                case CAMBIA_OBBLIGATORIETA -> view.acquisisciObbligatorietaCampo(configuratoreService.getCampiComuni())
                         .ifPresent(request -> view.mostraEsitoCatalogo(
-                                catalogoService.setObbligatorietaCampoComune(request)));
+                                configuratoreService.setObbligatorietaCampoComune(request)));
                 case TORNA -> {
                     return;
                 }
@@ -123,12 +126,12 @@ public final class ConfiguratoreController {
             switch (view.scegliAzioneCampiSpecifici(categoria)) {
                 case AGGIUNGI -> view.acquisisciNuovoCampo()
                         .ifPresent(request -> esegui(
-                                () -> catalogoService.addCampoSpecifico(categoria.getNome(), request),
+                                () -> configuratoreService.addCampoSpecifico(categoria.getNome(), request),
                                 () -> view.mostraEsitoCatalogo(CatalogoOperationResult.SUCCESSO)));
                 case RIMUOVI -> rimuoviCampoSpecifico(categoria);
                 case CAMBIA_OBBLIGATORIETA -> view.acquisisciObbligatorietaCampo(categoria.getCampiSpecifici())
                         .ifPresent(request -> view.mostraEsitoCatalogo(
-                                catalogoService.setObbligatorietaCampoSpecifico(categoria.getNome(), request)));
+                                configuratoreService.setObbligatorietaCampoSpecifico(categoria.getNome(), request)));
                 case TORNA -> {
                     return;
                 }
@@ -137,10 +140,10 @@ public final class ConfiguratoreController {
     }
 
     private void rimuoviCampoComune() {
-        view.selezionaCampoDaRimuovere(catalogoService.getCampiComuni())
+        view.selezionaCampoDaRimuovere(configuratoreService.getCampiComuni())
                 .filter(view::confermaRimozioneCampo)
                 .map(Campo::getNome)
-                .ifPresent(nome -> view.mostraEsitoCatalogo(catalogoService.rimuoviCampoComune(nome)));
+                .ifPresent(nome -> view.mostraEsitoCatalogo(configuratoreService.rimuoviCampoComune(nome)));
     }
 
     private void rimuoviCampoSpecifico(Categoria categoria) {
@@ -148,17 +151,14 @@ public final class ConfiguratoreController {
                 .filter(view::confermaRimozioneCampo)
                 .map(Campo::getNome)
                 .ifPresent(nome -> view.mostraEsitoCatalogo(
-                        catalogoService.rimuoviCampoSpecifico(categoria.getNome(), nome)));
+                        configuratoreService.rimuoviCampoSpecifico(categoria.getNome(), nome)));
     }
 
     private void creaProposta() {
-        view.selezionaCategoriaPerProposta(catalogoService.getCategorie())
+        view.selezionaCategoriaPerProposta(configuratoreService.getCategorie())
                 .ifPresent(categoria -> {
-                    Proposta proposta = propostaService.creaProposta(
-                            categoria,
-                            catalogoService.getCampiBase(),
-                            catalogoService.getCampiComuni());
-                    view.acquisisciValoriProposta(proposta, propostaService::validaCampo)
+                    Proposta proposta = configuratoreService.creaProposta(categoria);
+                    view.acquisisciValoriProposta(proposta, configuratoreService::validaCampo)
                             .ifPresentOrElse(
                                     valori -> validaESalvaProposta(proposta, valori),
                                     view::mostraOperazioneAnnullata);
@@ -166,36 +166,33 @@ public final class ConfiguratoreController {
     }
 
     private void validaESalvaProposta(Proposta proposta, Map<String, String> valori) {
-        PropostaValidationResult result = propostaService.applicaValoriEValida(proposta, valori);
+        var result = configuratoreService.applicaValoriEValida(proposta, valori);
         while (!result.valida()) {
             Optional<Map<String, String>> correzioni =
-                    view.correggiValoriProposta(proposta, result, propostaService::validaCampo);
+                    view.correggiValoriProposta(proposta, result, configuratoreService::validaCampo);
             if (correzioni.isEmpty()) {
                 return;
             }
-            result = propostaService.applicaValoriEValida(proposta, correzioni.get());
+            result = configuratoreService.applicaValoriEValida(proposta, correzioni.get());
         }
         esegui(
-                () -> propostaService.salvaProposta(proposta),
+                () -> configuratoreService.salvaProposta(proposta),
                 () -> view.mostraPropostaSalvata(proposta));
     }
 
     private void pubblicaProposta() {
-        view.selezionaPropostaDaPubblicare(propostaService.getProposteValide())
+        view.selezionaPropostaDaPubblicare(configuratoreService.getProposteValide())
                 .filter(view::confermaPubblicazione)
                 .ifPresent(proposta -> esegui(
-                        () -> {
-                            propostaService.pubblicaProposta(proposta);
-                            propostaService.rimuoviPropostaValida(proposta);
-                        },
+                        () -> configuratoreService.pubblicaProposta(proposta),
                         () -> view.mostraPropostaPubblicata(proposta)));
     }
 
     private void ritiraProposta() {
-        view.selezionaPropostaDaRitirare(propostaService.getProposteRitirabili())
+        view.selezionaPropostaDaRitirare(configuratoreService.getProposteRitirabili())
                 .filter(view::confermaRitiro)
                 .ifPresent(proposta -> esegui(
-                        () -> stateTransitionService.ritiraProposta(proposta),
+                        () -> configuratoreService.ritiraProposta(proposta),
                         () -> view.mostraEsitoCatalogo(CatalogoOperationResult.SUCCESSO)));
     }
 
@@ -203,7 +200,7 @@ public final class ConfiguratoreController {
         view.acquisisciPercorsoImportazione()
                 .ifPresent(path -> {
                     try {
-                        view.mostraRisultatoImportazione(batchImportService.importa(path));
+                        view.mostraRisultatoImportazione(configuratoreService.importa(path));
                     } catch (IOException e) {
                         view.mostraErrore(e);
                     }

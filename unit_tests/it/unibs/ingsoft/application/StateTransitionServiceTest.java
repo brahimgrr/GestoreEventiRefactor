@@ -1,5 +1,7 @@
 package it.unibs.ingsoft.application;
 
+import it.unibs.ingsoft.application.bacheca.NotificationService;
+import it.unibs.ingsoft.application.bacheca.StateTransitionService;
 import it.unibs.ingsoft.domain.Proposta;
 import it.unibs.ingsoft.domain.StatoProposta;
 import it.unibs.ingsoft.testsupport.DomainFixtures;
