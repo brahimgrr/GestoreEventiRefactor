@@ -99,6 +99,18 @@ public final class PropostaService {
         publicationService.pubblicaProposta(proposta);
     }
 
+    public void controllaScadenze() {
+        publicationService.controllaScadenze();
+    }
+
+    public void confermaProposta(Proposta proposta) {
+        publicationService.confermaProposta(proposta);
+    }
+
+    public void ritiraProposta(Proposta proposta) {
+        publicationService.ritiraProposta(proposta);
+    }
+
     public List<Proposta> getTutteLeProposte() {
         return queryService.getTutteLeProposte();
     }

@@ -218,6 +218,22 @@ public final class Proposta {
         cambiaStato(StatoProposta.RITIRATA);
     }
 
+    public EsitoTransizioneProposta applicaTransizionePerScadenza(LocalDate oggi) {
+        if (deveChiudereIscrizioni(oggi)) {
+            if (haNumeroPartecipantiCompleto() && confermaSeAperta()) {
+                return EsitoTransizioneProposta.CONFERMATA;
+            }
+
+            if (annullaSeAperta()) {
+                return EsitoTransizioneProposta.ANNULLATA;
+            }
+        } else if (deveConcludersi(oggi) && concludiSeConfermata()) {
+            return EsitoTransizioneProposta.CONCLUSA;
+        }
+
+        return EsitoTransizioneProposta.NESSUNA;
+    }
+
     @JsonIgnore
     public boolean deveChiudereIscrizioni(LocalDate oggi) {
         return isAperta() && isTermineIscrizioneScaduto(oggi);

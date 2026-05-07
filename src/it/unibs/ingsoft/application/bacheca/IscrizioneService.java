@@ -1,5 +1,6 @@
 package it.unibs.ingsoft.application.bacheca;
 
+import it.unibs.ingsoft.application.proposta.PropostaPublicationService;
 import it.unibs.ingsoft.domain.AppConstants;
 import it.unibs.ingsoft.domain.Fruitore;
 import it.unibs.ingsoft.domain.Proposta;
@@ -11,11 +12,11 @@ import java.util.Objects;
 public final class IscrizioneService {
 
     private final IBachecaRepository bachecaRepo;
-    private final StateTransitionService stateTransitionService;
+    private final PropostaPublicationService propostaPublicationService;
 
-    public IscrizioneService(IBachecaRepository bachecaRepo, StateTransitionService stateTransitionService) {
+    public IscrizioneService(IBachecaRepository bachecaRepo, PropostaPublicationService propostaPublicationService) {
         this.bachecaRepo = Objects.requireNonNull(bachecaRepo);
-        this.stateTransitionService = Objects.requireNonNull(stateTransitionService);
+        this.propostaPublicationService = Objects.requireNonNull(propostaPublicationService);
     }
 
     public void iscrivi(Proposta p, Fruitore f) {
@@ -23,7 +24,7 @@ public final class IscrizioneService {
         p.iscrivi(f.getUsername(), oggi);
 
         if (p.haNumeroPartecipantiCompleto()) {
-            stateTransitionService.confermaProposta(p);
+            propostaPublicationService.confermaProposta(p);
         }
 
         bachecaRepo.save();

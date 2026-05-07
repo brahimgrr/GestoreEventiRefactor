@@ -2,7 +2,6 @@ package it.unibs.ingsoft.composition;
 
 import it.unibs.ingsoft.application.bacheca.IscrizioneService;
 import it.unibs.ingsoft.application.bacheca.NotificationService;
-import it.unibs.ingsoft.application.bacheca.StateTransitionService;
 import it.unibs.ingsoft.application.proposta.PropostaService;
 import it.unibs.ingsoft.application.ConfiguratoreService;
 import it.unibs.ingsoft.application.FruitoreService;
@@ -71,8 +70,9 @@ public final class Application {
         PropostaCreationService propostaCreationService = new PropostaCreationService(propostaFactory);
         PropostaValidationService propostaValidationService = new PropostaValidationService();
         PropostaQueryService propostaQueryService = new PropostaQueryService(propostaRepo);
+        NotificationService notifService = new NotificationService(spazioRepo);
         PropostaPublicationService propostaPublicationService =
-                new PropostaPublicationService(propostaRepo, propostaQueryService);
+                new PropostaPublicationService(propostaRepo, propostaQueryService, notifService, notificaFactory);
         PropostaService propostaService = new PropostaService(
                 propostaCreationService,
                 propostaValidationService,
@@ -80,15 +80,12 @@ public final class Application {
                 propostaQueryService);
 
         AuthenticationService authService = new AuthenticationService(credenzialiRepo, utenteFactory);
-        NotificationService notifService = new NotificationService(spazioRepo);
-        StateTransitionService stateService = new StateTransitionService(propostaRepo, notifService, notificaFactory);
-        IscrizioneService iscrizioneService = new IscrizioneService(propostaRepo, stateService);
+        IscrizioneService iscrizioneService = new IscrizioneService(propostaRepo, propostaPublicationService);
 
         BatchImportService batchImportService = new BatchImportService(catalogoService, propostaService);
         ConfiguratoreService configuratoreService = new ConfiguratoreService(
                 catalogoService,
                 propostaService,
-                stateService,
                 batchImportService);
         FruitoreService fruitoreService = new FruitoreService(
                 propostaService,
@@ -115,15 +112,15 @@ public final class Application {
                 fruitoreController);
 
         try {
-            stateService.controllaScadenze();
-            startMidnightScheduler(stateService);
+            propostaService.controllaScadenze();
+            startMidnightScheduler(propostaService);
             mainController.run();
         } finally {
             stopMidnightScheduler();
         }
     }
 
-    private void startMidnightScheduler(StateTransitionService stateService) {
+    private void startMidnightScheduler(PropostaService propostaService) {
         ThreadFactory threadFactory = runnable -> {
             Thread thread = new Thread(runnable, "state-transition-midnight");
             thread.setDaemon(true);
@@ -131,7 +128,7 @@ public final class Application {
         };
 
         midnightScheduler = Executors.newSingleThreadScheduledExecutor(threadFactory);
-        scheduleNextMidnightCheck(stateService);
+        scheduleNextMidnightCheck(propostaService);
     }
 
     private void stopMidnightScheduler() {
@@ -146,14 +143,14 @@ public final class Application {
         return Duration.between(now, nextMidnight).toMillis();
     }
 
-    private void scheduleNextMidnightCheck(StateTransitionService stateService) {
+    private void scheduleNextMidnightCheck(PropostaService propostaService) {
         if (midnightScheduler == null || midnightScheduler.isShutdown()) {
             return;
         }
         long delay = millisUntilNextMidnight();
         midnightScheduler.schedule(() -> {
-            stateService.controllaScadenze();
-            scheduleNextMidnightCheck(stateService);
+            propostaService.controllaScadenze();
+            scheduleNextMidnightCheck(propostaService);
         }, delay, TimeUnit.MILLISECONDS);
     }
 }

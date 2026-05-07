@@ -1,6 +1,5 @@
 package it.unibs.ingsoft.application;
 
-import it.unibs.ingsoft.application.bacheca.StateTransitionService;
 import it.unibs.ingsoft.application.batch.BatchImportService;
 import it.unibs.ingsoft.application.batch.dto.ImportResult;
 import it.unibs.ingsoft.application.catalogo.CatalogoService;
@@ -27,16 +26,13 @@ import java.util.Objects;
 public final class ConfiguratoreService {
     private final CatalogoService catalogoService;
     private final PropostaService propostaService;
-    private final StateTransitionService stateTransitionService;
     private final BatchImportService batchImportService;
 
     public ConfiguratoreService(CatalogoService catalogoService,
                                 PropostaService propostaService,
-                                StateTransitionService stateTransitionService,
                                 BatchImportService batchImportService) {
         this.catalogoService = Objects.requireNonNull(catalogoService);
         this.propostaService = Objects.requireNonNull(propostaService);
-        this.stateTransitionService = Objects.requireNonNull(stateTransitionService);
         this.batchImportService = Objects.requireNonNull(batchImportService);
     }
 
@@ -130,7 +126,7 @@ public final class ConfiguratoreService {
     }
 
     public void ritiraProposta(Proposta proposta) {
-        stateTransitionService.ritiraProposta(proposta);
+        propostaService.ritiraProposta(proposta);
     }
 
     public Map<StatoProposta, List<Proposta>> getPropostePerStato() {
