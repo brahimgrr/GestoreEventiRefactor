@@ -1,9 +1,7 @@
 package it.unibs.ingsoft.presentation.controller;
 
 import it.unibs.ingsoft.application.ConfiguratoreService;
-import it.unibs.ingsoft.application.bacheca.StateTransitionService;
 import it.unibs.ingsoft.application.catalogo.dto.CatalogoOperationResult;
-import it.unibs.ingsoft.application.proposta.PropostaService;
 import it.unibs.ingsoft.domain.Campo;
 import it.unibs.ingsoft.domain.Categoria;
 import it.unibs.ingsoft.domain.Proposta;
@@ -23,20 +21,6 @@ public final class ConfiguratoreController {
             ConfiguratoreService configuratoreService) {
         this.view = Objects.requireNonNull(view);
         this.configuratoreService = Objects.requireNonNull(configuratoreService);
-    }
-
-    @Deprecated
-    public ConfiguratoreController(
-            IConfiguratoreView view,
-            it.unibs.ingsoft.application.catalogo.CatalogoService catalogoService,
-            PropostaService propostaService,
-            StateTransitionService stateTransitionService,
-            it.unibs.ingsoft.application.batch.BatchImportService batchImportService) {
-        this(view, new ConfiguratoreService(
-                catalogoService,
-                propostaService,
-                stateTransitionService,
-                batchImportService));
     }
 
     public void run() {

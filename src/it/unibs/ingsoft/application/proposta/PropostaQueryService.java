@@ -33,7 +33,7 @@ public final class PropostaQueryService {
 
     public List<Proposta> getBacheca() {
         return bacheca().getProposte().stream()
-                .filter(p -> p.getStato() == StatoProposta.APERTA)
+                .filter(Proposta::isAperta)
                 .collect(Collectors.toList());
     }
 
@@ -42,14 +42,14 @@ public final class PropostaQueryService {
             return List.of();
         }
         return getBacheca().stream()
-                .filter(p -> p.getListaAderenti().contains(username))
-                .collect(Collectors.toUnmodifiableList());
+                .filter(p -> p.isIscritto(username))
+                .toList();
     }
 
     public List<Proposta> getProposteRitirabili() {
         List<Proposta> ritirabili = new ArrayList<>(getBacheca());
         for (Proposta proposta : getTutteLeProposte()) {
-            if (proposta.getStato() == StatoProposta.CONFERMATA && !ritirabili.contains(proposta)) {
+            if (proposta.isConfermata() && !ritirabili.contains(proposta)) {
                 ritirabili.add(proposta);
             }
         }
@@ -67,7 +67,7 @@ public final class PropostaQueryService {
     public Map<String, List<Proposta>> getBachecaPerCategoria() {
         Map<String, List<Proposta>> mappa = new LinkedHashMap<>();
         for (Proposta proposta : bacheca().getProposte()) {
-            if (proposta.getStato() == StatoProposta.APERTA) {
+            if (proposta.isAperta()) {
                 mappa.computeIfAbsent(proposta.getCategoria().getNome(), k -> new ArrayList<>()).add(proposta);
             }
         }

@@ -5,14 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.*;
 
-/**
- * Catalogo dei campi e delle categorie dell'applicazione.
- * Le mutazioni strutturali sono mantenute qui; la logica di business risiede nel service layer.
- *
- * <p>Invariante: una volta che {@code campiBaseFissati == true}, {@code campiBase}
- * non viene mai più modificato. I nomi dei campi sono univoci globalmente
- * (case-insensitive) tra campi base e campi comuni.</p>
- */
 public final class Catalogo {
     private final List<Campo> campiBase = new ArrayList<>();
     private final List<Campo> campiComuni = new ArrayList<>();
@@ -39,15 +31,6 @@ public final class Catalogo {
     }
     // ---------------- CAMPI BASE ----------------
 
-    /**
-     * Fissa i campi base (fissi + eventuali extra). Può essere invocato una sola volta.
-     *
-     * @throws IllegalStateException    se i campi base sono già stati fissati
-     * @throws IllegalArgumentException se un campo è duplicato o già esistente globalmente
-     * @pre !campiBaseFissati
-     * @pre base != null
-     * @post campiBaseFissati == true
-     */
     public void fissareCampiBase(List<Campo> base, List<Campo> extra) {
         if (campiBaseFissati)
             throw new IllegalStateException("Campi base già fissati.");
@@ -88,10 +71,6 @@ public final class Catalogo {
 
     // ---------------- CAMPI COMUNI ----------------
 
-    /**
-     * @throws IllegalArgumentException se il nome è già presente globalmente
-     * @pre campo != null
-     */
     public void addCampoComune(Campo campo) {
         if (nomeEsistenteGlobale(campo.getNome()))
             throw new IllegalArgumentException("Campo già esistente.");
@@ -99,18 +78,10 @@ public final class Catalogo {
         campiComuni.add(campo);
     }
 
-    /**
-     * @return {@code true} se rimosso, {@code false} se non trovato
-     */
     public boolean removeCampoComune(String nome) {
         return campiComuni.removeIf(c -> c.getNome().equalsIgnoreCase(nome));
     }
 
-    /**
-     * Aggiorna il flag {@code obbligatorio} del campo comune indicato.
-     *
-     * @return {@code true} se aggiornato, {@code false} se non trovato
-     */
     public boolean updateCampoComune(String nome, boolean obbligatorio) {
         for (int i = 0; i < campiComuni.size(); i++) {
             Campo c = campiComuni.get(i);
@@ -124,11 +95,6 @@ public final class Catalogo {
 
     // ---------------- CATEGORIE ----------------
 
-    /**
-     * @throws IllegalArgumentException se la categoria esiste già
-     * @pre nome != null &amp;&amp; !nome.isBlank()
-     * @post getCategorie().stream().anyMatch(c - > c.getNome ().equalsIgnoreCase(nome))
-     */
     public Categoria addCategoria(String nome) {
         if (findCategoria(nome).isPresent())
             throw new IllegalArgumentException("Categoria già esistente.");
@@ -138,9 +104,6 @@ public final class Catalogo {
         return c;
     }
 
-    /**
-     * @return {@code true} se rimossa, {@code false} se non trovata
-     */
     public boolean removeCategoria(String nome) {
         return categorie.removeIf(c -> c.getNome().equalsIgnoreCase(nome));
     }
@@ -158,10 +121,6 @@ public final class Catalogo {
 
     // ---------------- CAMPI SPECIFICI ----------------
 
-    /**
-     * @throws IllegalArgumentException se il nome è già presente globalmente o la categoria non esiste
-     * @pre campo.getTipo() == TipoCampo.SPECIFICO
-     */
     public void addCampoSpecifico(String categoria, Campo campo) {
         if (nomeEsistenteGlobale(campo.getNome()))
             throw new IllegalArgumentException("Campo già esistente.");
@@ -169,18 +128,10 @@ public final class Catalogo {
         getCategoriaOrThrow(categoria).addCampoSpecifico(campo);
     }
 
-    /**
-     * @return {@code true} se rimosso, {@code false} se non trovato
-     * @throws IllegalArgumentException se la categoria non esiste
-     */
     public boolean removeCampoSpecifico(String categoria, String nome) {
         return getCategoriaOrThrow(categoria).removeCampoSpecifico(nome);
     }
 
-    /**
-     * @return {@code true} se aggiornato, {@code false} se non trovato
-     * @throws IllegalArgumentException se la categoria non esiste
-     */
     public boolean updateCampoSpecifico(String categoria, String nome, boolean obbligatorio) {
         return getCategoriaOrThrow(categoria)
                 .setObbligatorietaCampoSpecifico(nome, obbligatorio);

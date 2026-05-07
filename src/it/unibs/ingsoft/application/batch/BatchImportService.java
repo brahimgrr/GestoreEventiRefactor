@@ -206,7 +206,7 @@ public final class BatchImportService {
 
             try {
                 Proposta proposta = propostaService.creaProposta(categoria, campiBase, campiComuni);
-                proposta.putAllValoriCampi(valori);
+                proposta.aggiornaValoriCampi(valori);
 
                 List<String> erroriValidazione = propostaService.validaProposta(proposta);
                 if (!erroriValidazione.isEmpty()) {

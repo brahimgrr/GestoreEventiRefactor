@@ -2,8 +2,8 @@ package it.unibs.ingsoft.composition;
 
 import it.unibs.ingsoft.application.bacheca.IscrizioneService;
 import it.unibs.ingsoft.application.bacheca.NotificationService;
-import it.unibs.ingsoft.application.proposta.PropostaService;
 import it.unibs.ingsoft.application.bacheca.StateTransitionService;
+import it.unibs.ingsoft.application.proposta.PropostaService;
 import it.unibs.ingsoft.application.ConfiguratoreService;
 import it.unibs.ingsoft.application.FruitoreService;
 import it.unibs.ingsoft.application.authentication.AuthenticationService;
@@ -37,7 +37,6 @@ import it.unibs.ingsoft.presentation.view.interfaces.IConfiguratoreView;
 import it.unibs.ingsoft.presentation.view.interfaces.IFruitoreView;
 import it.unibs.ingsoft.presentation.view.interfaces.IMainView;
 
-import java.nio.file.Path;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.Scanner;
@@ -46,10 +45,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Composition root: crea e collega tutti i componenti, avvia il ciclo applicativo
- * e gestisce lo scheduler notturno per le transizioni automatiche di stato.
- */
+
 public final class Application {
     private ScheduledExecutorService midnightScheduler;
 
@@ -127,10 +123,6 @@ public final class Application {
         }
     }
 
-    /**
-     * Avvia un thread daemon che esegue {@link StateTransitionService#controllaScadenze()}
-     * ogni notte alla mezzanotte.
-     */
     private void startMidnightScheduler(StateTransitionService stateService) {
         ThreadFactory threadFactory = runnable -> {
             Thread thread = new Thread(runnable, "state-transition-midnight");
@@ -148,9 +140,6 @@ public final class Application {
         }
     }
 
-    /**
-     * Calcola i millisecondi mancanti alla mezzanotte successiva.
-     */
     private long millisUntilNextMidnight() {
         ZonedDateTime now = ZonedDateTime.now(AppConstants.clock);
         ZonedDateTime nextMidnight = now.toLocalDate().plusDays(1).atStartOfDay(now.getZone());

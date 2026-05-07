@@ -1,9 +1,6 @@
 package it.unibs.ingsoft.presentation.controller;
 
 import it.unibs.ingsoft.application.FruitoreService;
-import it.unibs.ingsoft.application.bacheca.IscrizioneService;
-import it.unibs.ingsoft.application.bacheca.NotificationService;
-import it.unibs.ingsoft.application.proposta.PropostaService;
 import it.unibs.ingsoft.domain.Fruitore;
 import it.unibs.ingsoft.presentation.view.interfaces.IFruitoreView;
 
@@ -18,15 +15,6 @@ public final class FruitoreController {
             FruitoreService fruitoreService) {
         this.view = Objects.requireNonNull(view);
         this.fruitoreService = Objects.requireNonNull(fruitoreService);
-    }
-
-    @Deprecated
-    public FruitoreController(
-            IFruitoreView view,
-            PropostaService propostaService,
-            IscrizioneService iscrizioneService,
-            NotificationService notificationService) {
-        this(view, new FruitoreService(propostaService, iscrizioneService, notificationService));
     }
 
     public void run(Fruitore fruitore) {

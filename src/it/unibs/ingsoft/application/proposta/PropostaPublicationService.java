@@ -3,7 +3,6 @@ package it.unibs.ingsoft.application.proposta;
 import it.unibs.ingsoft.domain.AppConstants;
 import it.unibs.ingsoft.domain.Bacheca;
 import it.unibs.ingsoft.domain.Proposta;
-import it.unibs.ingsoft.domain.StatoProposta;
 import it.unibs.ingsoft.persistence.interfaces.IBachecaRepository;
 
 import java.time.LocalDate;
@@ -34,9 +33,7 @@ public final class PropostaPublicationService {
     }
 
     public void salvaProposta(Proposta proposta) {
-        if (proposta.getStato() != StatoProposta.VALIDA) {
-            throw new IllegalStateException("Solo una proposta VALIDA puo' essere salvata.");
-        }
+        proposta.verificaSalvabile();
         rilevaDuplicatoAlSalvataggio(proposta);
         proposteValide.add(proposta);
     }
@@ -54,21 +51,11 @@ public final class PropostaPublicationService {
     }
 
     public void pubblicaProposta(Proposta proposta) {
-        if (proposta.getStato() != StatoProposta.VALIDA) {
-            throw new IllegalStateException("La proposta deve essere in stato VALIDA per essere pubblicata.");
-        }
-
         LocalDate oggi = LocalDate.now(AppConstants.clock);
-        if (proposta.getTermineIscrizione() != null && !proposta.getTermineIscrizione().isAfter(oggi)) {
-            throw new IllegalStateException(
-                    "Non e' piu' possibile pubblicare: il termine di iscrizione ("
-                            + proposta.getTermineIscrizione() + ") E' gia' scaduto. Rivalidare la proposta.");
-        }
-
+        proposta.verificaPubblicabile(oggi);
         rilevaDuplicato(proposta);
 
-        proposta.setStato(StatoProposta.APERTA);
-        proposta.setDataPubblicazione(oggi);
+        proposta.pubblica(oggi);
         bacheca().addProposta(proposta);
         bachecaRepo.save();
     }
@@ -94,7 +81,7 @@ public final class PropostaPublicationService {
                 .anyMatch(e -> e.getChiaveIdentita().equals(chiave));
 
         if (duplicato) {
-            throw new IllegalStateException("Esiste giÃ  una proposta con lo stesso Titolo, Data, Ora e Luogo.");
+            throw new IllegalStateException("Esiste gia' una proposta con lo stesso Titolo, Data, Ora e Luogo.");
         }
     }
 }
