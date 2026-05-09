@@ -1,9 +1,17 @@
 package it.unibs.ingsoft.domain;
 
-public final class NotificaFormatter {
+public final class NotificaFormatter   { // notificaview
 
     private NotificaFormatter() {
     }
+
+
+//    public static String render(Notifica notifica){
+//        switch (notifica.type) {
+//            case NotificaType.CONFERMATA:
+//                return propostaConfermata(notifica.getProposta*())
+//        }
+//    }
 
     public static String propostaConfermata(Proposta proposta) {
         String quota = proposta.valoreCampoOrDefault(AppConstants.CAMPO_QUOTA, "").trim();

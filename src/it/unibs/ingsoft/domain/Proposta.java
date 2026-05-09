@@ -75,6 +75,29 @@ public final class Proposta {
                 + valori.getOrDefault(AppConstants.CAMPO_LUOGO, "").trim()).toLowerCase();
     }
 
+    public static boolean isTermineIscrizioneValido(LocalDate termine) {
+        return termine != null && termine.isAfter(LocalDate.now(AppConstants.clock));
+    }
+
+    public static boolean isDataEventoValida(LocalDate dataEvento, LocalDate termine) {
+        return dataEvento != null && termine != null && dataEvento.isAfter(termine.plusDays(1));
+    }
+
+    public static boolean isDataConclusivaValida(LocalDate conclusiva, LocalDate data) {
+        return conclusiva != null && data != null && !conclusiva.isBefore(data);
+    }
+
+    private static LocalDate parseData(String s) {
+        if (s == null || s.isBlank()) {
+            return null;
+        }
+        try {
+            return LocalDate.parse(s.trim(), AppConstants.DATE_FMT);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public Categoria getCategoria() {
         return categoria;
     }
@@ -344,18 +367,6 @@ public final class Proposta {
         aggiornaValoriCampi(valori);
     }
 
-    public static boolean isTermineIscrizioneValido(LocalDate termine) {
-        return termine != null && termine.isAfter(LocalDate.now(AppConstants.clock));
-    }
-
-    public static boolean isDataEventoValida(LocalDate dataEvento, LocalDate termine) {
-        return dataEvento != null && termine != null && dataEvento.isAfter(termine.plusDays(1));
-    }
-
-    public static boolean isDataConclusivaValida(LocalDate conclusiva, LocalDate data) {
-        return conclusiva != null && data != null && !conclusiva.isBefore(data);
-    }
-
     public List<String> valida() {
         revertToBozzaSilent();
 
@@ -466,17 +477,6 @@ public final class Proposta {
             }
         } catch (NumberFormatException e) {
             errori.add("\"" + AppConstants.CAMPO_NUM_PARTECIPANTI + "\" deve essere un intero valido.");
-        }
-    }
-
-    private static LocalDate parseData(String s) {
-        if (s == null || s.isBlank()) {
-            return null;
-        }
-        try {
-            return LocalDate.parse(s.trim(), AppConstants.DATE_FMT);
-        } catch (Exception e) {
-            return null;
         }
     }
 
