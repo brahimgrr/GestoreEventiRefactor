@@ -1,12 +1,15 @@
 package it.unibs.ingsoft.application.catalogo.dto;
 
+import it.unibs.ingsoft.domain.error.DomainErrorCode;
+import it.unibs.ingsoft.domain.error.DomainException;
+
 /**
  * Dati necessari per cambiare l'obbligatorieta di un campo.
  */
 public record CampoObbligatorietaRequest(String nomeCampo, boolean obbligatorio) {
     public CampoObbligatorietaRequest {
         if (nomeCampo == null || nomeCampo.isBlank())
-            throw new IllegalArgumentException("Il nome del campo non puo essere vuoto.");
+            throw new DomainException(DomainErrorCode.CAMPO_NOME_NON_VALIDO);
 
         nomeCampo = nomeCampo.trim();
     }

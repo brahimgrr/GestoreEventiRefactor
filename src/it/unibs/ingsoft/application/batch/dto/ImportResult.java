@@ -1,5 +1,7 @@
 package it.unibs.ingsoft.application.batch.dto;
 
+import it.unibs.ingsoft.domain.error.ImportError;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,7 +12,7 @@ import java.util.List;
  */
 public final class ImportResult {
 
-    private final List<String> errori = new ArrayList<>();
+    private final List<ImportError> errori = new ArrayList<>();
     private int campiComuniImportati;
     private int categorieImportate;
     private int proposteImportate;
@@ -27,8 +29,8 @@ public final class ImportResult {
         proposteImportate++;
     }
 
-    public void addErrore(String messaggio) {
-        errori.add(messaggio);
+    public void addErrore(ImportError errore) {
+        errori.add(errore);
     }
 
     public int getCampiComuniImportati() {
@@ -43,7 +45,7 @@ public final class ImportResult {
         return proposteImportate;
     }
 
-    public List<String> getErrori() {
+    public List<ImportError> getErrori() {
         return Collections.unmodifiableList(errori);
     }
 

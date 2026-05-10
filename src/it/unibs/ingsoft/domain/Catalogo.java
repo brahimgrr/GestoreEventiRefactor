@@ -2,6 +2,8 @@ package it.unibs.ingsoft.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import it.unibs.ingsoft.domain.error.DomainErrorCode;
+import it.unibs.ingsoft.domain.error.DomainException;
 
 import java.util.*;
 
@@ -33,7 +35,7 @@ public final class Catalogo {
 
     public void fissareCampiBase(List<Campo> base, List<Campo> extra) {
         if (campiBaseFissati)
-            throw new IllegalStateException("Campi base già fissati.");
+            throw new DomainException(DomainErrorCode.CATALOGO_CAMPI_BASE_GIA_FISSATI);
 
         campiBase.clear();
 
@@ -51,7 +53,7 @@ public final class Catalogo {
                 addNomeUnico(nomi, c.getNome());
 
                 if (nomeEsistenteGlobale(c.getNome()))
-                    throw new IllegalArgumentException("Campo già esistente: " + c.getNome());
+                    throw new DomainException(DomainErrorCode.CATALOGO_CAMPO_DUPLICATO, c.getNome());
 
                 campiBase.add(c);
             }
@@ -62,7 +64,7 @@ public final class Catalogo {
 
     private void addNomeUnico(Set<String> set, String nome) {
         if (!set.add(nome.toLowerCase()))
-            throw new IllegalArgumentException("Duplicato: " + nome);
+            throw new DomainException(DomainErrorCode.CATALOGO_NOME_DUPLICATO, nome);
     }
 
     public boolean isCampiBaseFissati() {
@@ -73,7 +75,7 @@ public final class Catalogo {
 
     public void addCampoComune(Campo campo) {
         if (nomeEsistenteGlobale(campo.getNome()))
-            throw new IllegalArgumentException("Campo già esistente.");
+            throw new DomainException(DomainErrorCode.CATALOGO_CAMPO_DUPLICATO, campo.getNome());
 
         campiComuni.add(campo);
     }
@@ -97,7 +99,7 @@ public final class Catalogo {
 
     public Categoria addCategoria(String nome) {
         if (findCategoria(nome).isPresent())
-            throw new IllegalArgumentException("Categoria già esistente.");
+            throw new DomainException(DomainErrorCode.CATALOGO_CATEGORIA_DUPLICATA, nome);
 
         Categoria c = new Categoria(nome);
         categorie.add(c);
@@ -110,7 +112,7 @@ public final class Catalogo {
 
     public Categoria getCategoriaOrThrow(String nome) {
         return findCategoria(nome)
-                .orElseThrow(() -> new IllegalArgumentException("Categoria non trovata."));
+                .orElseThrow(() -> new DomainException(DomainErrorCode.CATALOGO_CATEGORIA_NON_TROVATA, nome));
     }
 
     private Optional<Categoria> findCategoria(String nome) {
@@ -123,7 +125,7 @@ public final class Catalogo {
 
     public void addCampoSpecifico(String categoria, Campo campo) {
         if (nomeEsistenteGlobale(campo.getNome()))
-            throw new IllegalArgumentException("Campo già esistente.");
+            throw new DomainException(DomainErrorCode.CATALOGO_CAMPO_DUPLICATO, campo.getNome());
 
         getCategoriaOrThrow(categoria).addCampoSpecifico(campo);
     }

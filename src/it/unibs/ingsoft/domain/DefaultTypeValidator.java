@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.domain;
 
-import it.unibs.ingsoft.domain.validation.ValidationError;
-import it.unibs.ingsoft.domain.validation.ValidationErrorCode;
+import it.unibs.ingsoft.domain.error.DomainErrorCode;
+import it.unibs.ingsoft.domain.error.ValidationError;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -47,7 +47,7 @@ public final class DefaultTypeValidator implements TypeValidator {
             LocalTime.parse(s.trim(), AppConstants.TIME_FMT);
             return null;
         } catch (Exception e) {
-            return ValidationError.error(null, ValidationErrorCode.TIPO_ORA_NON_VALIDA);
+            return ValidationError.error(null, DomainErrorCode.TIPO_ORA_NON_VALIDA);
         }
     }
 
@@ -56,7 +56,7 @@ public final class DefaultTypeValidator implements TypeValidator {
             Integer.parseInt(s.trim());
             return null;
         } catch (NumberFormatException e) {
-            return ValidationError.error(null, ValidationErrorCode.TIPO_INTERO_NON_VALIDO);
+            return ValidationError.error(null, DomainErrorCode.TIPO_INTERO_NON_VALIDO);
         }
     }
 
@@ -65,7 +65,7 @@ public final class DefaultTypeValidator implements TypeValidator {
             Double.parseDouble(s.trim().replace(',', '.'));
             return null;
         } catch (NumberFormatException e) {
-            return ValidationError.error(null, ValidationErrorCode.TIPO_DECIMALE_NON_VALIDO);
+            return ValidationError.error(null, DomainErrorCode.TIPO_DECIMALE_NON_VALIDO);
         }
     }
 
@@ -74,13 +74,13 @@ public final class DefaultTypeValidator implements TypeValidator {
             LocalDate.parse(s.trim(), AppConstants.DATE_FMT);
             return null;
         } catch (Exception e) {
-            return ValidationError.error(null, ValidationErrorCode.TIPO_DATA_NON_VALIDA);
+            return ValidationError.error(null, DomainErrorCode.TIPO_DATA_NON_VALIDA);
         }
     }
 
     private ValidationError validateBooleano(String s) {
         String lower = s.trim().toLowerCase();
         if (VALORI_SI.contains(lower) || VALORI_NO.contains(lower)) return null;
-        return ValidationError.error(null, ValidationErrorCode.TIPO_BOOLEANO_NON_VALIDO);
+        return ValidationError.error(null, DomainErrorCode.TIPO_BOOLEANO_NON_VALIDO);
     }
 }

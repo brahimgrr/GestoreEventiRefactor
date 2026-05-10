@@ -6,7 +6,7 @@ import it.unibs.ingsoft.domain.Campo;
 import it.unibs.ingsoft.domain.Categoria;
 import it.unibs.ingsoft.domain.Proposta;
 import it.unibs.ingsoft.domain.StatoProposta;
-import it.unibs.ingsoft.domain.validation.ValidationError;
+import it.unibs.ingsoft.domain.error.ValidationError;
 
 import java.util.List;
 import java.util.Map;

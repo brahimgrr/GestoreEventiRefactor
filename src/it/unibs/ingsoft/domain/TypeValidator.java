@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.domain;
 
-import it.unibs.ingsoft.domain.validation.ValidationError;
+import it.unibs.ingsoft.domain.error.ValidationError;
 
 /**
  * Valida una stringa grezza rispetto al {@link TipoDato} atteso.

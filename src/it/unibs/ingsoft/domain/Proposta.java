@@ -6,8 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import it.unibs.ingsoft.domain.error.DomainErrorCode;
 import it.unibs.ingsoft.domain.error.DomainException;
-import it.unibs.ingsoft.domain.validation.ValidationError;
-import it.unibs.ingsoft.domain.validation.ValidationErrorCode;
+import it.unibs.ingsoft.domain.error.ValidationError;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -360,13 +359,13 @@ public final class Proposta {
         if (termineIscr != null && data != null && !isDataEventoValida(data, termineIscr)) {
             errori.add(ValidationError.error(
                     AppConstants.CAMPO_DATA,
-                    ValidationErrorCode.DATA_EVENTO_TROPPO_PRESTO));
+                    DomainErrorCode.DATA_EVENTO_TROPPO_PRESTO));
         }
 
         if (data != null && dataConclusiva != null && !isDataConclusivaValida(dataConclusiva, data)) {
             errori.add(ValidationError.error(
                     AppConstants.CAMPO_DATA_CONCLUSIVA,
-                    ValidationErrorCode.DATA_CONCLUSIVA_PRECEDENTE));
+                    DomainErrorCode.DATA_CONCLUSIVA_PRECEDENTE));
         }
 
         if (errori.isEmpty()) {
@@ -393,12 +392,12 @@ public final class Proposta {
                 if (termineIscr != null && !isTermineIscrizioneValido(termineIscr)) {
                     errori.add(ValidationError.error(
                             AppConstants.CAMPO_TERMINE_ISCRIZIONE,
-                            ValidationErrorCode.TERMINE_ISCRIZIONE_NON_FUTURO));
+                            DomainErrorCode.TERMINE_ISCRIZIONE_NON_FUTURO));
                 }
                 if (termineIscr != null && data != null && !isDataEventoValida(data, termineIscr)) {
                     errori.add(ValidationError.error(
                             AppConstants.CAMPO_DATA,
-                            ValidationErrorCode.DATA_EVENTO_TROPPO_PRESTO));
+                            DomainErrorCode.DATA_EVENTO_TROPPO_PRESTO));
                 }
                 break;
 
@@ -406,12 +405,12 @@ public final class Proposta {
                 if (termineIscr != null && data != null && !isDataEventoValida(data, termineIscr)) {
                     errori.add(ValidationError.error(
                             AppConstants.CAMPO_DATA,
-                            ValidationErrorCode.DATA_EVENTO_TROPPO_PRESTO));
+                            DomainErrorCode.DATA_EVENTO_TROPPO_PRESTO));
                 }
                 if (data != null && dataConclusiva != null && !isDataConclusivaValida(dataConclusiva, data)) {
                     errori.add(ValidationError.error(
                             AppConstants.CAMPO_DATA_CONCLUSIVA,
-                            ValidationErrorCode.DATA_CONCLUSIVA_PRECEDENTE));
+                            DomainErrorCode.DATA_CONCLUSIVA_PRECEDENTE));
                 }
                 break;
 
@@ -419,7 +418,7 @@ public final class Proposta {
                 if (data != null && dataConclusiva != null && !isDataConclusivaValida(dataConclusiva, data)) {
                     errori.add(ValidationError.error(
                             AppConstants.CAMPO_DATA_CONCLUSIVA,
-                            ValidationErrorCode.DATA_CONCLUSIVA_PRECEDENTE));
+                            DomainErrorCode.DATA_CONCLUSIVA_PRECEDENTE));
                 }
                 break;
 
@@ -437,7 +436,7 @@ public final class Proposta {
                 if (valore == null || valore.isBlank()) {
                     errori.add(ValidationError.error(
                             campo.getNome(),
-                            ValidationErrorCode.CAMPO_OBBLIGATORIO_MANCANTE));
+                            DomainErrorCode.CAMPO_OBBLIGATORIO_MANCANTE));
                 }
             }
         }
@@ -454,12 +453,12 @@ public final class Proposta {
             if (n <= 0) {
                 errori.add(ValidationError.error(
                         AppConstants.CAMPO_NUM_PARTECIPANTI,
-                        ValidationErrorCode.NUMERO_PARTECIPANTI_NON_POSITIVO));
+                        DomainErrorCode.NUMERO_PARTECIPANTI_NON_POSITIVO));
             }
         } catch (NumberFormatException e) {
             errori.add(ValidationError.error(
                     AppConstants.CAMPO_NUM_PARTECIPANTI,
-                    ValidationErrorCode.NUMERO_PARTECIPANTI_NON_INTERO));
+                    DomainErrorCode.NUMERO_PARTECIPANTI_NON_INTERO));
         }
     }
 

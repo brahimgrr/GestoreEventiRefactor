@@ -3,6 +3,8 @@ package it.unibs.ingsoft.application.authentication;
 import it.unibs.ingsoft.domain.Configuratore;
 import it.unibs.ingsoft.domain.Credenziali;
 import it.unibs.ingsoft.domain.Fruitore;
+import it.unibs.ingsoft.domain.error.DomainErrorCode;
+import it.unibs.ingsoft.domain.error.DomainException;
 import it.unibs.ingsoft.domain.factory.UtenteFactory;
 import it.unibs.ingsoft.persistence.interfaces.ICredenzialiRepository;
 
@@ -40,17 +42,15 @@ public final class AuthenticationService {
 
     private static void validaCredenziali(String username, String password) {
         if (username == null || username.isBlank())
-            throw new IllegalArgumentException("Username non valido.");
+            throw new DomainException(DomainErrorCode.AUTH_USERNAME_NON_VALIDO);
 
         if (password == null || password.isBlank())
-            throw new IllegalArgumentException("Password non valida.");
+            throw new DomainException(DomainErrorCode.AUTH_PASSWORD_NON_VALIDA);
 
         if (username.length() < MIN_USERNAME_LENGTH)
-            throw new IllegalArgumentException(
-                    "Lo username deve avere almeno " + MIN_USERNAME_LENGTH + " caratteri.");
+            throw new DomainException(DomainErrorCode.AUTH_USERNAME_TROPPO_CORTO, MIN_USERNAME_LENGTH);
         if (password.length() < MIN_PASSWORD_LENGTH)
-            throw new IllegalArgumentException(
-                    "La password deve avere almeno " + MIN_PASSWORD_LENGTH + " caratteri.");
+            throw new DomainException(DomainErrorCode.AUTH_PASSWORD_TROPPO_CORTA, MIN_PASSWORD_LENGTH);
     }
 
     private Credenziali credenziali() {
@@ -64,18 +64,18 @@ public final class AuthenticationService {
 
     public void validaNuovoUsername(String username) {
         if (username == null || username.isBlank() || username.trim().length() < MIN_USERNAME_LENGTH)
-            throw new IllegalArgumentException("Username troppo corto (minimo " + MIN_USERNAME_LENGTH + " caratteri).");
+            throw new DomainException(DomainErrorCode.AUTH_USERNAME_TROPPO_CORTO, MIN_USERNAME_LENGTH);
 
         if (USERNAME_PREDEFINITO.equalsIgnoreCase(username.trim()))
-            throw new IllegalArgumentException("Username riservato. Scegli un nome diverso.");
+            throw new DomainException(DomainErrorCode.AUTH_USERNAME_RISERVATO);
 
         if (esisteUsername(username))
-            throw new IllegalArgumentException("Username gia in uso. Scegli un nome diverso.");
+            throw new DomainException(DomainErrorCode.AUTH_USERNAME_GIA_IN_USO);
     }
 
     public void validaNuovaPassword(String password) {
         if (password == null || password.isBlank() || password.trim().length() < MIN_PASSWORD_LENGTH)
-            throw new IllegalArgumentException("Password troppo corta (minimo " + MIN_PASSWORD_LENGTH + " caratteri).");
+            throw new DomainException(DomainErrorCode.AUTH_PASSWORD_TROPPO_CORTA, MIN_PASSWORD_LENGTH);
     }
 
     /**
@@ -150,10 +150,10 @@ public final class AuthenticationService {
         validaCredenziali(username, password);
 
         if (USERNAME_PREDEFINITO.equalsIgnoreCase(username))
-            throw new IllegalArgumentException("Lo username \"" + username + "\" e riservato.");
+            throw new DomainException(DomainErrorCode.AUTH_USERNAME_RISERVATO, username);
 
         if (esisteUsername(username))
-            throw new IllegalArgumentException("Esiste gia un utente (configuratore o fruitore) con username \"" + username + "\".");
+            throw new DomainException(DomainErrorCode.AUTH_USERNAME_GIA_IN_USO, username);
     }
 
     /**

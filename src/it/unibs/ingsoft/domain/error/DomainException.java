@@ -3,76 +3,71 @@ package it.unibs.ingsoft.domain.error;
 import it.unibs.ingsoft.domain.StatoProposta;
 
 import java.time.LocalDate;
-import java.util.EnumMap;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
 
 public class DomainException extends IllegalStateException {
     private final DomainErrorCode code;
-    private final Map<DomainErrorParameter, String> parameters;
+    private final List<String> details;
 
     public DomainException(DomainErrorCode code) {
-        this(code, Map.of());
+        this(code, List.of());
     }
 
-    private DomainException(DomainErrorCode code, Map<DomainErrorParameter, String> parameters) {
+    public DomainException(DomainErrorCode code, Object... details) {
+        this(code, details(details));
+    }
+
+    private DomainException(DomainErrorCode code, List<String> details) {
         super(code.name());
         this.code = code;
-        this.parameters = Map.copyOf(parameters);
+        this.details = List.copyOf(details);
     }
 
     public DomainErrorCode code() {
         return code;
     }
 
-    public Map<DomainErrorParameter, String> parameters() {
-        return parameters;
+    public List<String> details() {
+        return details;
     }
 
-    public String parameter(DomainErrorParameter parameter) {
-        return parameters.get(parameter);
+    public String detail(int index) {
+        return index >= 0 && index < details.size() ? details.get(index) : null;
     }
 
-    public String parameter(DomainErrorParameter parameter, String defaultValue) {
-        return parameters.getOrDefault(parameter, defaultValue);
+    public String detail(int index, String defaultValue) {
+        String value = detail(index);
+        return value == null ? defaultValue : value;
     }
 
     public static DomainException invalidStateTransition(StatoProposta from, StatoProposta to) {
-        Map<DomainErrorParameter, String> params = new EnumMap<>(DomainErrorParameter.class);
-        params.put(DomainErrorParameter.FROM, String.valueOf(from));
-        params.put(DomainErrorParameter.TO, String.valueOf(to));
-        return new DomainException(DomainErrorCode.INVALID_STATE_TRANSITION, params);
+        return new DomainException(DomainErrorCode.INVALID_STATE_TRANSITION, from, to);
     }
 
     public static DomainException publicationDeadlineExpired(LocalDate termine) {
-        return withParameter(DomainErrorCode.PROPOSTA_PUBLICATION_DEADLINE_EXPIRED,
-                DomainErrorParameter.TERMINE, termine);
+        return new DomainException(DomainErrorCode.PROPOSTA_PUBLICATION_DEADLINE_EXPIRED, termine);
     }
 
     public static DomainException subscriptionDeadlineExpired(LocalDate termine) {
-        return withParameter(DomainErrorCode.PROPOSTA_SUBSCRIPTION_DEADLINE_EXPIRED,
-                DomainErrorParameter.TERMINE, termine);
+        return new DomainException(DomainErrorCode.PROPOSTA_SUBSCRIPTION_DEADLINE_EXPIRED, termine);
     }
 
     public static DomainException unsubscriptionDeadlineExpired(LocalDate termine) {
-        return withParameter(DomainErrorCode.PROPOSTA_UNSUBSCRIPTION_DEADLINE_EXPIRED,
-                DomainErrorParameter.TERMINE, termine);
+        return new DomainException(DomainErrorCode.PROPOSTA_UNSUBSCRIPTION_DEADLINE_EXPIRED, termine);
     }
 
     public static DomainException fieldsNotModifiable(StatoProposta stato) {
-        return withParameter(DomainErrorCode.PROPOSTA_FIELDS_NOT_MODIFIABLE,
-                DomainErrorParameter.STATO, stato);
+        return new DomainException(DomainErrorCode.PROPOSTA_FIELDS_NOT_MODIFIABLE, stato);
     }
 
     public static DomainException participantsNotInteger(String value) {
-        return withParameter(DomainErrorCode.PROPOSTA_PARTICIPANTS_NOT_INTEGER,
-                DomainErrorParameter.VALUE, value);
+        return new DomainException(DomainErrorCode.PROPOSTA_PARTICIPANTS_NOT_INTEGER, value);
     }
 
-    private static DomainException withParameter(DomainErrorCode code,
-                                                 DomainErrorParameter parameter,
-                                                 Object value) {
-        Map<DomainErrorParameter, String> params = new EnumMap<>(DomainErrorParameter.class);
-        params.put(parameter, String.valueOf(value));
-        return new DomainException(code, params);
+    private static List<String> details(Object... values) {
+        return Arrays.stream(values)
+                .map(String::valueOf)
+                .toList();
     }
 }

@@ -2,6 +2,8 @@ package it.unibs.ingsoft.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import it.unibs.ingsoft.domain.error.DomainErrorCode;
+import it.unibs.ingsoft.domain.error.DomainException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,7 +16,7 @@ public final class Categoria {
 
     public Categoria(String nome) {
         if (nome == null || nome.isBlank())
-            throw new IllegalArgumentException("Il nome della categoria non può essere vuoto.");
+            throw new DomainException(DomainErrorCode.CATEGORIA_NOME_NON_VALIDO);
         this.nome = nome.trim();
         this.campiSpecifici = new ArrayList<>();
     }
@@ -44,10 +46,9 @@ public final class Categoria {
 
     public void addCampoSpecifico(Campo campoSpecifico) {
         if (campoSpecifico.getTipo() != TipoCampo.SPECIFICO)
-            throw new IllegalArgumentException("Solo campi di tipo SPECIFICO possono essere aggiunti a una categoria.");
+            throw new DomainException(DomainErrorCode.CATEGORIA_CAMPO_NON_SPECIFICO);
         if (containsCampo(campoSpecifico.getNome()))
-            throw new IllegalArgumentException(
-                    "La categoria \"" + nome + "\" ha già un campo chiamato \"" + campoSpecifico.getNome() + "\".");
+            throw new DomainException(DomainErrorCode.CATEGORIA_CAMPO_DUPLICATO, nome, campoSpecifico.getNome());
 
         campiSpecifici.add(campoSpecifico);
         campiSpecifici.sort(Comparator.comparing(Campo::getNome, String.CASE_INSENSITIVE_ORDER));

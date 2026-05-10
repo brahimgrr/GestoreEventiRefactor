@@ -3,6 +3,7 @@ package it.unibs.ingsoft.presentation.view.cli;
 import it.unibs.ingsoft.application.authentication.dto.CredenzialiRequest;
 import it.unibs.ingsoft.domain.Configuratore;
 import it.unibs.ingsoft.domain.Fruitore;
+import it.unibs.ingsoft.domain.error.DomainException;
 import it.unibs.ingsoft.presentation.view.interfaces.CredentialFieldValidator;
 import it.unibs.ingsoft.presentation.view.interfaces.IAppView;
 import it.unibs.ingsoft.presentation.view.interfaces.IMainView;
@@ -113,8 +114,8 @@ public final class MainCliView implements IMainView {
             try {
                 validator.validate(value);
                 return value;
-            } catch (IllegalArgumentException e) {
-                ui.stampaErrore(e.getMessage());
+            } catch (DomainException e) {
+                ui.stampaErrore(DomainErrorMessageMapper.message(e));
             }
         }
     }
@@ -125,8 +126,8 @@ public final class MainCliView implements IMainView {
             try {
                 validator.validate(value);
                 return value;
-            } catch (IllegalArgumentException e) {
-                ui.stampaErrore(e.getMessage());
+            } catch (DomainException e) {
+                ui.stampaErrore(DomainErrorMessageMapper.message(e));
             }
         }
     }
@@ -191,7 +192,7 @@ public final class MainCliView implements IMainView {
 
     @Override
     public void mostraErrore(Exception e) {
-        ui.stampaErrore(ErrorMessageMapper.message(e));
+        ui.stampaErrore(DomainErrorMessageMapper.message(e));
         ui.newLine();
     }
 }

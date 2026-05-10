@@ -5,6 +5,7 @@ import it.unibs.ingsoft.application.catalogo.dto.CatalogoOperationResult;
 import it.unibs.ingsoft.domain.Campo;
 import it.unibs.ingsoft.domain.Categoria;
 import it.unibs.ingsoft.domain.Proposta;
+import it.unibs.ingsoft.domain.error.DomainException;
 import it.unibs.ingsoft.presentation.view.interfaces.IConfiguratoreView;
 
 import java.io.IOException;
@@ -185,7 +186,7 @@ public final class ConfiguratoreController {
                 .ifPresent(path -> {
                     try {
                         view.mostraRisultatoImportazione(configuratoreService.importa(path));
-                    } catch (IOException e) {
+                    } catch (IOException | DomainException e) {
                         view.mostraErrore(e);
                     }
                 });

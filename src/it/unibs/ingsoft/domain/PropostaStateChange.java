@@ -19,6 +19,7 @@ public record PropostaStateChange(StatoProposta stato, LocalDate dataCambio) {
 
     @Override
     public String toString() {
-        return "Stato: " + stato + " (dal " + dataCambio + ")";
+        //return "Stato: " + stato + " (dal " + dataCambio + ")";
+        return "PropostaStateChange{stato=" + stato + ", dataCambio=" + dataCambio + "}";
     }
 }

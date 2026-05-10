@@ -2,6 +2,8 @@ package it.unibs.ingsoft.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import it.unibs.ingsoft.domain.error.DomainErrorCode;
+import it.unibs.ingsoft.domain.error.DomainException;
 
 /**
  * Value object immutabile che rappresenta la definizione di un campo (base, comune o specifico).
@@ -27,11 +29,11 @@ public final class Campo {
                  @JsonProperty("tipoDato") TipoDato tipoDato,
                  @JsonProperty("obbligatorio") boolean obbligatorio) {
         if (nome == null || nome.isBlank())
-            throw new IllegalArgumentException("Il nome del campo non può essere vuoto.");
+            throw new DomainException(DomainErrorCode.CAMPO_NOME_NON_VALIDO);
         if (tipo == null)
-            throw new IllegalArgumentException("Il tipo del campo non può essere null.");
+            throw new DomainException(DomainErrorCode.CAMPO_TIPO_NON_VALIDO);
         if (tipoDato == null)
-            throw new IllegalArgumentException("Il tipo dato del campo non può essere null.");
+            throw new DomainException(DomainErrorCode.CAMPO_TIPO_DATO_NON_VALIDO);
 
         this.nome = nome.trim();
         this.tipo = tipo;
@@ -86,6 +88,7 @@ public final class Campo {
 
     @Override
     public String toString() {
-        return nome + " [" + tipoDato + "]" + (obbligatorio ? "  (obbligatorio)" : "");
+        //return nome + " [" + tipoDato + "]" + (obbligatorio ? "  (obbligatorio)" : "");
+        return "Campo{nome='" + nome + "', tipoDato=" + tipoDato + ", obbligatorio=" + obbligatorio + "}";
     }
 }

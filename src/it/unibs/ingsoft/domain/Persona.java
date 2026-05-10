@@ -1,5 +1,8 @@
 package it.unibs.ingsoft.domain;
 
+import it.unibs.ingsoft.domain.error.DomainErrorCode;
+import it.unibs.ingsoft.domain.error.DomainException;
+
 /**
  * Classe base astratta per tutti gli utenti dell'applicazione.
  */
@@ -14,7 +17,7 @@ public abstract class Persona {
      */
     protected Persona(String username) {
         if (username == null || username.isBlank())
-            throw new IllegalArgumentException("Lo username non può essere vuoto.");
+            throw new DomainException(DomainErrorCode.PERSONA_USERNAME_NON_VALIDO);
         this.username = username.trim();
     }
 

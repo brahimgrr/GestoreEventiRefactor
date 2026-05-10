@@ -4,11 +4,12 @@ import it.unibs.ingsoft.domain.Campo;
 import it.unibs.ingsoft.domain.CampoBaseDefinito;
 import it.unibs.ingsoft.domain.TipoCampo;
 import it.unibs.ingsoft.domain.TipoDato;
+import it.unibs.ingsoft.domain.error.DomainErrorCode;
+import it.unibs.ingsoft.domain.error.DomainException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -41,11 +42,12 @@ public final class CampoFactory {
     }
 
     public List<Campo> creaCampiBaseExtra(List<String> nomiExtra, List<TipoDato> tipiExtra) {
-        Objects.requireNonNull(nomiExtra, "I nomi dei campi extra non possono essere null.");
-        Objects.requireNonNull(tipiExtra, "I tipi dei campi extra non possono essere null.");
+        if (nomiExtra == null || tipiExtra == null) {
+            throw new DomainException(DomainErrorCode.CAMPO_EXTRA_DATI_NON_VALIDI);
+        }
 
         if (nomiExtra.size() != tipiExtra.size()) {
-            throw new IllegalArgumentException("Nomi e tipi dei campi extra devono avere la stessa dimensione.");
+            throw new DomainException(DomainErrorCode.CAMPO_EXTRA_DIMENSIONI_NON_COHERENTI);
         }
 
         return IntStream.range(0, nomiExtra.size())

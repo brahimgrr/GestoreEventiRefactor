@@ -1,6 +1,8 @@
 package it.unibs.ingsoft.application.catalogo.dto;
 
 import it.unibs.ingsoft.domain.TipoDato;
+import it.unibs.ingsoft.domain.error.DomainErrorCode;
+import it.unibs.ingsoft.domain.error.DomainException;
 
 /**
  * Dati necessari per creare un campo comune o specifico.
@@ -8,9 +10,9 @@ import it.unibs.ingsoft.domain.TipoDato;
 public record CampoDefinitionRequest(String nome, TipoDato tipoDato, boolean obbligatorio) {
     public CampoDefinitionRequest {
         if (nome == null || nome.isBlank())
-            throw new IllegalArgumentException("Il nome del campo non puo essere vuoto.");
+            throw new DomainException(DomainErrorCode.CAMPO_NOME_NON_VALIDO);
         if (tipoDato == null)
-            throw new IllegalArgumentException("Il tipo dato del campo non puo essere null.");
+            throw new DomainException(DomainErrorCode.CAMPO_TIPO_DATO_NON_VALIDO);
 
         nome = nome.trim();
     }

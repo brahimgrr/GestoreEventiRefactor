@@ -176,7 +176,7 @@ public final class FruitoreCliView implements IFruitoreView {
 
     @Override
     public void mostraErrore(Exception e) {
-        ui.stampaErrore(ErrorMessageMapper.message(e));
+        ui.stampaErrore(DomainErrorMessageMapper.message(e));
         ui.pausaConSpaziatura();
     }
 

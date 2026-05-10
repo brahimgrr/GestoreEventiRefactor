@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.presentation.view.cli;
 
 import it.unibs.ingsoft.domain.*;
-import it.unibs.ingsoft.domain.validation.ValidationError;
+import it.unibs.ingsoft.domain.error.ValidationError;
 import it.unibs.ingsoft.presentation.view.interfaces.IAppView;
 import it.unibs.ingsoft.presentation.view.interfaces.OperationCancelledException;
 import it.unibs.ingsoft.presentation.view.interfaces.ProposalFieldValidator;
@@ -70,7 +70,7 @@ public final class ConsoleUI implements IAppView {
             return;
         }
         for (Campo c : campi)
-            stampa("  - " + c);
+            stampa("  - " + formatCampo(c));
     }
 
     @Override
@@ -82,7 +82,7 @@ public final class ConsoleUI implements IAppView {
         for (Categoria cat : categorie) {
             stampa("  - " + cat.getNome());
             for (Campo c : cat.getCampiSpecifici())
-                stampa("      - " + c);
+                stampa("      - " + formatCampo(c));
         }
     }
 
@@ -365,7 +365,7 @@ public final class ConsoleUI implements IAppView {
 
         stampa(prompt);
         for (int i = 0; i < elementi.size(); i++)
-            stampa("  " + (i + 1) + ") " + elementi.get(i));
+            stampa("  " + (i + 1) + ") " + formatElemento(elementi.get(i)));
         stampa("  0) Annulla");
         newLine();
 
@@ -387,7 +387,7 @@ public final class ConsoleUI implements IAppView {
 
         stampa(prompt);
         for (int i = 0; i < elementi.size(); i++)
-            stampa("  " + (i + 1) + ") " + elementi.get(i) +
+            stampa("  " + (i + 1) + ") " + formatElemento(elementi.get(i)) +
                     "  [" + infoMapper.apply(elementi.get(i)) + "]");
         stampa("  0) Annulla");
         newLine();
@@ -451,7 +451,7 @@ public final class ConsoleUI implements IAppView {
 
             ValidationError typeError = typeValidator.validate(raw, campo.getTipoDato());
             if (typeError != null) {
-                stampaErrore("  " + ValidationMessageMapper.message(typeError));
+                stampaErrore("  " + ValidationErrorMessageMapper.message(typeError));
                 continue;
             }
 
@@ -463,7 +463,7 @@ public final class ConsoleUI implements IAppView {
             );
             if (!businessErrors.isEmpty()) {
                 for (ValidationError businessError : businessErrors)
-                    stampaErrore("  " + ValidationMessageMapper.message(businessError));
+                    stampaErrore("  " + ValidationErrorMessageMapper.message(businessError));
                 continue;
             }
 
@@ -473,6 +473,21 @@ public final class ConsoleUI implements IAppView {
         }
 
         return Optional.of(ctx);
+    }
+
+    private String formatElemento(Object elemento) {
+        if (elemento instanceof Campo campo) {
+            return formatCampo(campo);
+        }
+        if (elemento instanceof Categoria categoria) {
+            return categoria.getNome();
+        }
+        return String.valueOf(elemento);
+    }
+
+    private String formatCampo(Campo campo) {
+        return campo.getNome() + " [" + campo.getTipoDato() + "]"
+                + (campo.isObbligatorio() ? "  (obbligatorio)" : "");
     }
 
     @Override

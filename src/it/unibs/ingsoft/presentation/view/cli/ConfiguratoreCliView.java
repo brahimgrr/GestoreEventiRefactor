@@ -336,7 +336,7 @@ public final class ConfiguratoreCliView implements IConfiguratoreView {
         ui.newLine();
         ui.stampa("La proposta NON e valida per i seguenti motivi:");
         for (var errore : result.errori()) {
-            ui.stampaErrore(ValidationMessageMapper.message(errore));
+            ui.stampaErrore(ValidationErrorMessageMapper.message(errore));
         }
         ui.newLine();
 
@@ -439,8 +439,8 @@ public final class ConfiguratoreCliView implements IConfiguratoreView {
 
         if (result.hasErrors()) {
             ui.stampaAvviso("Errori riscontrati (" + result.getErrori().size() + "):");
-            for (String errore : result.getErrori()) {
-                ui.stampaErrore(errore);
+            for (var errore : result.getErrori()) {
+                ui.stampaErrore(ImportErrorMessageMapper.message(errore));
             }
             ui.newLine();
         }
@@ -458,7 +458,7 @@ public final class ConfiguratoreCliView implements IConfiguratoreView {
 
     @Override
     public void mostraErrore(Exception e) {
-        ui.stampaErrore(ErrorMessageMapper.message(e));
+        ui.stampaErrore(DomainErrorMessageMapper.message(e));
     }
 
     @Override

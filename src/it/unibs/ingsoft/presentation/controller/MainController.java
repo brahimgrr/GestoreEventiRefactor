@@ -4,6 +4,7 @@ import it.unibs.ingsoft.application.authentication.dto.CredenzialiRequest;
 import it.unibs.ingsoft.application.authentication.AuthenticationService;
 import it.unibs.ingsoft.domain.Configuratore;
 import it.unibs.ingsoft.domain.Fruitore;
+import it.unibs.ingsoft.domain.error.DomainException;
 import it.unibs.ingsoft.presentation.view.interfaces.IMainView;
 
 import java.util.Objects;
@@ -117,7 +118,7 @@ public final class MainController {
                 Fruitore registered = auth.registraNuovoFruitore(input.get().username(), input.get().password());
                 view.mostraRegistrazioneCompletata(registered.getUsername());
                 return registered;
-            } catch (IllegalArgumentException e) {
+            } catch (DomainException e) {
                 view.mostraErrore(e);
             }
         }
@@ -136,7 +137,7 @@ public final class MainController {
                         .registraNuovoConfiguratore(input.get().username(), input.get().password());
                 view.mostraRegistrazioneCompletata(registered.getUsername());
                 return registered;
-            } catch (IllegalArgumentException e) {
+            } catch (DomainException e) {
                 view.mostraErrore(e);
             }
         }

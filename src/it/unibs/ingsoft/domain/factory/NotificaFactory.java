@@ -24,10 +24,6 @@ public final class NotificaFactory {
         return instance;
     }
 
-    public Notifica creaNotifica(String messaggio) {
-        return new Notifica(messaggio);
-    }
-
     public Notifica creaNotificaPropostaConfermata(Proposta proposta) {
         return Notifica.notificaStrutturata(NotificaType.PROPOSTA_CONFERMATA, payloadProposta(proposta));
     }
@@ -42,7 +38,7 @@ public final class NotificaFactory {
 
     private Map<String, String> payloadProposta(Proposta proposta) {
         Map<String, String> payload = new LinkedHashMap<>();
-        payload.put("titolo", proposta.valoreCampoOrDefault(AppConstants.CAMPO_TITOLO, "Senza titolo"));
+        payload.put("titolo", proposta.valoreCampoOrDefault(AppConstants.CAMPO_TITOLO, ""));
         payload.put("data", proposta.valoreCampoOrDefault(AppConstants.CAMPO_DATA, ""));
         payload.put("ora", proposta.valoreCampoOrDefault(AppConstants.CAMPO_ORA, ""));
         payload.put("luogo", proposta.valoreCampoOrDefault(AppConstants.CAMPO_LUOGO, ""));

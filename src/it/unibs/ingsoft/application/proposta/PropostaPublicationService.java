@@ -1,8 +1,8 @@
 package it.unibs.ingsoft.application.proposta;
 
-import it.unibs.ingsoft.application.error.ApplicationErrorCode;
-import it.unibs.ingsoft.application.error.ApplicationException;
 import it.unibs.ingsoft.domain.*;
+import it.unibs.ingsoft.domain.error.DomainErrorCode;
+import it.unibs.ingsoft.domain.error.DomainException;
 import it.unibs.ingsoft.persistence.interfaces.IBachecaRepository;
 
 import java.time.LocalDate;
@@ -69,7 +69,7 @@ public final class PropostaPublicationService {
                 .anyMatch(e -> e.getChiaveIdentita().equals(chiave));
 
         if (inBacheca || inValide) {
-            throw new ApplicationException(ApplicationErrorCode.PROPOSTA_DUPLICATA);
+            throw new DomainException(DomainErrorCode.PROPOSTA_DUPLICATA);
         }
     }
 
@@ -80,7 +80,7 @@ public final class PropostaPublicationService {
                 .anyMatch(e -> e.getChiaveIdentita().equals(chiave));
 
         if (duplicato) {
-            throw new ApplicationException(ApplicationErrorCode.PROPOSTA_DUPLICATA);
+            throw new DomainException(DomainErrorCode.PROPOSTA_DUPLICATA);
         }
     }
 }
