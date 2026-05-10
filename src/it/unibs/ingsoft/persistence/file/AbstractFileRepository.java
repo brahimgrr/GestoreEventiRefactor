@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -83,9 +84,7 @@ abstract class AbstractFileRepository<T> {
         try {
             return MAPPER.readValue(path.toFile(), type);
         } catch (IOException e) {
-            System.err.println("[WARN] Impossibile leggere " + path + ": " + e.getMessage()
-                    + " — avvio con stato vuoto.");
-            return defaultValue.get();
+            throw new UncheckedIOException("Impossibile leggere i dati da: " + path, e);
         }
     }
 
@@ -98,10 +97,21 @@ abstract class AbstractFileRepository<T> {
 
             Path tmp = path.resolveSibling(path.getFileName() + ".tmp");
             MAPPER.writeValue(tmp.toFile(), data);
-            Files.move(tmp, path, StandardCopyOption.REPLACE_EXISTING,
-                    StandardCopyOption.ATOMIC_MOVE);
+            try {
+                moveAtomically(tmp, path);
+            } catch (AtomicMoveNotSupportedException e) {
+                moveReplacing(tmp, path);
+            }
         } catch (IOException e) {
             throw new UncheckedIOException("Impossibile salvare i dati in: " + path, e);
         }
+    }
+
+    protected void moveAtomically(Path tmp, Path target) throws IOException {
+        Files.move(tmp, target, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+    }
+
+    protected void moveReplacing(Path tmp, Path target) throws IOException {
+        Files.move(tmp, target, StandardCopyOption.REPLACE_EXISTING);
     }
 }

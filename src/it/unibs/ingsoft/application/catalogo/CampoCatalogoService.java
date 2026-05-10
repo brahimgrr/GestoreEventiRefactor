@@ -29,7 +29,7 @@ public final class CampoCatalogoService {
     }
 
     private Catalogo catalogo() {
-        return repo.get();
+        return repo.load();
     }
 
     public boolean nomeEsistente(String nome) {
@@ -52,34 +52,49 @@ public final class CampoCatalogoService {
         }
 
         try {
+            Catalogo catalogo = repo.load();
             addCampiBaseConExtra(
+                    catalogo,
                     richieste.stream().map(CampoBaseExtraRequest::nome).collect(Collectors.toList()),
                     richieste.stream().map(CampoBaseExtraRequest::tipoDato).collect(Collectors.toList())
             );
+            repo.save(catalogo);
         } catch (IllegalArgumentException | IllegalStateException e) {
-            if (!catalogo().isCampiBaseFissati()) {
-                initiateCampiBase();
+            Catalogo fallback = repo.load();
+            if (!fallback.isCampiBaseFissati()) {
+                initiateCampiBase(fallback);
+                repo.save(fallback);
             }
             throw e;
         }
     }
 
     public void initiateCampiBase() {
-        catalogo().fissareCampiBase(
+        Catalogo catalogo = repo.load();
+        initiateCampiBase(catalogo);
+        repo.save(catalogo);
+    }
+
+    private void initiateCampiBase(Catalogo catalogo) {
+        catalogo.fissareCampiBase(
                 campoFactory.creaCampiBase(),
                 null
         );
-        repo.save();
     }
 
     public void addCampiBaseConExtra(List<String> nomi, List<TipoDato> tipi) {
+        Catalogo catalogo = repo.load();
+        addCampiBaseConExtra(catalogo, nomi, tipi);
+        repo.save(catalogo);
+    }
+
+    private void addCampiBaseConExtra(Catalogo catalogo, List<String> nomi, List<TipoDato> tipi) {
         List<Campo> extra = campoFactory.creaCampiBaseExtra(nomi, tipi);
 
-        catalogo().fissareCampiBase(
+        catalogo.fissareCampiBase(
                 campoFactory.creaCampiBase(),
                 extra
         );
-        repo.save();
     }
 
     public List<Campo> getCampiBase() {
@@ -87,10 +102,11 @@ public final class CampoCatalogoService {
     }
 
     public void addCampoComune(String nome, TipoDato tipo, boolean obbligatorio) {
-        catalogo().addCampoComune(
+        Catalogo catalogo = repo.load();
+        catalogo.addCampoComune(
                 campoFactory.creaCampoComune(nome, tipo, obbligatorio)
         );
-        repo.save();
+        repo.save(catalogo);
     }
 
     public void addCampoComune(CampoDefinitionRequest request) {
@@ -99,8 +115,9 @@ public final class CampoCatalogoService {
     }
 
     public boolean removeCampoComune(String nome) {
-        boolean changed = catalogo().removeCampoComune(nome);
-        if (changed) repo.save();
+        Catalogo catalogo = repo.load();
+        boolean changed = catalogo.removeCampoComune(nome);
+        if (changed) repo.save(catalogo);
         return changed;
     }
 
@@ -111,23 +128,28 @@ public final class CampoCatalogoService {
     }
 
     public boolean setObbligatorietaCampoComune(String nome, boolean obbligatorio) {
-        boolean changed = catalogo().updateCampoComune(nome, obbligatorio);
-        if (changed) repo.save();
+        Catalogo catalogo = repo.load();
+        boolean changed = catalogo.updateCampoComune(nome, obbligatorio);
+        if (changed) repo.save(catalogo);
         return changed;
     }
 
     public CatalogoOperationResult setObbligatorietaCampoComune(CampoObbligatorietaRequest request) {
         Objects.requireNonNull(request);
-        for (Campo campo : getCampiComuni()) {
+        Catalogo catalogo = repo.load();
+        for (Campo campo : catalogo.getCampiComuni()) {
             if (campo.getNome().equalsIgnoreCase(request.nomeCampo()) &&
                     campo.isObbligatorio() == request.obbligatorio()) {
                 return CatalogoOperationResult.NESSUNA_MODIFICA;
             }
         }
 
-        return setObbligatorietaCampoComune(request.nomeCampo(), request.obbligatorio())
-                ? CatalogoOperationResult.SUCCESSO
-                : CatalogoOperationResult.NON_TROVATO;
+        boolean changed = catalogo.updateCampoComune(request.nomeCampo(), request.obbligatorio());
+        if (changed) {
+            repo.save(catalogo);
+            return CatalogoOperationResult.SUCCESSO;
+        }
+        return CatalogoOperationResult.NON_TROVATO;
     }
 
     public List<Campo> getCampiComuni() {
@@ -135,11 +157,12 @@ public final class CampoCatalogoService {
     }
 
     public void addCampoSpecifico(String categoria, String nome, TipoDato tipo, boolean obbligatorio) {
-        catalogo().addCampoSpecifico(
+        Catalogo catalogo = repo.load();
+        catalogo.addCampoSpecifico(
                 categoria,
                 campoFactory.creaCampoSpecifico(nome, tipo, obbligatorio)
         );
-        repo.save();
+        repo.save(catalogo);
     }
 
     public void addCampoSpecifico(String categoria, CampoDefinitionRequest request) {
@@ -148,8 +171,9 @@ public final class CampoCatalogoService {
     }
 
     public boolean removeCampoSpecifico(String categoria, String nome) {
-        boolean changed = catalogo().removeCampoSpecifico(categoria, nome);
-        if (changed) repo.save();
+        Catalogo catalogo = repo.load();
+        boolean changed = catalogo.removeCampoSpecifico(categoria, nome);
+        if (changed) repo.save(catalogo);
         return changed;
     }
 
@@ -160,14 +184,16 @@ public final class CampoCatalogoService {
     }
 
     public boolean setObbligatorietaCampoSpecifico(String categoria, String nome, boolean obbligatorio) {
-        boolean changed = catalogo().updateCampoSpecifico(categoria, nome, obbligatorio);
-        if (changed) repo.save();
+        Catalogo catalogo = repo.load();
+        boolean changed = catalogo.updateCampoSpecifico(categoria, nome, obbligatorio);
+        if (changed) repo.save(catalogo);
         return changed;
     }
 
     public CatalogoOperationResult setObbligatorietaCampoSpecifico(String categoria, CampoObbligatorietaRequest request) {
         Objects.requireNonNull(request);
-        Categoria cat = catalogo().getCategoriaOrThrow(categoria);
+        Catalogo catalogo = repo.load();
+        Categoria cat = catalogo.getCategoriaOrThrow(categoria);
         for (Campo campo : cat.getCampiSpecifici()) {
             if (campo.getNome().equalsIgnoreCase(request.nomeCampo()) &&
                     campo.isObbligatorio() == request.obbligatorio()) {
@@ -175,8 +201,11 @@ public final class CampoCatalogoService {
             }
         }
 
-        return setObbligatorietaCampoSpecifico(categoria, request.nomeCampo(), request.obbligatorio())
-                ? CatalogoOperationResult.SUCCESSO
-                : CatalogoOperationResult.NON_TROVATO;
+        boolean changed = catalogo.updateCampoSpecifico(categoria, request.nomeCampo(), request.obbligatorio());
+        if (changed) {
+            repo.save(catalogo);
+            return CatalogoOperationResult.SUCCESSO;
+        }
+        return CatalogoOperationResult.NON_TROVATO;
     }
 }

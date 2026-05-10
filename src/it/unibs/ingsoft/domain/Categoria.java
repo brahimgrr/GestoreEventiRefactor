@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public final class Categoria {
     private final String nome;
@@ -23,7 +24,9 @@ public final class Categoria {
 
     public Categoria(Categoria oldCategoria) {
         this.nome = oldCategoria.nome;
-        this.campiSpecifici = oldCategoria.campiSpecifici.stream().map(Campo::new).toList();
+        this.campiSpecifici = oldCategoria.campiSpecifici.stream()
+                .map(Campo::new)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     @JsonCreator

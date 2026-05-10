@@ -1,7 +1,6 @@
 package it.unibs.ingsoft.persistence.file;
 
 import it.unibs.ingsoft.domain.ArchivioNotifiche;
-import it.unibs.ingsoft.domain.SpazioPersonale;
 import it.unibs.ingsoft.persistence.interfaces.ISpazioPersonaleRepository;
 
 import java.nio.file.Path;
@@ -9,30 +8,19 @@ import java.nio.file.Path;
 /**
  * Implementazione JSON su file di {@link ISpazioPersonaleRepository}.
  */
-public class FileSpazioPersonaleRepository extends AbstractFileRepository<ArchivioNotifiche> implements ISpazioPersonaleRepository {
-
-    private ArchivioNotifiche cached;
+public final class FileSpazioPersonaleRepository extends AbstractFileRepository<ArchivioNotifiche> implements ISpazioPersonaleRepository {
 
     public FileSpazioPersonaleRepository(Path path) {
         super(path, ArchivioNotifiche.class, ArchivioNotifiche::new);
     }
 
-    private ArchivioNotifiche getArchivio() {
-        if (cached == null) {
-            cached = load();
-        }
-        return cached;
+    @Override
+    public ArchivioNotifiche load() {
+        return super.load();
     }
 
     @Override
-    public SpazioPersonale get(String username) {
-        return getArchivio().getSpazioDi(username);
-    }
-
-    @Override
-    public void save() {
-        if (cached != null) {
-            super.save(cached);
-        }
+    public void save(ArchivioNotifiche archivio) {
+        super.save(archivio);
     }
 }

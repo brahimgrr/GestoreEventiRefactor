@@ -6,16 +6,20 @@ import it.unibs.ingsoft.persistence.interfaces.ICredenzialiRepository;
 import it.unibs.ingsoft.persistence.interfaces.ISpazioPersonaleRepository;
 
 import java.nio.file.Path;
+import java.util.Objects;
 
 public final class FileRepositoryFactory {
-    private static final Path DATA_CATALOGO = Path.of("data/v5", "catalogo.json");
-    private static final Path DATA_UTENTI = Path.of("data/v5", "utenti.json");
-    private static final Path DATA_PROPOSTE = Path.of("data/v5", "proposte.json");
-    private static final Path DATA_NOTIFICHE = Path.of("data/v5", "notifiche.json");
+    private static final Path DEFAULT_DATA_DIR = Path.of("data/v5");
 
     private static FileRepositoryFactory instance;
+    private final Path dataDir;
 
     private FileRepositoryFactory() {
+        this(DEFAULT_DATA_DIR);
+    }
+
+    public FileRepositoryFactory(Path dataDir) {
+        this.dataDir = Objects.requireNonNull(dataDir);
     }
 
     public static FileRepositoryFactory getInstance() {
@@ -26,18 +30,18 @@ public final class FileRepositoryFactory {
     }
 
     public ICatalogoRepository createCatalogoRepository() {
-        return new FileCatalogoRepository(DATA_CATALOGO);
+        return new FileCatalogoRepository(dataDir.resolve("catalogo.json"));
     }
 
     public ICredenzialiRepository createCredenzialiRepository() {
-        return new FileCredenzialiRepository(DATA_UTENTI);
+        return new FileCredenzialiRepository(dataDir.resolve("utenti.json"));
     }
 
     public IBachecaRepository createBachecaRepository() {
-        return new FileBachecaRepository(DATA_PROPOSTE);
+        return new FileBachecaRepository(dataDir.resolve("proposte.json"));
     }
 
     public ISpazioPersonaleRepository createSpazioPersonaleRepository() {
-        return new FileSpazioPersonaleRepository(DATA_NOTIFICHE);
+        return new FileSpazioPersonaleRepository(dataDir.resolve("notifiche.json"));
     }
 }

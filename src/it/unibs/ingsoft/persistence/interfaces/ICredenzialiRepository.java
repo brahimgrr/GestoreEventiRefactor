@@ -11,10 +11,10 @@ public interface ICredenzialiRepository {
      *
      * @return le credenziali correnti; mai {@code null}
      */
-    Credenziali get();
+    Credenziali load();
 
     /**
      * Persiste lo stato corrente delle credenziali.
      */
-    void save();
+    void save(Credenziali credenziali);
 }

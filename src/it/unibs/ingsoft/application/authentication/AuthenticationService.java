@@ -54,7 +54,7 @@ public final class AuthenticationService {
     }
 
     private Credenziali credenziali() {
-        return repo.get();
+        return repo.load();
     }
 
     public boolean isConfiguratorePredefinito(Configuratore configuratore) {
@@ -123,11 +123,12 @@ public final class AuthenticationService {
      * @throws IllegalArgumentException se le credenziali sono riservate, duplicate o troppo corte
      */
     public Configuratore registraNuovoConfiguratore(String username, String password) {
-        validaNuovoAccount(username, password);
+        Credenziali credenziali = repo.load();
+        validaNuovoAccount(username, password, credenziali);
 
         String normalized = username.trim();
-        credenziali().addConfiguratore(normalized, password);
-        repo.save();
+        credenziali.addConfiguratore(normalized, password);
+        repo.save(credenziali);
         return utenteFactory.creaConfiguratore(normalized);
     }
 
@@ -138,21 +139,26 @@ public final class AuthenticationService {
      * @post esisteUsername(username)
      */
     public Fruitore registraNuovoFruitore(String username, String password) {
-        validaNuovoAccount(username, password);
+        Credenziali credenziali = repo.load();
+        validaNuovoAccount(username, password, credenziali);
 
         String normalized = username.trim();
-        credenziali().addFruitore(normalized, password);
-        repo.save();
+        credenziali.addFruitore(normalized, password);
+        repo.save(credenziali);
         return utenteFactory.creaFruitore(normalized);
     }
 
     private void validaNuovoAccount(String username, String password) {
+        validaNuovoAccount(username, password, repo.load());
+    }
+
+    private void validaNuovoAccount(String username, String password, Credenziali credenziali) {
         validaCredenziali(username, password);
 
         if (USERNAME_PREDEFINITO.equalsIgnoreCase(username))
             throw new DomainException(DomainErrorCode.AUTH_USERNAME_RISERVATO, username);
 
-        if (esisteUsername(username))
+        if (esisteUsername(username, credenziali))
             throw new DomainException(DomainErrorCode.AUTH_USERNAME_GIA_IN_USO, username);
     }
 
@@ -160,9 +166,13 @@ public final class AuthenticationService {
      * Restituisce true se un account con questo username è già registrato (in qualsiasi ruolo).
      */
     public boolean esisteUsername(String username) {
+        return esisteUsername(username, repo.load());
+    }
+
+    private boolean esisteUsername(String username, Credenziali credenziali) {
         if (username == null) return false;
         String u = username.trim().toLowerCase();
-        return credenziali().getConfiguratori().containsKey(u) ||
-                credenziali().getFruitori().containsKey(u);
+        return credenziali.getConfiguratori().containsKey(u) ||
+                credenziali.getFruitori().containsKey(u);
     }
 }

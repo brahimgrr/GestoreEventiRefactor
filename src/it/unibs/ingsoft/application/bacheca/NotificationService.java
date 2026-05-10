@@ -1,5 +1,6 @@
 package it.unibs.ingsoft.application.bacheca;
 
+import it.unibs.ingsoft.domain.ArchivioNotifiche;
 import it.unibs.ingsoft.domain.Notifica;
 import it.unibs.ingsoft.domain.SpazioPersonale;
 import it.unibs.ingsoft.persistence.interfaces.ISpazioPersonaleRepository;
@@ -17,18 +18,26 @@ public final class NotificationService {
 
     public void inviaNotifica(String username, Notifica notifica) {
         if (username == null || notifica == null) return;
-        SpazioPersonale sp = repo.get(username);
+        ArchivioNotifiche archivio = repo.load();
+        SpazioPersonale sp = archivio.getOrCreateSpazioDi(username);
         sp.addNotifica(notifica);
-        repo.save();
+        repo.save(archivio);
     }
 
     public List<Notifica> getNotifiche(String username) {
-        return repo.get(username).getNotifiche();
+        if (username == null) return List.of();
+        return repo.load()
+                .findSpazioDi(username)
+                .map(SpazioPersonale::getNotifiche)
+                .orElseGet(List::of);
     }
 
     public void cancellaNotifica(String username, Notifica notifica) {
-        SpazioPersonale sp = repo.get(username);
-        sp.removeNotifica(notifica);
-        repo.save();
+        if (username == null || notifica == null) return;
+        ArchivioNotifiche archivio = repo.load();
+        SpazioPersonale sp = archivio.findSpazioDi(username).orElse(null);
+        if (sp != null && sp.removeNotifica(notifica)) {
+            repo.save(archivio);
+        }
     }
 }

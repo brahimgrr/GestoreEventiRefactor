@@ -19,18 +19,20 @@ public final class CategoriaCatalogoService {
     }
 
     private Catalogo catalogo() {
-        return repo.get();
+        return repo.load();
     }
 
     public Categoria createCategoria(String nome) {
-        Categoria categoria = catalogo().addCategoria(nome);
-        repo.save();
+        Catalogo catalogo = repo.load();
+        Categoria categoria = catalogo.addCategoria(nome);
+        repo.save(catalogo);
         return categoria;
     }
 
     public boolean removeCategoria(String nome) {
-        boolean changed = catalogo().removeCategoria(nome);
-        if (changed) repo.save();
+        Catalogo catalogo = repo.load();
+        boolean changed = catalogo.removeCategoria(nome);
+        if (changed) repo.save(catalogo);
         return changed;
     }
 

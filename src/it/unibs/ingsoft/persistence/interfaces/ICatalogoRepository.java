@@ -13,11 +13,11 @@ public interface ICatalogoRepository {
      *
      * @return il catalogo corrente; mai {@code null}
      */
-    Catalogo get();
+    Catalogo load();
 
     /**
      * Persiste lo stato corrente del catalogo.
      */
-    void save();
+    void save(Catalogo catalogo);
 
 }

@@ -3,8 +3,10 @@ package it.unibs.ingsoft.domain;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Mappa {@code username → SpazioPersonale} persistita su file.
@@ -29,7 +31,18 @@ public final class ArchivioNotifiche {
     }
 
     public Map<String, SpazioPersonale> getUtenti() {
-        return utenti;
+        return Collections.unmodifiableMap(utenti);
+    }
+
+    public Optional<SpazioPersonale> findSpazioDi(String username) {
+        if (username == null) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(utenti.get(username));
+    }
+
+    public SpazioPersonale getOrCreateSpazioDi(String username) {
+        return utenti.computeIfAbsent(username, k -> new SpazioPersonale());
     }
 
     /**
@@ -39,6 +52,6 @@ public final class ArchivioNotifiche {
      * @post result != null
      */
     public SpazioPersonale getSpazioDi(String username) {
-        return utenti.computeIfAbsent(username, k -> new SpazioPersonale());
+        return getOrCreateSpazioDi(username);
     }
 }

@@ -11,24 +11,18 @@ import java.nio.file.Path;
 public final class FileBachecaRepository
         extends AbstractFileRepository<Bacheca>
         implements IBachecaRepository {
-    private Bacheca cached;
 
     public FileBachecaRepository(Path path) {
         super(path, Bacheca.class, Bacheca::new);
     }
 
     @Override
-    public Bacheca get() {
-        if (cached == null) {
-            cached = load();
-        }
-        return cached;
+    public Bacheca load() {
+        return super.load();
     }
 
     @Override
-    public void save() {
-        if (cached != null) {
-            super.save(cached);
-        }
+    public void save(Bacheca bacheca) {
+        super.save(bacheca);
     }
 }

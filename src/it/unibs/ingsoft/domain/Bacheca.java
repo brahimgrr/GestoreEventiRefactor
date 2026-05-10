@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Raccolta serializzabile delle proposte. Contiene proposte in qualsiasi stato.
@@ -30,6 +31,20 @@ public final class Bacheca {
 
     public List<Proposta> getProposte() {
         return Collections.unmodifiableList(proposte);
+    }
+
+    public Optional<Proposta> findByChiaveIdentita(String chiaveIdentita) {
+        if (chiaveIdentita == null) {
+            return Optional.empty();
+        }
+
+        return proposte.stream()
+                .filter(p -> chiaveIdentita.equals(p.getChiaveIdentita()))
+                .findFirst();
+    }
+
+    public boolean containsChiaveIdentita(String chiaveIdentita) {
+        return findByChiaveIdentita(chiaveIdentita).isPresent();
     }
 
     /**

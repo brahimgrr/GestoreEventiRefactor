@@ -6,6 +6,8 @@ import it.unibs.ingsoft.domain.Bacheca;
 import it.unibs.ingsoft.domain.EsitoTransizioneProposta;
 import it.unibs.ingsoft.domain.Notifica;
 import it.unibs.ingsoft.domain.Proposta;
+import it.unibs.ingsoft.domain.error.DomainErrorCode;
+import it.unibs.ingsoft.domain.error.DomainException;
 import it.unibs.ingsoft.domain.factory.NotificaFactory;
 import it.unibs.ingsoft.persistence.interfaces.IBachecaRepository;
 
@@ -37,7 +39,7 @@ public final class PropostaLifecycleService {
             LocalDate oggi = LocalDate.now(AppConstants.clock);
             boolean changed = false;
 
-            Bacheca bacheca = bachecaRepo.get();
+            Bacheca bacheca = bachecaRepo.load();
             for (Proposta p : bacheca.getProposte()) {
                 EsitoTransizioneProposta esito = p.applicaTransizionePerScadenza(oggi);
                 if (esito == EsitoTransizioneProposta.CONFERMATA) {
@@ -52,7 +54,7 @@ public final class PropostaLifecycleService {
             }
 
             if (changed) {
-                bachecaRepo.save();
+                bachecaRepo.save(bacheca);
             }
         } finally {
             lock.unlock();
@@ -62,8 +64,21 @@ public final class PropostaLifecycleService {
     public void confermaProposta(Proposta p) {
         lock.lock();
         try {
-            if (!p.confermaSeAperta()) return;
+            Bacheca bacheca = bachecaRepo.load();
+            Proposta propostaPersistita = trovaPropostaPersistita(bacheca, p);
+            if (!confermaPropostaSenzaSalvataggio(propostaPersistita)) return;
+            bachecaRepo.save(bacheca);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public boolean confermaPropostaSenzaSalvataggio(Proposta p) {
+        lock.lock();
+        try {
+            if (!p.confermaSeAperta()) return false;
             notificaAderenti(p, () -> notificaFactory.creaNotificaPropostaConfermata(p));
+            return true;
         } finally {
             lock.unlock();
         }
@@ -72,14 +87,25 @@ public final class PropostaLifecycleService {
     public void ritiraProposta(Proposta p) {
         lock.lock();
         try {
+            Bacheca bacheca = bachecaRepo.load();
+            Proposta propostaPersistita = trovaPropostaPersistita(bacheca, p);
             LocalDate oggi = LocalDate.now(AppConstants.clock);
-            p.ritira(oggi);
-            notificaAderenti(p, () -> notificaFactory.creaNotificaPropostaRitirata(p));
+            propostaPersistita.ritira(oggi);
+            notificaAderenti(propostaPersistita, () -> notificaFactory.creaNotificaPropostaRitirata(propostaPersistita));
 
-            bachecaRepo.save();
+            bachecaRepo.save(bacheca);
         } finally {
             lock.unlock();
         }
+    }
+
+    private Proposta trovaPropostaPersistita(Bacheca bacheca, Proposta proposta) {
+        if (proposta == null) {
+            throw new DomainException(DomainErrorCode.PROPOSTA_NON_TROVATA);
+        }
+        String chiave = proposta.getChiaveIdentita();
+        return bacheca.findByChiaveIdentita(chiave)
+                .orElseThrow(() -> new DomainException(DomainErrorCode.PROPOSTA_NON_TROVATA, chiave));
     }
 
     private void notificaAderenti(Proposta p, Supplier<Notifica> notificaSupplier) {

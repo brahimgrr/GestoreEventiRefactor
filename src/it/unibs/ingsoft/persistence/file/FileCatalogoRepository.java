@@ -12,24 +12,17 @@ public final class FileCatalogoRepository
         extends AbstractFileRepository<Catalogo>
         implements ICatalogoRepository {
 
-    private Catalogo cached;
-
     public FileCatalogoRepository(Path path) {
         super(path, Catalogo.class, Catalogo::new);
     }
 
     @Override
-    public Catalogo get() {
-        if (cached == null) {
-            cached = load();
-        }
-        return cached;
+    public Catalogo load() {
+        return super.load();
     }
 
     @Override
-    public void save() {
-        if (cached != null) {
-            super.save(cached);
-        }
+    public void save(Catalogo catalogo) {
+        super.save(catalogo);
     }
 }

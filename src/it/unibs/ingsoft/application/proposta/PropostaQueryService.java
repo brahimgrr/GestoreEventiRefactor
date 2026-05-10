@@ -24,7 +24,7 @@ public final class PropostaQueryService {
     }
 
     private Bacheca bacheca() {
-        return bachecaRepo.get();
+        return bachecaRepo.load();
     }
 
     public List<Proposta> getTutteLeProposte() {

@@ -29,7 +29,7 @@ public final class PropostaPublicationService {
     }
 
     private Bacheca bacheca() {
-        return bachecaRepo.get();
+        return bachecaRepo.load();
     }
 
     public void salvaProposta(Proposta proposta) {
@@ -53,11 +53,12 @@ public final class PropostaPublicationService {
     public void pubblicaProposta(Proposta proposta) {
         LocalDate oggi = LocalDate.now(AppConstants.clock);
         proposta.verificaPubblicabile(oggi);
-        rilevaDuplicato(proposta);
+        Bacheca bacheca = bachecaRepo.load();
+        rilevaDuplicato(proposta, bacheca);
 
         proposta.pubblica(oggi);
-        bacheca().addProposta(proposta);
-        bachecaRepo.save();
+        bacheca.addProposta(proposta);
+        bachecaRepo.save(bacheca);
     }
 
     private void rilevaDuplicatoAlSalvataggio(Proposta proposta) {
@@ -73,13 +74,10 @@ public final class PropostaPublicationService {
         }
     }
 
-    private void rilevaDuplicato(Proposta proposta) {
+    private void rilevaDuplicato(Proposta proposta, Bacheca bacheca) {
         String chiave = proposta.getChiaveIdentita();
 
-        boolean duplicato = queryService.getTutteLeProposte().stream()
-                .anyMatch(e -> e.getChiaveIdentita().equals(chiave));
-
-        if (duplicato) {
+        if (bacheca.containsChiaveIdentita(chiave)) {
             throw new DomainException(DomainErrorCode.PROPOSTA_DUPLICATA);
         }
     }

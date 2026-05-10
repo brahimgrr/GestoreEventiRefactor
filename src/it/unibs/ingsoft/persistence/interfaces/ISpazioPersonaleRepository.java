@@ -1,21 +1,20 @@
 package it.unibs.ingsoft.persistence.interfaces;
 
-import it.unibs.ingsoft.domain.SpazioPersonale;
+import it.unibs.ingsoft.domain.ArchivioNotifiche;
 
 /**
  * Astrazione del repository per gli spazi personali (notifiche) dei fruitori.
  */
 public interface ISpazioPersonaleRepository {
     /**
-     * Restituisce lo spazio personale del fruitore; lo crea se non esiste ancora.
+     * Carica l'archivio degli spazi personali, o restituisce un archivio vuoto se non esiste ancora.
      *
-     * @pre username != null
      * @post result != null
      */
-    SpazioPersonale get(String username);
+    ArchivioNotifiche load();
 
     /**
      * Persiste tutti gli spazi personali.
      */
-    void save();
+    void save(ArchivioNotifiche archivio);
 }

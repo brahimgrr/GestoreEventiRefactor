@@ -90,6 +90,7 @@ public final class DomainErrorMessageMapper {
                     "'" + AppConstants.CAMPO_NUM_PARTECIPANTI + "' non e' un intero valido: "
                             + detail(details, 0, "");
             case PROPOSTA_DUPLICATA -> "Esiste gia' una proposta con lo stesso Titolo, Data, Ora e Luogo.";
+            case PROPOSTA_NON_TROVATA -> "Proposta non trovata o non piu' disponibile.";
             case IMPORT_FILE_NON_TROVATO -> "File non trovato: " + detail(details, 0, "");
             case IMPORT_FILE_NON_LEGGIBILE -> "File non leggibile: " + detail(details, 0, "");
             default -> code.name();

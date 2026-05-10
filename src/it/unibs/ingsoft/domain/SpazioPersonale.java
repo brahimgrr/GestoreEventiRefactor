@@ -45,7 +45,7 @@ public final class SpazioPersonale {
     /**
      * Rimuove {@code n}; non fa nulla se non trovata.
      */
-    public void removeNotifica(Notifica n) {
-        notifiche.remove(n);
+    public boolean removeNotifica(Notifica n) {
+        return notifiche.remove(n);
     }
 }
