@@ -6,10 +6,8 @@ import it.unibs.ingsoft.domain.Campo;
 import it.unibs.ingsoft.domain.Categoria;
 import it.unibs.ingsoft.domain.Proposta;
 import it.unibs.ingsoft.domain.StatoProposta;
-import it.unibs.ingsoft.domain.factory.PropostaFactory;
-import it.unibs.ingsoft.persistence.interfaces.IBachecaRepository;
+import it.unibs.ingsoft.domain.validation.ValidationError;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -30,41 +28,19 @@ public final class PropostaService {
     private final PropostaCreationService creationService;
     private final PropostaValidationService validationService;
     private final PropostaPublicationService publicationService;
+    private final PropostaLifecycleService lifecycleService;
     private final PropostaQueryService queryService;
-
-    public PropostaService(IBachecaRepository bachecaRepo) {
-        this(bachecaRepo, PropostaFactory.getInstance());
-    }
-
-    public PropostaService(IBachecaRepository bachecaRepo, PropostaFactory propostaFactory) {
-        this(
-                new PropostaCreationService(propostaFactory),
-                new PropostaValidationService(),
-                new PropostaPublicationService(bachecaRepo),
-                new PropostaQueryService(bachecaRepo)
-        );
-    }
 
     public PropostaService(PropostaCreationService creationService,
                            PropostaValidationService validationService,
                            PropostaPublicationService publicationService,
+                           PropostaLifecycleService lifecycleService,
                            PropostaQueryService queryService) {
         this.creationService = Objects.requireNonNull(creationService);
         this.validationService = Objects.requireNonNull(validationService);
         this.publicationService = Objects.requireNonNull(publicationService);
+        this.lifecycleService = Objects.requireNonNull(lifecycleService);
         this.queryService = Objects.requireNonNull(queryService);
-    }
-
-    public static boolean isTermineIscrizioneValido(LocalDate termine) {
-        return PropostaValidationService.isTermineIscrizioneValido(termine);
-    }
-
-    public static boolean isDataEventoValida(LocalDate dataEvento, LocalDate termine) {
-        return PropostaValidationService.isDataEventoValida(dataEvento, termine);
-    }
-
-    public static boolean isDataConclusivaValida(LocalDate conclusiva, LocalDate data) {
-        return PropostaValidationService.isDataConclusivaValida(conclusiva, data);
     }
 
     public void salvaProposta(Proposta proposta) {
@@ -75,10 +51,6 @@ public final class PropostaService {
         return publicationService.getProposteValide();
     }
 
-    public void rimuoviPropostaValida(Proposta proposta) {
-        publicationService.rimuoviPropostaValida(proposta);
-    }
-
     public void clearProposteValide() {
         publicationService.clearProposteValide();
     }
@@ -87,28 +59,29 @@ public final class PropostaService {
         return creationService.creaProposta(categoria, campiBase, campiComuni);
     }
 
-    public List<String> validaProposta(Proposta proposta) {
+    public List<ValidationError> validaProposta(Proposta proposta) {
         return validationService.validaProposta(proposta);
     }
 
-    public List<String> validaCampo(Proposta proposta, Map<String, String> valoriCorrenti, String nomeCampo, String valore) {
+    public List<ValidationError> validaCampo(Proposta proposta, Map<String, String> valoriCorrenti, String nomeCampo, String valore) {
         return validationService.validaCampo(proposta, valoriCorrenti, nomeCampo, valore);
     }
 
     public void pubblicaProposta(Proposta proposta) {
         publicationService.pubblicaProposta(proposta);
+        publicationService.rimuoviPropostaValida(proposta);
     }
 
     public void controllaScadenze() {
-        publicationService.controllaScadenze();
+        lifecycleService.controllaScadenze();
     }
 
     public void confermaProposta(Proposta proposta) {
-        publicationService.confermaProposta(proposta);
+        lifecycleService.confermaProposta(proposta);
     }
 
     public void ritiraProposta(Proposta proposta) {
-        publicationService.ritiraProposta(proposta);
+        lifecycleService.ritiraProposta(proposta);
     }
 
     public List<Proposta> getTutteLeProposte() {
@@ -135,7 +108,7 @@ public final class PropostaService {
         return queryService.getBachecaPerCategoria();
     }
 
-    public List<Campo> getCampiConErrore(Proposta proposta, List<String> errori) {
+    public List<Campo> getCampiConErrore(Proposta proposta, List<ValidationError> errori) {
         return validationService.getCampiConErrore(proposta, errori);
     }
 

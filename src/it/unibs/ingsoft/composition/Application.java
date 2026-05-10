@@ -11,6 +11,7 @@ import it.unibs.ingsoft.application.catalogo.CampoCatalogoService;
 import it.unibs.ingsoft.application.catalogo.CatalogoService;
 import it.unibs.ingsoft.application.catalogo.CategoriaCatalogoService;
 import it.unibs.ingsoft.application.proposta.PropostaCreationService;
+import it.unibs.ingsoft.application.proposta.PropostaLifecycleService;
 import it.unibs.ingsoft.application.proposta.PropostaPublicationService;
 import it.unibs.ingsoft.application.proposta.PropostaQueryService;
 import it.unibs.ingsoft.application.proposta.PropostaValidationService;
@@ -72,15 +73,18 @@ public final class Application {
         PropostaQueryService propostaQueryService = new PropostaQueryService(propostaRepo);
         NotificationService notifService = new NotificationService(spazioRepo);
         PropostaPublicationService propostaPublicationService =
-                new PropostaPublicationService(propostaRepo, propostaQueryService, notifService, notificaFactory);
+                new PropostaPublicationService(propostaRepo, propostaQueryService);
+        PropostaLifecycleService propostaLifecycleService =
+                new PropostaLifecycleService(propostaRepo, notifService, notificaFactory);
         PropostaService propostaService = new PropostaService(
                 propostaCreationService,
                 propostaValidationService,
                 propostaPublicationService,
+                propostaLifecycleService,
                 propostaQueryService);
 
         AuthenticationService authService = new AuthenticationService(credenzialiRepo, utenteFactory);
-        IscrizioneService iscrizioneService = new IscrizioneService(propostaRepo, propostaPublicationService);
+        IscrizioneService iscrizioneService = new IscrizioneService(propostaRepo, propostaLifecycleService);
 
         BatchImportService batchImportService = new BatchImportService(catalogoService, propostaService);
         ConfiguratoreService configuratoreService = new ConfiguratoreService(

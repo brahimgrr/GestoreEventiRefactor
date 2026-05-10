@@ -73,17 +73,9 @@ public final class CatalogoService {
         campoCatalogoService.addCampoComune(request);
     }
 
-//    public boolean removeCampoComune(String nome) {
-//        return campoCatalogoService.removeCampoComune(nome);
-//    }
-
     public CatalogoOperationResult rimuoviCampoComune(String nome) {
         return campoCatalogoService.rimuoviCampoComune(nome);
     }
-
-//    public boolean setObbligatorietaCampoComune(String nome, boolean obbligatorio) {
-//        return campoCatalogoService.setObbligatorietaCampoComune(nome, obbligatorio);
-//    }
 
     public CatalogoOperationResult setObbligatorietaCampoComune(CampoObbligatorietaRequest request) {
         return campoCatalogoService.setObbligatorietaCampoComune(request);
@@ -96,10 +88,6 @@ public final class CatalogoService {
     public Categoria createCategoria(String nome) {
         return categoriaCatalogoService.createCategoria(nome);
     }
-
-//    public boolean removeCategoria(String nome) {
-//        return categoriaCatalogoService.removeCategoria(nome);
-//    }
 
     public CatalogoOperationResult rimuoviCategoria(String nome) {
         return categoriaCatalogoService.rimuoviCategoria(nome);
@@ -117,17 +105,9 @@ public final class CatalogoService {
         campoCatalogoService.addCampoSpecifico(categoria, request);
     }
 
-//    public boolean removeCampoSpecifico(String categoria, String nome) {
-//        return campoCatalogoService.removeCampoSpecifico(categoria, nome);
-//    }
-
     public CatalogoOperationResult rimuoviCampoSpecifico(String categoria, String nome) {
         return campoCatalogoService.rimuoviCampoSpecifico(categoria, nome);
     }
-
-//    public boolean setObbligatorietaCampoSpecifico(String categoria, String nome, boolean obbligatorio) {
-//        return campoCatalogoService.setObbligatorietaCampoSpecifico(categoria, nome, obbligatorio);
-//    }
 
     public CatalogoOperationResult setObbligatorietaCampoSpecifico(String categoria, CampoObbligatorietaRequest request) {
         return campoCatalogoService.setObbligatorietaCampoSpecifico(categoria, request);

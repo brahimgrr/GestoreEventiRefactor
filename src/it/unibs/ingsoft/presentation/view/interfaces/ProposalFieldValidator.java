@@ -1,6 +1,7 @@
 package it.unibs.ingsoft.presentation.view.interfaces;
 
 import it.unibs.ingsoft.domain.Proposta;
+import it.unibs.ingsoft.domain.validation.ValidationError;
 
 import java.util.List;
 import java.util.Map;
@@ -13,5 +14,5 @@ import java.util.Map;
  */
 @FunctionalInterface
 public interface ProposalFieldValidator {
-    List<String> validate(Proposta proposta, Map<String, String> valoriCorrenti, String nomeCampo, String valore);
+    List<ValidationError> validate(Proposta proposta, Map<String, String> valoriCorrenti, String nomeCampo, String valore);
 }

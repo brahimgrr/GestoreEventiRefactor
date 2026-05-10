@@ -335,8 +335,8 @@ public final class ConfiguratoreCliView implements IConfiguratoreView {
             ProposalFieldValidator validator) {
         ui.newLine();
         ui.stampa("La proposta NON e valida per i seguenti motivi:");
-        for (String errore : result.errori()) {
-            ui.stampaErrore(errore);
+        for (var errore : result.errori()) {
+            ui.stampaErrore(ValidationMessageMapper.message(errore));
         }
         ui.newLine();
 
@@ -458,7 +458,7 @@ public final class ConfiguratoreCliView implements IConfiguratoreView {
 
     @Override
     public void mostraErrore(Exception e) {
-        ui.stampaErrore(e.getMessage());
+        ui.stampaErrore(ErrorMessageMapper.message(e));
     }
 
     @Override

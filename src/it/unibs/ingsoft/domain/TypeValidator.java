@@ -1,5 +1,7 @@
 package it.unibs.ingsoft.domain;
 
+import it.unibs.ingsoft.domain.validation.ValidationError;
+
 /**
  * Valida una stringa grezza rispetto al {@link TipoDato} atteso.
  *
@@ -7,5 +9,5 @@ package it.unibs.ingsoft.domain;
  */
 @FunctionalInterface
 public interface TypeValidator {
-    String validate(String input, TipoDato tipo);
+    ValidationError validate(String input, TipoDato tipo);
 }

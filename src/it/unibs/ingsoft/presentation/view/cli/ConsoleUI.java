@@ -1,6 +1,7 @@
 package it.unibs.ingsoft.presentation.view.cli;
 
 import it.unibs.ingsoft.domain.*;
+import it.unibs.ingsoft.domain.validation.ValidationError;
 import it.unibs.ingsoft.presentation.view.interfaces.IAppView;
 import it.unibs.ingsoft.presentation.view.interfaces.OperationCancelledException;
 import it.unibs.ingsoft.presentation.view.interfaces.ProposalFieldValidator;
@@ -448,21 +449,21 @@ public final class ConsoleUI implements IAppView {
                 continue;
             }
 
-            String typeError = typeValidator.validate(raw, campo.getTipoDato());
+            ValidationError typeError = typeValidator.validate(raw, campo.getTipoDato());
             if (typeError != null) {
-                stampaErrore("  " + typeError);
+                stampaErrore("  " + ValidationMessageMapper.message(typeError));
                 continue;
             }
 
-            List<String> businessErrors = validator.validate(
+            List<ValidationError> businessErrors = validator.validate(
                     proposta,
                     Collections.unmodifiableMap(ctx),
                     nome,
                     raw
             );
             if (!businessErrors.isEmpty()) {
-                for (String businessError : businessErrors)
-                    stampaErrore("  " + businessError);
+                for (ValidationError businessError : businessErrors)
+                    stampaErrore("  " + ValidationMessageMapper.message(businessError));
                 continue;
             }
 

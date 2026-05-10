@@ -6,6 +6,9 @@ import it.unibs.ingsoft.application.proposta.PropostaService;
 import it.unibs.ingsoft.application.batch.dto.*;
 import it.unibs.ingsoft.application.catalogo.CatalogoService;
 import it.unibs.ingsoft.domain.*;
+import it.unibs.ingsoft.domain.validation.ValidationError;
+import it.unibs.ingsoft.presentation.view.cli.ErrorMessageMapper;
+import it.unibs.ingsoft.presentation.view.cli.ValidationMessageMapper;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -191,9 +194,10 @@ public final class BatchImportService {
             for (Campo campo : tuttiCampi) {
                 String valore = valori.get(campo.getNome());
                 if (valore != null && !valore.isBlank()) {
-                    String errore = DefaultTypeValidator.INSTANCE.validate(valore, campo.getTipoDato());
+                    ValidationError errore = DefaultTypeValidator.INSTANCE.validate(valore, campo.getTipoDato());
                     if (errore != null) {
-                        erroriTipo.add("campo \"" + campo.getNome() + "\": " + errore);
+                        erroriTipo.add("campo \"" + campo.getNome() + "\": "
+                                + ValidationMessageMapper.message(errore));
                     }
                 }
             }
@@ -208,10 +212,10 @@ public final class BatchImportService {
                 Proposta proposta = propostaService.creaProposta(categoria, campiBase, campiComuni);
                 proposta.aggiornaValoriCampi(valori);
 
-                List<String> erroriValidazione = propostaService.validaProposta(proposta);
+                List<ValidationError> erroriValidazione = propostaService.validaProposta(proposta);
                 if (!erroriValidazione.isEmpty()) {
-                    for (String e : erroriValidazione)
-                        result.addErrore("[Proposta] '" + titolo + "': " + e);
+                    for (ValidationError e : erroriValidazione)
+                        result.addErrore("[Proposta] '" + titolo + "': " + ValidationMessageMapper.message(e));
                     continue;
                 }
 
@@ -219,7 +223,7 @@ public final class BatchImportService {
                 result.incrementProposte();
 
             } catch (IllegalArgumentException | IllegalStateException e) {
-                result.addErrore("[Proposta] '" + titolo + "': " + e.getMessage());
+                result.addErrore("[Proposta] '" + titolo + "': " + ErrorMessageMapper.message(e));
             }
         }
     }

@@ -1,5 +1,8 @@
 package it.unibs.ingsoft.domain;
 
+import it.unibs.ingsoft.domain.validation.ValidationError;
+import it.unibs.ingsoft.domain.validation.ValidationErrorCode;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Set;
@@ -18,7 +21,7 @@ public final class DefaultTypeValidator implements TypeValidator {
     }
 
     @Override
-    public String validate(String input, TipoDato tipo) {
+    public ValidationError validate(String input, TipoDato tipo) {
         if (input == null || input.isBlank()) return null;
 
         switch (tipo) {
@@ -39,46 +42,45 @@ public final class DefaultTypeValidator implements TypeValidator {
         }
     }
 
-    private String validateOra(String s) {
+    private ValidationError validateOra(String s) {
         try {
             LocalTime.parse(s.trim(), AppConstants.TIME_FMT);
             return null;
         } catch (Exception e) {
-            return "Valore non valido: inserire una data nel formato hh:mm (es. 16:30).";
+            return ValidationError.error(null, ValidationErrorCode.TIPO_ORA_NON_VALIDA);
         }
     }
 
-    private String validateIntero(String s) {
+    private ValidationError validateIntero(String s) {
         try {
             Integer.parseInt(s.trim());
             return null;
         } catch (NumberFormatException e) {
-            return "Valore non valido: inserire un numero intero.";
+            return ValidationError.error(null, ValidationErrorCode.TIPO_INTERO_NON_VALIDO);
         }
     }
 
-    private String validateDecimale(String s) {
+    private ValidationError validateDecimale(String s) {
         try {
             Double.parseDouble(s.trim().replace(',', '.'));
             return null;
         } catch (NumberFormatException e) {
-            return "Valore non valido: inserire un numero decimale.";
+            return ValidationError.error(null, ValidationErrorCode.TIPO_DECIMALE_NON_VALIDO);
         }
     }
 
-    private String validateData(String s) {
+    private ValidationError validateData(String s) {
         try {
             LocalDate.parse(s.trim(), AppConstants.DATE_FMT);
             return null;
         } catch (Exception e) {
-            return "Valore non valido: inserire una data nel formato "
-                    + AppConstants.DATE_FORMAT_LABEL + " (es. 25/12/2026).";
+            return ValidationError.error(null, ValidationErrorCode.TIPO_DATA_NON_VALIDA);
         }
     }
 
-    private String validateBooleano(String s) {
+    private ValidationError validateBooleano(String s) {
         String lower = s.trim().toLowerCase();
         if (VALORI_SI.contains(lower) || VALORI_NO.contains(lower)) return null;
-        return "Valore non valido: inserire s/si/sì oppure n/no.";
+        return ValidationError.error(null, ValidationErrorCode.TIPO_BOOLEANO_NON_VALIDO);
     }
 }

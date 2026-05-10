@@ -138,7 +138,7 @@ public final class FruitoreCliView implements IFruitoreView {
         for (int i = 0; i < notifiche.size(); i++) {
             Notifica notifica = notifiche.get(i);
             ui.stampa((i + 1) + ". [" + notifica.dataCreazione().format(NOTIFICA_FMT) + "] "
-                    + notifica.messaggio());
+                    + NotificaMessageMapper.message(notifica));
         }
         ui.newLine();
 
@@ -176,7 +176,7 @@ public final class FruitoreCliView implements IFruitoreView {
 
     @Override
     public void mostraErrore(Exception e) {
-        ui.stampaErrore(e.getMessage() == null ? e.toString() : e.getMessage());
+        ui.stampaErrore(ErrorMessageMapper.message(e));
         ui.pausaConSpaziatura();
     }
 

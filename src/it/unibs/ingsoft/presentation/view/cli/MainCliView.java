@@ -191,7 +191,7 @@ public final class MainCliView implements IMainView {
 
     @Override
     public void mostraErrore(Exception e) {
-        ui.stampaErrore(e.getMessage() == null ? e.toString() : e.getMessage());
+        ui.stampaErrore(ErrorMessageMapper.message(e));
         ui.newLine();
     }
 }

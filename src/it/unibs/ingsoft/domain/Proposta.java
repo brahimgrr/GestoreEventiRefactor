@@ -4,6 +4,10 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import it.unibs.ingsoft.domain.error.DomainErrorCode;
+import it.unibs.ingsoft.domain.error.DomainException;
+import it.unibs.ingsoft.domain.validation.ValidationError;
+import it.unibs.ingsoft.domain.validation.ValidationErrorCode;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -24,7 +28,7 @@ public final class Proposta {
 
     public Proposta(Categoria categoria, List<Campo> campiBase, List<Campo> campiComuni) {
         if (categoria == null)
-            throw new IllegalArgumentException("La categoria non puo' essere null.");
+            throw new DomainException(DomainErrorCode.NULL_PROPOSTA_CATEGORY);
         this.categoria = new Categoria(categoria);
         this.campiBase = campiBase == null
                 ? new ArrayList<>()
@@ -117,9 +121,9 @@ public final class Proposta {
 
     private void cambiaStato(StatoProposta next) {
         if (next == null)
-            throw new IllegalArgumentException("Stato non puo' essere null.");
+            throw new DomainException(DomainErrorCode.NULL_STATO_PROPOSTA);
         if (!stato.canTransitionTo(next))
-            throw new IllegalStateException("Transizione non valida: " + stato + " → " + next + ".");
+            throw DomainException.invalidStateTransition(stato, next);
         this.stato = next;
         this.stateHistory.add(new PropostaStateChange(next, LocalDate.now(AppConstants.clock)));
     }
@@ -187,19 +191,17 @@ public final class Proposta {
 
     public void verificaSalvabile() {
         if (!isValida()) {
-            throw new IllegalStateException("Solo una proposta VALIDA puo' essere salvata.");
+            throw new DomainException(DomainErrorCode.PROPOSTA_NOT_SALVABILE);
         }
     }
 
     public void verificaPubblicabile(LocalDate oggi) {
         if (!isValida()) {
-            throw new IllegalStateException("La proposta deve essere in stato VALIDA per essere pubblicata.");
+            throw new DomainException(DomainErrorCode.PROPOSTA_NOT_VALID_FOR_PUBLICATION);
         }
 
         if (termineIscrizione != null && !termineIscrizione.isAfter(oggi)) {
-            throw new IllegalStateException(
-                    "Non e' piu' possibile pubblicare: il termine di iscrizione ("
-                            + termineIscrizione + ") E' gia' scaduto. Rivalidare la proposta.");
+            throw DomainException.publicationDeadlineExpired(termineIscrizione);
         }
     }
 
@@ -229,13 +231,11 @@ public final class Proposta {
 
     public void ritira(LocalDate oggi) {
         if (!isRitirabile()) {
-            throw new IllegalStateException(
-                    "Impossibile ritirare: la proposta non e' APERTA ne' CONFERMATA.");
+            throw new DomainException(DomainErrorCode.PROPOSTA_NOT_WITHDRAWABLE);
         }
 
         if (dataEvento != null && !oggi.isBefore(dataEvento)) {
-            throw new IllegalStateException(
-                    "Impossibile ritirare: il ritiro e' consentito solo entro il giorno precedente la data dell'evento.");
+            throw new DomainException(DomainErrorCode.PROPOSTA_WITHDRAWAL_TOO_LATE);
         }
 
         cambiaStato(StatoProposta.RITIRATA);
@@ -275,22 +275,20 @@ public final class Proposta {
 
     public void iscrivi(String username, LocalDate oggi) {
         if (!isAperta()) {
-            throw new IllegalStateException("Impossibile iscriversi: la proposta non e' APERTA.");
+            throw new DomainException(DomainErrorCode.PROPOSTA_NOT_OPEN_FOR_SUBSCRIPTION);
         }
 
         if (isTermineIscrizioneScaduto(oggi)) {
-            throw new IllegalStateException(
-                    "Impossibile iscriversi: il termine di iscrizione e' scaduto (" + termineIscrizione + ").");
+            throw DomainException.subscriptionDeadlineExpired(termineIscrizione);
         }
 
         if (isIscritto(username)) {
-            throw new IllegalStateException("Sei gia' iscritto a questa proposta.");
+            throw new DomainException(DomainErrorCode.PROPOSTA_ALREADY_SUBSCRIBED);
         }
 
         int numeroPartecipantiPrevisto = getNumeroPartecipanti();
         if (listaAderenti.size() >= numeroPartecipantiPrevisto) {
-            throw new IllegalStateException(
-                    "Impossibile iscriversi: la proposta ha già raggiunto il numero massimo di partecipanti.");
+            throw new DomainException(DomainErrorCode.PROPOSTA_FULL);
         }
 
         listaAderenti.add(username);
@@ -298,42 +296,21 @@ public final class Proposta {
 
     public void disiscrivi(String username, LocalDate oggi) {
         if (!isAperta()) {
-            throw new IllegalStateException("Impossibile disdire: la proposta non e' APERTA.");
+            throw new DomainException(DomainErrorCode.PROPOSTA_NOT_OPEN_FOR_UNSUBSCRIPTION);
         }
 
         if (isTermineIscrizioneScaduto(oggi)) {
-            throw new IllegalStateException(
-                    "Impossibile disdire: il termine di iscrizione e' scaduto (" + termineIscrizione + ").");
+            throw DomainException.unsubscriptionDeadlineExpired(termineIscrizione);
         }
 
         if (!isIscritto(username)) {
-            throw new IllegalStateException("Non sei iscritto a questa proposta.");
+            throw new DomainException(DomainErrorCode.PROPOSTA_NOT_SUBSCRIBED);
         }
 
         listaAderenti.remove(username);
     }
 
-    public void addAderente(String username) {
-        if (stato != StatoProposta.APERTA)
-            throw new IllegalStateException("Impossibile aggiungere aderenti: la proposta non e' APERTA.");
-        if (listaAderenti.contains(username))
-            throw new IllegalStateException("L'utente e' gia' iscritto a questa proposta.");
-        if (isCapienzaRaggiunta())
-            throw new IllegalStateException("Impossibile aggiungere aderenti: capienza massima raggiunta.");
-        listaAderenti.add(username);
-        // post condition: utente aggiunto a listaAderenti done.
-    }
-
-    public void removeAderente(String username, LocalDate oggi) {
-        if (stato != StatoProposta.APERTA)
-            throw new IllegalStateException("Impossibile rimuovere aderenti: la proposta non e' APERTA.");
-        if (isTermineIscrizioneScaduto(oggi))
-            throw new IllegalStateException(
-                    "Impossibile rimuovere: il termine di iscrizione e' scaduto (" + termineIscrizione + ").");
-        listaAderenti.remove(username);
-    }
-
-    public void revertToBozzaSilent() {
+    private void revertToBozzaSilent() {
         if (this.stato == StatoProposta.VALIDA) {
             this.stato = StatoProposta.BOZZA;
         }
@@ -345,8 +322,7 @@ public final class Proposta {
 
     public void aggiornaValoriCampi(Map<String, String> valori) {
         if (stato != StatoProposta.BOZZA && stato != StatoProposta.VALIDA)
-            throw new IllegalStateException(
-                    "Impossibile modificare i campi di una proposta in stato " + stato + ".");
+            throw DomainException.fieldsNotModifiable(stato);
         valoriCampi.putAll(valori);
 
         Map<String, String> temp = new HashMap<>(valoriCampi);
@@ -363,14 +339,10 @@ public final class Proposta {
         valoriCampi.putAll(temp);
     }
 
-    public void putAllValoriCampi(Map<String, String> valori) {
-        aggiornaValoriCampi(valori);
-    }
-
-    public List<String> valida() {
+    public List<ValidationError> valida() {
         revertToBozzaSilent();
 
-        List<String> errori = new ArrayList<>();
+        List<ValidationError> errori = new ArrayList<>();
         controllaCampiObbligatori(errori);
         controllaNumeroPartecipanti(errori);
 
@@ -380,19 +352,21 @@ public final class Proposta {
         LocalDate dataConclusiva = parseData(valoriCampi.get(AppConstants.CAMPO_DATA_CONCLUSIVA));
 
         if (termineIscr != null && !isTermineIscrizioneValido(termineIscr)) {
-            errori.add("\"" + AppConstants.CAMPO_TERMINE_ISCRIZIONE
-                    + "\" deve essere successivo alla data odierna (" + oggi + ").");
+            errori.add(ValidationError.termineIscrizioneNonFuturo(
+                    AppConstants.CAMPO_TERMINE_ISCRIZIONE,
+                    oggi));
         }
 
         if (termineIscr != null && data != null && !isDataEventoValida(data, termineIscr)) {
-            errori.add("\"" + AppConstants.CAMPO_DATA
-                    + "\" deve essere successivo di almeno 2 giorni rispetto a \""
-                    + AppConstants.CAMPO_TERMINE_ISCRIZIONE + "\".");
+            errori.add(ValidationError.error(
+                    AppConstants.CAMPO_DATA,
+                    ValidationErrorCode.DATA_EVENTO_TROPPO_PRESTO));
         }
 
         if (data != null && dataConclusiva != null && !isDataConclusivaValida(dataConclusiva, data)) {
-            errori.add("\"" + AppConstants.CAMPO_DATA_CONCLUSIVA
-                    + "\" non puo' essere precedente a \"" + AppConstants.CAMPO_DATA + "\".");
+            errori.add(ValidationError.error(
+                    AppConstants.CAMPO_DATA_CONCLUSIVA,
+                    ValidationErrorCode.DATA_CONCLUSIVA_PRECEDENTE));
         }
 
         if (errori.isEmpty()) {
@@ -404,12 +378,12 @@ public final class Proposta {
         return errori;
     }
 
-    public List<String> validaCampo(Map<String, String> valoriCorrenti, String nomeCampo, String valore) {
+    public List<ValidationError> validaCampo(Map<String, String> valoriCorrenti, String nomeCampo, String valore) {
         Map<String, String> valori = new LinkedHashMap<>(valoriCampi);
         valori.putAll(valoriCorrenti);
         valori.put(nomeCampo, valore);
 
-        List<String> errori = new ArrayList<>();
+        List<ValidationError> errori = new ArrayList<>();
         LocalDate termineIscr = parseData(valori.get(AppConstants.CAMPO_TERMINE_ISCRIZIONE));
         LocalDate data = parseData(valori.get(AppConstants.CAMPO_DATA));
         LocalDate dataConclusiva = parseData(valori.get(AppConstants.CAMPO_DATA_CONCLUSIVA));
@@ -417,32 +391,35 @@ public final class Proposta {
         switch (nomeCampo) {
             case AppConstants.CAMPO_TERMINE_ISCRIZIONE:
                 if (termineIscr != null && !isTermineIscrizioneValido(termineIscr)) {
-                    errori.add("\"" + AppConstants.CAMPO_TERMINE_ISCRIZIONE
-                            + "\" deve essere successivo alla data odierna.");
+                    errori.add(ValidationError.error(
+                            AppConstants.CAMPO_TERMINE_ISCRIZIONE,
+                            ValidationErrorCode.TERMINE_ISCRIZIONE_NON_FUTURO));
                 }
                 if (termineIscr != null && data != null && !isDataEventoValida(data, termineIscr)) {
-                    errori.add("\"" + AppConstants.CAMPO_DATA
-                            + "\" deve essere successivo di almeno 2 giorni rispetto a \""
-                            + AppConstants.CAMPO_TERMINE_ISCRIZIONE + "\".");
+                    errori.add(ValidationError.error(
+                            AppConstants.CAMPO_DATA,
+                            ValidationErrorCode.DATA_EVENTO_TROPPO_PRESTO));
                 }
                 break;
 
             case AppConstants.CAMPO_DATA:
                 if (termineIscr != null && data != null && !isDataEventoValida(data, termineIscr)) {
-                    errori.add("\"" + AppConstants.CAMPO_DATA
-                            + "\" deve essere successivo di almeno 2 giorni rispetto a \""
-                            + AppConstants.CAMPO_TERMINE_ISCRIZIONE + "\".");
+                    errori.add(ValidationError.error(
+                            AppConstants.CAMPO_DATA,
+                            ValidationErrorCode.DATA_EVENTO_TROPPO_PRESTO));
                 }
                 if (data != null && dataConclusiva != null && !isDataConclusivaValida(dataConclusiva, data)) {
-                    errori.add("\"" + AppConstants.CAMPO_DATA_CONCLUSIVA
-                            + "\" non puo' essere precedente a \"" + AppConstants.CAMPO_DATA + "\".");
+                    errori.add(ValidationError.error(
+                            AppConstants.CAMPO_DATA_CONCLUSIVA,
+                            ValidationErrorCode.DATA_CONCLUSIVA_PRECEDENTE));
                 }
                 break;
 
             case AppConstants.CAMPO_DATA_CONCLUSIVA:
                 if (data != null && dataConclusiva != null && !isDataConclusivaValida(dataConclusiva, data)) {
-                    errori.add("\"" + AppConstants.CAMPO_DATA_CONCLUSIVA
-                            + "\" non puo' essere precedente a \"" + AppConstants.CAMPO_DATA + "\".");
+                    errori.add(ValidationError.error(
+                            AppConstants.CAMPO_DATA_CONCLUSIVA,
+                            ValidationErrorCode.DATA_CONCLUSIVA_PRECEDENTE));
                 }
                 break;
 
@@ -453,18 +430,20 @@ public final class Proposta {
         return errori;
     }
 
-    private void controllaCampiObbligatori(List<String> errori) {
+    private void controllaCampiObbligatori(List<ValidationError> errori) {
         for (Campo campo : getCampi()) {
             if (campo.isObbligatorio()) {
                 String valore = valoriCampi.get(campo.getNome());
                 if (valore == null || valore.isBlank()) {
-                    errori.add("Campo obbligatorio mancante: \"" + campo.getNome() + "\".");
+                    errori.add(ValidationError.error(
+                            campo.getNome(),
+                            ValidationErrorCode.CAMPO_OBBLIGATORIO_MANCANTE));
                 }
             }
         }
     }
 
-    private void controllaNumeroPartecipanti(List<String> errori) {
+    private void controllaNumeroPartecipanti(List<ValidationError> errori) {
         String numStr = valoriCampi.get(AppConstants.CAMPO_NUM_PARTECIPANTI);
         if (numStr == null || numStr.isBlank()) {
             return;
@@ -473,10 +452,14 @@ public final class Proposta {
         try {
             int n = Integer.parseInt(numStr.trim());
             if (n <= 0) {
-                errori.add("\"" + AppConstants.CAMPO_NUM_PARTECIPANTI + "\" deve essere un intero positivo.");
+                errori.add(ValidationError.error(
+                        AppConstants.CAMPO_NUM_PARTECIPANTI,
+                        ValidationErrorCode.NUMERO_PARTECIPANTI_NON_POSITIVO));
             }
         } catch (NumberFormatException e) {
-            errori.add("\"" + AppConstants.CAMPO_NUM_PARTECIPANTI + "\" deve essere un intero valido.");
+            errori.add(ValidationError.error(
+                    AppConstants.CAMPO_NUM_PARTECIPANTI,
+                    ValidationErrorCode.NUMERO_PARTECIPANTI_NON_INTERO));
         }
     }
 
@@ -495,10 +478,6 @@ public final class Proposta {
         try {
             return LocalDate.parse(s.trim(), AppConstants.DATE_FMT);
         } catch (DateTimeParseException e) {
-            if (avvisaSeMalformata) {
-                System.err.println("[WARN] Proposta: campo '" + AppConstants.CAMPO_DATA_CONCLUSIVA
-                        + "' non parseable ('" + s + "'), fallback su dataEvento.");
-            }
             return dataEvento;
         }
     }
@@ -507,17 +486,14 @@ public final class Proposta {
     public int getNumeroPartecipanti() {
         String s = valoriCampi.get(AppConstants.CAMPO_NUM_PARTECIPANTI);
         if (s == null || s.isBlank())
-            throw new IllegalStateException(
-                    "Campo '" + AppConstants.CAMPO_NUM_PARTECIPANTI + "' non definito nella proposta.");
+            throw new DomainException(DomainErrorCode.PROPOSTA_PARTICIPANTS_MISSING);
         try {
             int n = Integer.parseInt(s.trim());
             if (n <= 0)
-                throw new IllegalStateException(
-                        "'" + AppConstants.CAMPO_NUM_PARTECIPANTI + "' deve essere un intero positivo.");
+                throw new DomainException(DomainErrorCode.PROPOSTA_PARTICIPANTS_NOT_POSITIVE);
             return n;
         } catch (NumberFormatException e) {
-            throw new IllegalStateException(
-                    "'" + AppConstants.CAMPO_NUM_PARTECIPANTI + "' non e' un intero valido: " + s);
+            throw DomainException.participantsNotInteger(s);
         }
     }
 

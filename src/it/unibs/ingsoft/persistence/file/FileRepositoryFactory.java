@@ -6,7 +6,6 @@ import it.unibs.ingsoft.persistence.interfaces.ICredenzialiRepository;
 import it.unibs.ingsoft.persistence.interfaces.ISpazioPersonaleRepository;
 
 import java.nio.file.Path;
-import java.util.Objects;
 
 public final class FileRepositoryFactory {
     private static final Path DATA_CATALOGO = Path.of("data/v5", "catalogo.json");

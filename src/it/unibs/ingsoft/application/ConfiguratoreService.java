@@ -13,6 +13,7 @@ import it.unibs.ingsoft.domain.Campo;
 import it.unibs.ingsoft.domain.Categoria;
 import it.unibs.ingsoft.domain.Proposta;
 import it.unibs.ingsoft.domain.StatoProposta;
+import it.unibs.ingsoft.domain.validation.ValidationError;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -96,7 +97,7 @@ public final class ConfiguratoreService {
         return propostaService.creaProposta(categoria, getCampiBase(), getCampiComuni());
     }
 
-    public List<String> validaCampo(Proposta proposta, Map<String, String> valoriCorrenti, String nomeCampo, String valore) {
+    public List<ValidationError> validaCampo(Proposta proposta, Map<String, String> valoriCorrenti, String nomeCampo, String valore) {
         return propostaService.validaCampo(proposta, valoriCorrenti, nomeCampo, valore);
     }
 
@@ -114,7 +115,6 @@ public final class ConfiguratoreService {
 
     public void pubblicaProposta(Proposta proposta) {
         propostaService.pubblicaProposta(proposta);
-        propostaService.rimuoviPropostaValida(proposta);
     }
 
     public Map<String, List<Proposta>> getBachecaPerCategoria() {

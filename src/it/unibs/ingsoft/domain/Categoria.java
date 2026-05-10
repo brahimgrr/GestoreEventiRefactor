@@ -8,12 +8,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-/**
- * Categoria di iniziativa ricreativa. Ogni categoria ha un nome univoco e una lista
- * di campi specifici, mantenuta ordinata alfabeticamente per nome.
- *
- * <p>Invariante: {@code campiSpecifici} è sempre ordinata per nome (case-insensitive).</p>
- */
 public final class Categoria {
     private final String nome;
     private final List<Campo> campiSpecifici;
@@ -30,9 +24,6 @@ public final class Categoria {
         this.campiSpecifici = oldCategoria.campiSpecifici.stream().map(Campo::new).toList();
     }
 
-    /**
-     * Factory di deserializzazione Jackson — ripristina nome e campi specifici.
-     */
     @JsonCreator
     public static Categoria fromJson(
             @JsonProperty("nome") String nome,
@@ -51,13 +42,6 @@ public final class Categoria {
         return Collections.unmodifiableList(campiSpecifici);
     }
 
-    /**
-     * Aggiunge un campo specifico alla categoria.
-     *
-     * @throws IllegalArgumentException se il tipo è errato o il nome è duplicato
-     * @pre campoSpecifico.getTipo() == TipoCampo.SPECIFICO
-     * @pre nessun campo specifico ha già lo stesso nome (case-insensitive)
-     */
     public void addCampoSpecifico(Campo campoSpecifico) {
         if (campoSpecifico.getTipo() != TipoCampo.SPECIFICO)
             throw new IllegalArgumentException("Solo campi di tipo SPECIFICO possono essere aggiunti a una categoria.");
@@ -69,20 +53,10 @@ public final class Categoria {
         campiSpecifici.sort(Comparator.comparing(Campo::getNome, String.CASE_INSENSITIVE_ORDER));
     }
 
-    /**
-     * @return {@code true} se rimosso, {@code false} se non trovato
-     */
     public boolean removeCampoSpecifico(String nomeCampo) {
         return campiSpecifici.removeIf(c -> c.getNome().equalsIgnoreCase(nomeCampo));
     }
 
-    /**
-     * Aggiorna il flag {@code obbligatorio} del campo specifico indicato.
-     * Sostituisce il {@link Campo} esistente (immutabile) con una nuova istanza
-     * tramite {@link Campo#withObbligatorio(boolean)}.
-     *
-     * @return {@code true} se aggiornato, {@code false} se non trovato
-     */
     public boolean setObbligatorietaCampoSpecifico(String nomeCampo, boolean obbligatorio) {
         for (int i = 0; i < campiSpecifici.size(); i++) {
             if (campiSpecifici.get(i).getNome().equalsIgnoreCase(nomeCampo)) {
