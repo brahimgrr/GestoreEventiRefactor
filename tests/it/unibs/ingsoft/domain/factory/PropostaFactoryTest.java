@@ -1,8 +1,8 @@
 package it.unibs.ingsoft.domain.factory;
 
-import it.unibs.ingsoft.domain.Categoria;
-import it.unibs.ingsoft.domain.Proposta;
-import it.unibs.ingsoft.domain.StatoProposta;
+import it.unibs.ingsoft.domain.catalogo.Categoria;
+import it.unibs.ingsoft.domain.proposta.Proposta;
+import it.unibs.ingsoft.domain.proposta.StatoProposta;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

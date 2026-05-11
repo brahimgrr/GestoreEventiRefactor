@@ -1,8 +1,8 @@
 package it.unibs.ingsoft.application.proposta;
 
-import it.unibs.ingsoft.domain.Bacheca;
-import it.unibs.ingsoft.domain.Proposta;
-import it.unibs.ingsoft.domain.StatoProposta;
+import it.unibs.ingsoft.domain.proposta.Bacheca;
+import it.unibs.ingsoft.domain.proposta.Proposta;
+import it.unibs.ingsoft.domain.proposta.StatoProposta;
 import it.unibs.ingsoft.persistence.interfaces.IBachecaRepository;
 
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ public final class PropostaQueryService {
     }
 
     public List<Proposta> getTutteLeProposte() {
-        return Collections.unmodifiableList(bacheca().getProposte());
+        return bacheca().getProposte();
     }
 
     public List<Proposta> getBacheca() {
@@ -41,15 +41,17 @@ public final class PropostaQueryService {
         if (username == null) {
             return List.of();
         }
-        return getBacheca().stream()
+        return bacheca().getProposte().stream()
+                .filter(Proposta::isAperta)
                 .filter(p -> p.isIscritto(username))
                 .toList();
     }
 
     public List<Proposta> getProposteRitirabili() {
-        List<Proposta> ritirabili = new ArrayList<>(getBacheca());
-        for (Proposta proposta : getTutteLeProposte()) {
-            if (proposta.isConfermata() && !ritirabili.contains(proposta)) {
+        Bacheca bacheca = bacheca();
+        List<Proposta> ritirabili = new ArrayList<>();
+        for (Proposta proposta : bacheca.getProposte()) {
+            if (proposta.isAperta() || proposta.isConfermata()) {
                 ritirabili.add(proposta);
             }
         }

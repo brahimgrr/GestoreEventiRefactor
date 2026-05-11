@@ -1,8 +1,11 @@
 package it.unibs.ingsoft.application.proposta;
 
-import it.unibs.ingsoft.domain.*;
-import it.unibs.ingsoft.domain.error.DomainErrorCode;
-import it.unibs.ingsoft.domain.error.DomainException;
+import it.unibs.ingsoft.domain.proposta.Bacheca;
+import it.unibs.ingsoft.domain.proposta.Proposta;
+import it.unibs.ingsoft.domain.proposta.PropostaIdentityPolicy;
+import it.unibs.ingsoft.domain.shared.error.DomainErrorCode;
+import it.unibs.ingsoft.domain.shared.error.DomainException;
+import it.unibs.ingsoft.domain.shared.AppConstants;
 import it.unibs.ingsoft.persistence.interfaces.IBachecaRepository;
 
 import java.time.LocalDate;
@@ -12,62 +15,70 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Gestisce salvataggio in memoria e pubblicazione delle proposte valide.
+ * Gestisce l'area temporanea di sessione delle proposte pronte alla pubblicazione
+ * e la pubblicazione duratura in bacheca.
  */
 public final class PropostaPublicationService {
     private final IBachecaRepository bachecaRepo;
-    private final PropostaQueryService queryService;
-    private final List<Proposta> proposteValide = new ArrayList<>();
+    private final PropostaIdentityPolicy duplicatePolicy;
+    private final PropostaCommandLock commandLock;
+    private final List<Proposta> proposteProntePerPubblicazione = new ArrayList<>();
 
     public PropostaPublicationService(IBachecaRepository bachecaRepo) {
-        this(bachecaRepo, new PropostaQueryService(bachecaRepo));
+        this(bachecaRepo, PropostaIdentityPolicy.DEFAULT);
     }
 
-    public PropostaPublicationService(IBachecaRepository bachecaRepo, PropostaQueryService queryService) {
+    public PropostaPublicationService(IBachecaRepository bachecaRepo,
+                                      PropostaIdentityPolicy identityPolicy) {
+        this(bachecaRepo, identityPolicy, new PropostaCommandLock());
+    }
+
+    public PropostaPublicationService(IBachecaRepository bachecaRepo,
+                                      PropostaIdentityPolicy duplicatePolicy,
+                                      PropostaCommandLock commandLock) {
         this.bachecaRepo = Objects.requireNonNull(bachecaRepo);
-        this.queryService = Objects.requireNonNull(queryService);
-    }
-
-    private Bacheca bacheca() {
-        return bachecaRepo.load();
+        this.duplicatePolicy = Objects.requireNonNull(duplicatePolicy);
+        this.commandLock = Objects.requireNonNull(commandLock);
     }
 
     public void salvaProposta(Proposta proposta) {
-        proposta.verificaSalvabile();
-        rilevaDuplicatoAlSalvataggio(proposta);
-        proposteValide.add(proposta);
+        commandLock.runLocked(() -> {
+            proposta.verificaSalvabile();
+            rilevaDuplicatoAlSalvataggio(proposta);
+            proposteProntePerPubblicazione.add(proposta);
+        });
     }
 
     public List<Proposta> getProposteValide() {
-        return Collections.unmodifiableList(proposteValide);
-    }
-
-    void rimuoviPropostaValida(Proposta proposta) {
-        proposteValide.remove(proposta);
+        return commandLock.callLocked(() -> Collections.unmodifiableList(
+                new ArrayList<>(proposteProntePerPubblicazione)));
     }
 
     public void clearProposteValide() {
-        proposteValide.clear();
+        commandLock.runLocked(proposteProntePerPubblicazione::clear);
     }
 
     public void pubblicaProposta(Proposta proposta) {
-        LocalDate oggi = LocalDate.now(AppConstants.clock);
-        proposta.verificaPubblicabile(oggi);
-        Bacheca bacheca = bachecaRepo.load();
-        rilevaDuplicato(proposta, bacheca);
+        commandLock.runLocked(() -> {
+            LocalDate oggi = LocalDate.now(AppConstants.clock);
+            proposta.verificaPubblicabile(oggi);
+            Bacheca bacheca = bachecaRepo.load();
+            rilevaDuplicato(proposta, bacheca);
 
-        proposta.pubblica(oggi);
-        bacheca.addProposta(proposta);
-        bachecaRepo.save(bacheca);
+            proposta.pubblica(oggi);
+            bacheca.addProposta(proposta);
+            bachecaRepo.save(bacheca);
+            proposteProntePerPubblicazione.remove(proposta);
+        });
     }
 
     private void rilevaDuplicatoAlSalvataggio(Proposta proposta) {
-        String chiave = proposta.getChiaveIdentita();
+        String chiave = duplicatePolicy.chiaveDuplicato(proposta);
 
-        boolean inBacheca = queryService.getTutteLeProposte().stream()
-                .anyMatch(e -> e.getChiaveIdentita().equals(chiave));
-        boolean inValide = proposteValide.stream()
-                .anyMatch(e -> e.getChiaveIdentita().equals(chiave));
+        boolean inBacheca = bachecaRepo.load().getProposte().stream()
+                .anyMatch(e -> duplicatePolicy.chiaveDuplicato(e).equals(chiave));
+        boolean inValide = proposteProntePerPubblicazione.stream()
+                .anyMatch(e -> duplicatePolicy.chiaveDuplicato(e).equals(chiave));
 
         if (inBacheca || inValide) {
             throw new DomainException(DomainErrorCode.PROPOSTA_DUPLICATA);
@@ -75,9 +86,9 @@ public final class PropostaPublicationService {
     }
 
     private void rilevaDuplicato(Proposta proposta, Bacheca bacheca) {
-        String chiave = proposta.getChiaveIdentita();
+        String chiave = duplicatePolicy.chiaveDuplicato(proposta);
 
-        if (bacheca.containsChiaveIdentita(chiave)) {
+        if (bacheca.containsChiaveDuplicato(chiave)) {
             throw new DomainException(DomainErrorCode.PROPOSTA_DUPLICATA);
         }
     }

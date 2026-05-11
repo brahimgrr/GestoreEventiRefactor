@@ -1,7 +1,8 @@
 package it.unibs.ingsoft.domain.factory;
 
-import it.unibs.ingsoft.domain.Configuratore;
-import it.unibs.ingsoft.domain.Fruitore;
+import it.unibs.ingsoft.domain.utente.Configuratore;
+import it.unibs.ingsoft.domain.utente.Fruitore;
+import it.unibs.ingsoft.domain.utente.UtenteFactory;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

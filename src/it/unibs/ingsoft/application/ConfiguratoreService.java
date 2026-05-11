@@ -9,11 +9,11 @@ import it.unibs.ingsoft.application.catalogo.dto.CampoObbligatorietaRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CatalogoOperationResult;
 import it.unibs.ingsoft.application.proposta.PropostaService;
 import it.unibs.ingsoft.application.proposta.dto.PropostaValidationResult;
-import it.unibs.ingsoft.domain.Campo;
-import it.unibs.ingsoft.domain.Categoria;
-import it.unibs.ingsoft.domain.Proposta;
-import it.unibs.ingsoft.domain.StatoProposta;
-import it.unibs.ingsoft.domain.error.ValidationError;
+import it.unibs.ingsoft.domain.catalogo.Campo;
+import it.unibs.ingsoft.domain.catalogo.Categoria;
+import it.unibs.ingsoft.domain.proposta.Proposta;
+import it.unibs.ingsoft.domain.proposta.StatoProposta;
+import it.unibs.ingsoft.domain.shared.error.ValidationError;
 
 import java.io.IOException;
 import java.nio.file.Path;

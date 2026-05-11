@@ -4,11 +4,11 @@ import it.unibs.ingsoft.application.catalogo.dto.CampoBaseExtraRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CampoDefinitionRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CampoObbligatorietaRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CatalogoOperationResult;
-import it.unibs.ingsoft.domain.Campo;
-import it.unibs.ingsoft.domain.Catalogo;
-import it.unibs.ingsoft.domain.Categoria;
-import it.unibs.ingsoft.domain.TipoDato;
-import it.unibs.ingsoft.domain.factory.CampoFactory;
+import it.unibs.ingsoft.domain.catalogo.Campo;
+import it.unibs.ingsoft.domain.catalogo.Catalogo;
+import it.unibs.ingsoft.domain.catalogo.Categoria;
+import it.unibs.ingsoft.domain.catalogo.TipoDato;
+import it.unibs.ingsoft.domain.catalogo.CampoFactory;
 import it.unibs.ingsoft.persistence.interfaces.ICatalogoRepository;
 
 import java.util.Collections;

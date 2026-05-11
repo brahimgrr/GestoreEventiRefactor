@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.presentation.view.cli;
 
-import it.unibs.ingsoft.domain.error.DomainErrorCode;
-import it.unibs.ingsoft.domain.error.ImportError;
+import it.unibs.ingsoft.domain.shared.error.DomainErrorCode;
+import it.unibs.ingsoft.domain.shared.error.ImportError;
 
 public final class ImportErrorMessageMapper {
     private ImportErrorMessageMapper() {

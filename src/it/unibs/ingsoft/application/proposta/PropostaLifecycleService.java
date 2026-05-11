@@ -1,19 +1,16 @@
 package it.unibs.ingsoft.application.proposta;
 
-import it.unibs.ingsoft.application.bacheca.NotificationService;
-import it.unibs.ingsoft.domain.AppConstants;
-import it.unibs.ingsoft.domain.Bacheca;
-import it.unibs.ingsoft.domain.EsitoTransizioneProposta;
-import it.unibs.ingsoft.domain.Notifica;
-import it.unibs.ingsoft.domain.Proposta;
-import it.unibs.ingsoft.domain.error.DomainErrorCode;
-import it.unibs.ingsoft.domain.error.DomainException;
-import it.unibs.ingsoft.domain.factory.NotificaFactory;
+import it.unibs.ingsoft.application.notifica.NotificationService;
+import it.unibs.ingsoft.domain.shared.AppConstants;
+import it.unibs.ingsoft.domain.proposta.Bacheca;
+import it.unibs.ingsoft.domain.proposta.EsitoTransizioneProposta;
+import it.unibs.ingsoft.domain.notifica.Notifica;
+import it.unibs.ingsoft.domain.proposta.Proposta;
+import it.unibs.ingsoft.domain.notifica.NotificaFactory;
 import it.unibs.ingsoft.persistence.interfaces.IBachecaRepository;
 
 import java.time.LocalDate;
 import java.util.Objects;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 
 /**
@@ -23,19 +20,26 @@ public final class PropostaLifecycleService {
     private final IBachecaRepository bachecaRepo;
     private final NotificationService notificationService;
     private final NotificaFactory notificaFactory;
-    private final ReentrantLock lock = new ReentrantLock();
+    private final PropostaCommandLock commandLock;
 
     public PropostaLifecycleService(IBachecaRepository bachecaRepo,
                                     NotificationService notificationService,
                                     NotificaFactory notificaFactory) {
+        this(bachecaRepo, notificationService, notificaFactory, new PropostaCommandLock());
+    }
+
+    public PropostaLifecycleService(IBachecaRepository bachecaRepo,
+                                    NotificationService notificationService,
+                                    NotificaFactory notificaFactory,
+                                    PropostaCommandLock commandLock) {
         this.bachecaRepo = Objects.requireNonNull(bachecaRepo);
         this.notificationService = Objects.requireNonNull(notificationService);
         this.notificaFactory = Objects.requireNonNull(notificaFactory);
+        this.commandLock = Objects.requireNonNull(commandLock);
     }
 
     public void controllaScadenze() {
-        lock.lock();
-        try {
+        commandLock.runLocked(() -> {
             LocalDate oggi = LocalDate.now(AppConstants.clock);
             boolean changed = false;
 
@@ -56,56 +60,59 @@ public final class PropostaLifecycleService {
             if (changed) {
                 bachecaRepo.save(bacheca);
             }
-        } finally {
-            lock.unlock();
-        }
+        });
     }
 
     public void confermaProposta(Proposta p) {
-        lock.lock();
-        try {
+        commandLock.runLocked(() -> {
             Bacheca bacheca = bachecaRepo.load();
-            Proposta propostaPersistita = trovaPropostaPersistita(bacheca, p);
-            if (!confermaPropostaSenzaSalvataggio(propostaPersistita)) return;
-            bachecaRepo.save(bacheca);
-        } finally {
-            lock.unlock();
-        }
+            Proposta propostaPersistita = bacheca.findSameIdentityAs(p);
+            if (confermaPropostaCaricata(propostaPersistita)) {
+                bachecaRepo.save(bacheca);
+            }
+        });
     }
 
-    public boolean confermaPropostaSenzaSalvataggio(Proposta p) {
-        lock.lock();
-        try {
-            if (!p.confermaSeAperta()) return false;
-            notificaAderenti(p, () -> notificaFactory.creaNotificaPropostaConfermata(p));
-            return true;
-        } finally {
-            lock.unlock();
-        }
+    private boolean confermaPropostaCaricata(Proposta p) {
+        if (!p.confermaSeAperta()) return false;
+        notificaAderenti(p, () -> notificaFactory.creaNotificaPropostaConfermata(p));
+        return true;
     }
 
     public void ritiraProposta(Proposta p) {
-        lock.lock();
-        try {
+        commandLock.runLocked(() -> {
             Bacheca bacheca = bachecaRepo.load();
-            Proposta propostaPersistita = trovaPropostaPersistita(bacheca, p);
+            Proposta propostaPersistita = bacheca.findSameIdentityAs(p);
             LocalDate oggi = LocalDate.now(AppConstants.clock);
             propostaPersistita.ritira(oggi);
             notificaAderenti(propostaPersistita, () -> notificaFactory.creaNotificaPropostaRitirata(propostaPersistita));
 
             bachecaRepo.save(bacheca);
-        } finally {
-            lock.unlock();
-        }
+        });
     }
 
-    private Proposta trovaPropostaPersistita(Bacheca bacheca, Proposta proposta) {
-        if (proposta == null) {
-            throw new DomainException(DomainErrorCode.PROPOSTA_NON_TROVATA);
-        }
-        String chiave = proposta.getChiaveIdentita();
-        return bacheca.findByChiaveIdentita(chiave)
-                .orElseThrow(() -> new DomainException(DomainErrorCode.PROPOSTA_NON_TROVATA, chiave));
+    public void iscrivi(Proposta p, String username) {
+        commandLock.runLocked(() -> {
+            Bacheca bacheca = bachecaRepo.load();
+            Proposta propostaPersistita = bacheca.findSameIdentityAs(p);
+            LocalDate oggi = LocalDate.now(AppConstants.clock);
+            propostaPersistita.iscrivi(username, oggi);
+
+            if (propostaPersistita.haNumeroPartecipantiCompleto()) {
+                confermaPropostaCaricata(propostaPersistita);
+            }
+
+            bachecaRepo.save(bacheca);
+        });
+    }
+
+    public void disiscrivi(Proposta p, String username) {
+        commandLock.runLocked(() -> {
+            Bacheca bacheca = bachecaRepo.load();
+            Proposta propostaPersistita = bacheca.findSameIdentityAs(p);
+            propostaPersistita.disiscrivi(username, LocalDate.now(AppConstants.clock));
+            bachecaRepo.save(bacheca);
+        });
     }
 
     private void notificaAderenti(Proposta p, Supplier<Notifica> notificaSupplier) {

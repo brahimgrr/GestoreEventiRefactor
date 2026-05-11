@@ -1,9 +1,9 @@
 package it.unibs.ingsoft.presentation.view.cli;
 
-import it.unibs.ingsoft.domain.AppConstants;
-import it.unibs.ingsoft.domain.Fruitore;
-import it.unibs.ingsoft.domain.Notifica;
-import it.unibs.ingsoft.domain.Proposta;
+import it.unibs.ingsoft.domain.shared.AppConstants;
+import it.unibs.ingsoft.domain.utente.Fruitore;
+import it.unibs.ingsoft.domain.notifica.Notifica;
+import it.unibs.ingsoft.domain.proposta.Proposta;
 import it.unibs.ingsoft.presentation.view.interfaces.IAppView;
 import it.unibs.ingsoft.presentation.view.interfaces.IFruitoreView;
 import it.unibs.ingsoft.presentation.view.interfaces.OperationCancelledException;

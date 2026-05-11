@@ -1,5 +1,6 @@
 package it.unibs.ingsoft.domain;
 
+import it.unibs.ingsoft.domain.utente.Credenziali;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;

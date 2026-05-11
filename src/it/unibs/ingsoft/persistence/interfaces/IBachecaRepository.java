@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.persistence.interfaces;
 
-import it.unibs.ingsoft.domain.Bacheca;
+import it.unibs.ingsoft.domain.proposta.Bacheca;
 
 /**
  * Repository per la bacheca delle proposte.

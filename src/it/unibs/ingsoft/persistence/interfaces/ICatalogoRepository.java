@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.persistence.interfaces;
 
-import it.unibs.ingsoft.domain.Catalogo;
+import it.unibs.ingsoft.domain.catalogo.Catalogo;
 
 /**
  * Astrazione del repository per il catalogo.

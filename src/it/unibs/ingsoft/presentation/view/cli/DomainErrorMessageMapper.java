@@ -1,8 +1,8 @@
 package it.unibs.ingsoft.presentation.view.cli;
 
-import it.unibs.ingsoft.domain.AppConstants;
-import it.unibs.ingsoft.domain.error.DomainErrorCode;
-import it.unibs.ingsoft.domain.error.DomainException;
+import it.unibs.ingsoft.domain.shared.AppConstants;
+import it.unibs.ingsoft.domain.shared.error.DomainErrorCode;
+import it.unibs.ingsoft.domain.shared.error.DomainException;
 
 import java.util.List;
 

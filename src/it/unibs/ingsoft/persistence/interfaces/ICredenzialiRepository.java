@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.persistence.interfaces;
 
-import it.unibs.ingsoft.domain.Credenziali;
+import it.unibs.ingsoft.domain.utente.Credenziali;
 
 /**
  * Astrazione del repository per le credenziali degli utenti.

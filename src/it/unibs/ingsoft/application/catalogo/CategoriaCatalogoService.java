@@ -1,8 +1,8 @@
 package it.unibs.ingsoft.application.catalogo;
 
 import it.unibs.ingsoft.application.catalogo.dto.CatalogoOperationResult;
-import it.unibs.ingsoft.domain.Catalogo;
-import it.unibs.ingsoft.domain.Categoria;
+import it.unibs.ingsoft.domain.catalogo.Catalogo;
+import it.unibs.ingsoft.domain.catalogo.Categoria;
 import it.unibs.ingsoft.persistence.interfaces.ICatalogoRepository;
 
 import java.util.List;

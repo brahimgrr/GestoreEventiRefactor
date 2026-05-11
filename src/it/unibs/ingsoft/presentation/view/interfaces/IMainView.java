@@ -1,8 +1,8 @@
 package it.unibs.ingsoft.presentation.view.interfaces;
 
 import it.unibs.ingsoft.application.authentication.dto.CredenzialiRequest;
-import it.unibs.ingsoft.domain.Configuratore;
-import it.unibs.ingsoft.domain.Fruitore;
+import it.unibs.ingsoft.domain.utente.Configuratore;
+import it.unibs.ingsoft.domain.utente.Fruitore;
 
 import java.util.Optional;
 

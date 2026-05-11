@@ -1,8 +1,8 @@
 package it.unibs.ingsoft.application.catalogo.dto;
 
-import it.unibs.ingsoft.domain.TipoDato;
-import it.unibs.ingsoft.domain.error.DomainErrorCode;
-import it.unibs.ingsoft.domain.error.DomainException;
+import it.unibs.ingsoft.domain.catalogo.TipoDato;
+import it.unibs.ingsoft.domain.shared.error.DomainErrorCode;
+import it.unibs.ingsoft.domain.shared.error.DomainException;
 
 /**
  * Dati necessari per configurare un campo base extra.

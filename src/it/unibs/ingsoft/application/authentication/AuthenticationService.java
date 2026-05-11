@@ -1,11 +1,11 @@
 package it.unibs.ingsoft.application.authentication;
 
-import it.unibs.ingsoft.domain.Configuratore;
-import it.unibs.ingsoft.domain.Credenziali;
-import it.unibs.ingsoft.domain.Fruitore;
-import it.unibs.ingsoft.domain.error.DomainErrorCode;
-import it.unibs.ingsoft.domain.error.DomainException;
-import it.unibs.ingsoft.domain.factory.UtenteFactory;
+import it.unibs.ingsoft.domain.utente.Configuratore;
+import it.unibs.ingsoft.domain.utente.Credenziali;
+import it.unibs.ingsoft.domain.utente.Fruitore;
+import it.unibs.ingsoft.domain.shared.error.DomainErrorCode;
+import it.unibs.ingsoft.domain.shared.error.DomainException;
+import it.unibs.ingsoft.domain.utente.UtenteFactory;
 import it.unibs.ingsoft.persistence.interfaces.ICredenzialiRepository;
 
 import java.util.Objects;

@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.persistence.interfaces;
 
-import it.unibs.ingsoft.domain.ArchivioNotifiche;
+import it.unibs.ingsoft.domain.notifica.ArchivioNotifiche;
 
 /**
  * Astrazione del repository per gli spazi personali (notifiche) dei fruitori.

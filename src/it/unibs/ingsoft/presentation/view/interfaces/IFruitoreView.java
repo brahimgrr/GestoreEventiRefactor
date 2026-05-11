@@ -1,8 +1,8 @@
 package it.unibs.ingsoft.presentation.view.interfaces;
 
-import it.unibs.ingsoft.domain.Fruitore;
-import it.unibs.ingsoft.domain.Notifica;
-import it.unibs.ingsoft.domain.Proposta;
+import it.unibs.ingsoft.domain.utente.Fruitore;
+import it.unibs.ingsoft.domain.notifica.Notifica;
+import it.unibs.ingsoft.domain.proposta.Proposta;
 
 import java.util.List;
 import java.util.Map;

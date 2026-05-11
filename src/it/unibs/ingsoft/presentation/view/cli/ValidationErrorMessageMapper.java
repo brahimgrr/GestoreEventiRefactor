@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.presentation.view.cli;
 
-import it.unibs.ingsoft.domain.AppConstants;
-import it.unibs.ingsoft.domain.error.ValidationError;
+import it.unibs.ingsoft.domain.shared.AppConstants;
+import it.unibs.ingsoft.domain.shared.error.ValidationError;
 
 import java.util.List;
 

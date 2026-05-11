@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.persistence.file;
 
-import it.unibs.ingsoft.domain.Credenziali;
+import it.unibs.ingsoft.domain.utente.Credenziali;
 import it.unibs.ingsoft.persistence.interfaces.ICredenzialiRepository;
 
 import java.nio.file.Path;

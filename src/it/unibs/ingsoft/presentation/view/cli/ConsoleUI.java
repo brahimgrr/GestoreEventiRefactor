@@ -1,7 +1,12 @@
 package it.unibs.ingsoft.presentation.view.cli;
 
-import it.unibs.ingsoft.domain.*;
-import it.unibs.ingsoft.domain.error.ValidationError;
+import it.unibs.ingsoft.domain.catalogo.Campo;
+import it.unibs.ingsoft.domain.catalogo.Categoria;
+import it.unibs.ingsoft.domain.catalogo.TipoDato;
+import it.unibs.ingsoft.domain.proposta.Proposta;
+import it.unibs.ingsoft.domain.proposta.PropostaStateChange;
+import it.unibs.ingsoft.domain.shared.error.ValidationError;
+import it.unibs.ingsoft.domain.shared.AppConstants;
 import it.unibs.ingsoft.presentation.view.interfaces.IAppView;
 import it.unibs.ingsoft.presentation.view.interfaces.OperationCancelledException;
 import it.unibs.ingsoft.presentation.view.interfaces.ProposalFieldValidator;
@@ -415,7 +420,6 @@ public final class ConsoleUI implements IAppView {
 
     private Optional<Map<String, String>> eseguiForm(Proposta proposta, List<Campo> campi, ProposalFieldValidator validator) {
         Map<String, String> ctx = new LinkedHashMap<>(proposta.getValoriCampi());
-        TypeValidator typeValidator = DefaultTypeValidator.INSTANCE;
         int i = 0;
 
         while (i < campi.size()) {
@@ -446,12 +450,6 @@ public final class ConsoleUI implements IAppView {
                 } else {
                     stampaErrore("  Campo obbligatorio. Inserire un valore.");
                 }
-                continue;
-            }
-
-            ValidationError typeError = typeValidator.validate(raw, campo.getTipoDato());
-            if (typeError != null) {
-                stampaErrore("  " + ValidationErrorMessageMapper.message(typeError));
                 continue;
             }
 

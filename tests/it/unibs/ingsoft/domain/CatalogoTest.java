@@ -1,5 +1,6 @@
 package it.unibs.ingsoft.domain;
 
+import it.unibs.ingsoft.domain.catalogo.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

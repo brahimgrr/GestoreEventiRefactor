@@ -1,8 +1,8 @@
 package it.unibs.ingsoft.presentation.view.interfaces;
 
-import it.unibs.ingsoft.domain.Categoria;
-import it.unibs.ingsoft.domain.Proposta;
-import it.unibs.ingsoft.domain.TipoDato;
+import it.unibs.ingsoft.domain.catalogo.Categoria;
+import it.unibs.ingsoft.domain.proposta.Proposta;
+import it.unibs.ingsoft.domain.catalogo.TipoDato;
 
 import java.util.*;
 import java.util.function.Function;

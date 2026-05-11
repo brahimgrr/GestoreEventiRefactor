@@ -1,6 +1,7 @@
 package it.unibs.ingsoft.domain.factory;
 
-import it.unibs.ingsoft.domain.Notifica;
+import it.unibs.ingsoft.domain.notifica.Notifica;
+import it.unibs.ingsoft.domain.notifica.NotificaFactory;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

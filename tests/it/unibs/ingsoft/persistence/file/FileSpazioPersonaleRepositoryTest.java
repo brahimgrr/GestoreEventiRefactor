@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.persistence.file;
 
-import it.unibs.ingsoft.domain.Notifica;
-import it.unibs.ingsoft.domain.SpazioPersonale;
+import it.unibs.ingsoft.domain.notifica.Notifica;
+import it.unibs.ingsoft.domain.utente.SpazioPersonale;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 

@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.persistence.file;
 
-import it.unibs.ingsoft.domain.Credenziali;
+import it.unibs.ingsoft.domain.utente.Credenziali;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 

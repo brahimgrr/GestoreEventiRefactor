@@ -1,7 +1,6 @@
 package it.unibs.ingsoft.composition;
 
-import it.unibs.ingsoft.application.bacheca.IscrizioneService;
-import it.unibs.ingsoft.application.bacheca.NotificationService;
+import it.unibs.ingsoft.application.notifica.NotificationService;
 import it.unibs.ingsoft.application.proposta.PropostaService;
 import it.unibs.ingsoft.application.ConfiguratoreService;
 import it.unibs.ingsoft.application.FruitoreService;
@@ -10,16 +9,16 @@ import it.unibs.ingsoft.application.batch.BatchImportService;
 import it.unibs.ingsoft.application.catalogo.CampoCatalogoService;
 import it.unibs.ingsoft.application.catalogo.CatalogoService;
 import it.unibs.ingsoft.application.catalogo.CategoriaCatalogoService;
-import it.unibs.ingsoft.application.proposta.PropostaCreationService;
 import it.unibs.ingsoft.application.proposta.PropostaLifecycleService;
 import it.unibs.ingsoft.application.proposta.PropostaPublicationService;
+import it.unibs.ingsoft.application.proposta.PropostaCommandLock;
 import it.unibs.ingsoft.application.proposta.PropostaQueryService;
 import it.unibs.ingsoft.application.proposta.PropostaValidationService;
-import it.unibs.ingsoft.domain.AppConstants;
-import it.unibs.ingsoft.domain.factory.CampoFactory;
-import it.unibs.ingsoft.domain.factory.NotificaFactory;
-import it.unibs.ingsoft.domain.factory.PropostaFactory;
-import it.unibs.ingsoft.domain.factory.UtenteFactory;
+import it.unibs.ingsoft.domain.shared.AppConstants;
+import it.unibs.ingsoft.domain.proposta.PropostaIdentityPolicy;
+import it.unibs.ingsoft.domain.catalogo.CampoFactory;
+import it.unibs.ingsoft.domain.notifica.NotificaFactory;
+import it.unibs.ingsoft.domain.utente.UtenteFactory;
 import it.unibs.ingsoft.persistence.interfaces.IBachecaRepository;
 import it.unibs.ingsoft.persistence.interfaces.ICatalogoRepository;
 import it.unibs.ingsoft.persistence.interfaces.ICredenzialiRepository;
@@ -51,7 +50,6 @@ public final class Application {
 
     public void start() {
         CampoFactory campoFactory = CampoFactory.getInstance();
-        PropostaFactory propostaFactory = PropostaFactory.getInstance();
         NotificaFactory notificaFactory = NotificaFactory.getInstance();
         UtenteFactory utenteFactory = UtenteFactory.getInstance();
 
@@ -68,23 +66,24 @@ public final class Application {
         CategoriaCatalogoService categoriaCatalogoService = new CategoriaCatalogoService(catalogoRepo);
         CatalogoService catalogoService = new CatalogoService(campoCatalogoService, categoriaCatalogoService);
 
-        PropostaCreationService propostaCreationService = new PropostaCreationService(propostaFactory);
         PropostaValidationService propostaValidationService = new PropostaValidationService();
         PropostaQueryService propostaQueryService = new PropostaQueryService(propostaRepo);
         NotificationService notifService = new NotificationService(spazioRepo);
+        PropostaCommandLock propostaCommandLock = new PropostaCommandLock();
         PropostaPublicationService propostaPublicationService =
-                new PropostaPublicationService(propostaRepo, propostaQueryService);
+                new PropostaPublicationService(
+                        propostaRepo,
+                        PropostaIdentityPolicy.DEFAULT,
+                        propostaCommandLock);
         PropostaLifecycleService propostaLifecycleService =
-                new PropostaLifecycleService(propostaRepo, notifService, notificaFactory);
+                new PropostaLifecycleService(propostaRepo, notifService, notificaFactory, propostaCommandLock);
         PropostaService propostaService = new PropostaService(
-                propostaCreationService,
                 propostaValidationService,
                 propostaPublicationService,
                 propostaLifecycleService,
                 propostaQueryService);
 
         AuthenticationService authService = new AuthenticationService(credenzialiRepo, utenteFactory);
-        IscrizioneService iscrizioneService = new IscrizioneService(propostaRepo, propostaLifecycleService);
 
         BatchImportService batchImportService = new BatchImportService(catalogoService, propostaService);
         ConfiguratoreService configuratoreService = new ConfiguratoreService(
@@ -93,7 +92,6 @@ public final class Application {
                 batchImportService);
         FruitoreService fruitoreService = new FruitoreService(
                 propostaService,
-                iscrizioneService,
                 notifService);
 
         IAppView ui = new ConsoleUI(new Scanner(System.in));

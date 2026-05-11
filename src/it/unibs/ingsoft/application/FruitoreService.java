@@ -1,11 +1,10 @@
 package it.unibs.ingsoft.application;
 
-import it.unibs.ingsoft.application.bacheca.IscrizioneService;
-import it.unibs.ingsoft.application.bacheca.NotificationService;
+import it.unibs.ingsoft.application.notifica.NotificationService;
 import it.unibs.ingsoft.application.proposta.PropostaService;
-import it.unibs.ingsoft.domain.Fruitore;
-import it.unibs.ingsoft.domain.Notifica;
-import it.unibs.ingsoft.domain.Proposta;
+import it.unibs.ingsoft.domain.utente.Fruitore;
+import it.unibs.ingsoft.domain.notifica.Notifica;
+import it.unibs.ingsoft.domain.proposta.Proposta;
 
 import java.util.List;
 import java.util.Map;
@@ -16,14 +15,11 @@ import java.util.Objects;
  */
 public final class FruitoreService {
     private final PropostaService propostaService;
-    private final IscrizioneService iscrizioneService;
     private final NotificationService notificationService;
 
     public FruitoreService(PropostaService propostaService,
-                           IscrizioneService iscrizioneService,
                            NotificationService notificationService) {
         this.propostaService = Objects.requireNonNull(propostaService);
-        this.iscrizioneService = Objects.requireNonNull(iscrizioneService);
         this.notificationService = Objects.requireNonNull(notificationService);
     }
 
@@ -32,7 +28,7 @@ public final class FruitoreService {
     }
 
     public void iscrivi(Proposta proposta, Fruitore fruitore) {
-        iscrizioneService.iscrivi(proposta, fruitore);
+        propostaService.iscrivi(proposta, fruitore.getUsername());
     }
 
     public List<Proposta> getProposteAperteIscritteDa(Fruitore fruitore) {
@@ -40,7 +36,7 @@ public final class FruitoreService {
     }
 
     public void disiscrivi(Proposta proposta, Fruitore fruitore) {
-        iscrizioneService.disiscrivi(proposta, fruitore);
+        propostaService.disiscrivi(proposta, fruitore.getUsername());
     }
 
     public List<Notifica> getNotifiche(Fruitore fruitore) {

@@ -10,21 +10,20 @@ import it.unibs.ingsoft.application.batch.dto.ImportResult;
 import it.unibs.ingsoft.application.batch.dto.PropostaImportDTO;
 import it.unibs.ingsoft.application.catalogo.CatalogoService;
 import it.unibs.ingsoft.application.proposta.PropostaService;
-import it.unibs.ingsoft.domain.AppConstants;
-import it.unibs.ingsoft.domain.Campo;
-import it.unibs.ingsoft.domain.Categoria;
-import it.unibs.ingsoft.domain.DefaultTypeValidator;
-import it.unibs.ingsoft.domain.Proposta;
-import it.unibs.ingsoft.domain.TipoDato;
-import it.unibs.ingsoft.domain.error.DomainErrorCode;
-import it.unibs.ingsoft.domain.error.DomainException;
-import it.unibs.ingsoft.domain.error.ImportError;
-import it.unibs.ingsoft.domain.error.ValidationError;
+import it.unibs.ingsoft.domain.shared.AppConstants;
+import it.unibs.ingsoft.domain.catalogo.Campo;
+import it.unibs.ingsoft.domain.catalogo.Categoria;
+import it.unibs.ingsoft.domain.proposta.Proposta;
+import it.unibs.ingsoft.domain.proposta.PropostaIdentityPolicy;
+import it.unibs.ingsoft.domain.catalogo.TipoDato;
+import it.unibs.ingsoft.domain.shared.error.DomainErrorCode;
+import it.unibs.ingsoft.domain.shared.error.DomainException;
+import it.unibs.ingsoft.domain.shared.error.ImportError;
+import it.unibs.ingsoft.domain.shared.error.ValidationError;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -41,10 +40,18 @@ public final class BatchImportService {
 
     private final CatalogoService catalogoService;
     private final PropostaService propostaService;
+    private final PropostaIdentityPolicy identityPolicy;
 
     public BatchImportService(CatalogoService catalogoService, PropostaService propostaService) {
+        this(catalogoService, propostaService, PropostaIdentityPolicy.DEFAULT);
+    }
+
+    public BatchImportService(CatalogoService catalogoService,
+                              PropostaService propostaService,
+                              PropostaIdentityPolicy identityPolicy) {
         this.catalogoService = Objects.requireNonNull(catalogoService);
         this.propostaService = Objects.requireNonNull(propostaService);
+        this.identityPolicy = Objects.requireNonNull(identityPolicy);
     }
 
     private static TipoDato parseTipoDato(String s) {
@@ -192,7 +199,7 @@ public final class BatchImportService {
                 continue;
             }
 
-            String chiave = Proposta.chiaveIdentita(valori);
+            String chiave = identityPolicy.chiaveDuplicato(valori);
             if (!chiaviBatch.add(chiave)) {
                 result.addErrore(ImportError.of(DomainErrorCode.IMPORT_PROPOSTA_DUPLICATA_FILE, titolo));
                 continue;
@@ -201,38 +208,11 @@ public final class BatchImportService {
             List<Campo> campiBase = catalogoService.getCampiBase();
             List<Campo> campiComuni = catalogoService.getCampiComuni();
 
-            List<Campo> tuttiCampi = new ArrayList<>();
-            tuttiCampi.addAll(campiBase);
-            tuttiCampi.addAll(campiComuni);
-            tuttiCampi.addAll(categoria.getCampiSpecifici());
-
-            List<ImportError> erroriTipo = new ArrayList<>();
-
-            for (Campo campo : tuttiCampi) {
-                String valore = valori.get(campo.getNome());
-                if (valore != null && !valore.isBlank()) {
-                    ValidationError errore = DefaultTypeValidator.INSTANCE.validate(valore, campo.getTipoDato());
-                    if (errore != null) {
-                        erroriTipo.add(ImportError.withValidationError(
-                                DomainErrorCode.IMPORT_PROPOSTA_CAMPO_TIPO_NON_VALIDO,
-                                errore,
-                                titolo,
-                                campo.getNome()));
-                    }
-                }
-            }
-
-            if (!erroriTipo.isEmpty()) {
-                for (ImportError e : erroriTipo)
-                    result.addErrore(e);
-                continue;
-            }
-
             try {
                 Proposta proposta = propostaService.creaProposta(categoria, campiBase, campiComuni);
-                proposta.aggiornaValoriCampi(valori);
 
-                List<ValidationError> erroriValidazione = propostaService.validaProposta(proposta);
+                List<ValidationError> erroriValidazione =
+                        propostaService.applicaValoriEValida(proposta, valori).errori();
                 if (!erroriValidazione.isEmpty()) {
                     for (ValidationError e : erroriValidazione)
                         result.addErrore(ImportError.withValidationError(

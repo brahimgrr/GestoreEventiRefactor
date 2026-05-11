@@ -1,5 +1,7 @@
 package it.unibs.ingsoft.domain;
 
+import it.unibs.ingsoft.domain.catalogo.TipoDato;
+import it.unibs.ingsoft.domain.shared.validation.DefaultTypeValidator;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

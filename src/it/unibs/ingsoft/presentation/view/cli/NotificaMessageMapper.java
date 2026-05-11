@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.presentation.view.cli;
 
-import it.unibs.ingsoft.domain.Notifica;
+import it.unibs.ingsoft.domain.notifica.Notifica;
 
 import java.util.Map;
 

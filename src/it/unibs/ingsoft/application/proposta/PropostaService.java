@@ -1,12 +1,11 @@
 package it.unibs.ingsoft.application.proposta;
 
 import it.unibs.ingsoft.application.proposta.dto.PropostaValidationResult;
-import it.unibs.ingsoft.domain.AppConstants;
-import it.unibs.ingsoft.domain.Campo;
-import it.unibs.ingsoft.domain.Categoria;
-import it.unibs.ingsoft.domain.Proposta;
-import it.unibs.ingsoft.domain.StatoProposta;
-import it.unibs.ingsoft.domain.error.ValidationError;
+import it.unibs.ingsoft.domain.catalogo.Campo;
+import it.unibs.ingsoft.domain.catalogo.Categoria;
+import it.unibs.ingsoft.domain.proposta.Proposta;
+import it.unibs.ingsoft.domain.proposta.StatoProposta;
+import it.unibs.ingsoft.domain.shared.error.ValidationError;
 
 import java.util.List;
 import java.util.Map;
@@ -16,27 +15,15 @@ import java.util.Objects;
  * Facade compatibile per creazione, validazione, pubblicazione e query delle proposte.
  */
 public final class PropostaService {
-    public static final String CAMPO_TITOLO = AppConstants.CAMPO_TITOLO;
-    public static final String CAMPO_TERMINE_ISCRIZIONE = AppConstants.CAMPO_TERMINE_ISCRIZIONE;
-    public static final String CAMPO_DATA = AppConstants.CAMPO_DATA;
-    public static final String CAMPO_DATA_CONCLUSIVA = AppConstants.CAMPO_DATA_CONCLUSIVA;
-    public static final String CAMPO_ORA = AppConstants.CAMPO_ORA;
-    public static final String CAMPO_LUOGO = AppConstants.CAMPO_LUOGO;
-    public static final String CAMPO_QUOTA = AppConstants.CAMPO_QUOTA;
-    public static final String CAMPO_NUM_PARTECIPANTI = AppConstants.CAMPO_NUM_PARTECIPANTI;
-
-    private final PropostaCreationService creationService;
     private final PropostaValidationService validationService;
     private final PropostaPublicationService publicationService;
     private final PropostaLifecycleService lifecycleService;
     private final PropostaQueryService queryService;
 
-    public PropostaService(PropostaCreationService creationService,
-                           PropostaValidationService validationService,
+    public PropostaService(PropostaValidationService validationService,
                            PropostaPublicationService publicationService,
                            PropostaLifecycleService lifecycleService,
                            PropostaQueryService queryService) {
-        this.creationService = Objects.requireNonNull(creationService);
         this.validationService = Objects.requireNonNull(validationService);
         this.publicationService = Objects.requireNonNull(publicationService);
         this.lifecycleService = Objects.requireNonNull(lifecycleService);
@@ -56,7 +43,7 @@ public final class PropostaService {
     }
 
     public Proposta creaProposta(Categoria categoria, List<Campo> campiBase, List<Campo> campiComuni) {
-        return creationService.creaProposta(categoria, campiBase, campiComuni);
+        return new Proposta(categoria, campiBase, campiComuni);
     }
 
     public List<ValidationError> validaProposta(Proposta proposta) {
@@ -69,7 +56,6 @@ public final class PropostaService {
 
     public void pubblicaProposta(Proposta proposta) {
         publicationService.pubblicaProposta(proposta);
-        publicationService.rimuoviPropostaValida(proposta);
     }
 
     public void controllaScadenze() {
@@ -82,6 +68,14 @@ public final class PropostaService {
 
     public void ritiraProposta(Proposta proposta) {
         lifecycleService.ritiraProposta(proposta);
+    }
+
+    public void iscrivi(Proposta proposta, String username) {
+        lifecycleService.iscrivi(proposta, username);
+    }
+
+    public void disiscrivi(Proposta proposta, String username) {
+        lifecycleService.disiscrivi(proposta, username);
     }
 
     public List<Proposta> getTutteLeProposte() {

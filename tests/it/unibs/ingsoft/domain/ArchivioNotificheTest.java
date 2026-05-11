@@ -1,5 +1,7 @@
 package it.unibs.ingsoft.domain;
 
+import it.unibs.ingsoft.domain.notifica.ArchivioNotifiche;
+import it.unibs.ingsoft.domain.utente.SpazioPersonale;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;

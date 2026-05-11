@@ -1,5 +1,9 @@
 package it.unibs.ingsoft.domain;
 
+import it.unibs.ingsoft.domain.catalogo.Campo;
+import it.unibs.ingsoft.domain.catalogo.Categoria;
+import it.unibs.ingsoft.domain.catalogo.TipoCampo;
+import it.unibs.ingsoft.domain.catalogo.TipoDato;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
