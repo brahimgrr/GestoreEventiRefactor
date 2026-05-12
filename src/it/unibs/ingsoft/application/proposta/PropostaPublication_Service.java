@@ -14,20 +14,23 @@ import java.util.Objects;
 /**
  * Gestisce salvataggio in memoria e pubblicazione delle proposte valide.
  */
-public final class PropostaPublicationService {
+public final class PropostaPublication_Service {
     private final IBachecaRepository bachecaRepo;
     private final PropostaQueryService queryService;
     private final List<Proposta> proposteValide = new ArrayList<>();
 
-    public PropostaPublicationService(IBachecaRepository bachecaRepo) {
+    public PropostaPublication_Service(IBachecaRepository bachecaRepo) {
         this(bachecaRepo, new PropostaQueryService(bachecaRepo));
     }
 
-    public PropostaPublicationService(IBachecaRepository bachecaRepo, PropostaQueryService queryService) {
+    public PropostaPublication_Service(IBachecaRepository bachecaRepo, PropostaQueryService queryService) {
         this.bachecaRepo = Objects.requireNonNull(bachecaRepo);
         this.queryService = Objects.requireNonNull(queryService);
     }
 
+    /*
+    COSTRUTTORE MAI USATO
+     */
     private Bacheca bacheca() {
         return bachecaRepo.load();
     }

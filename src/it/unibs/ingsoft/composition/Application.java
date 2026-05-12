@@ -2,17 +2,17 @@ package it.unibs.ingsoft.composition;
 
 import it.unibs.ingsoft.application.bacheca.IscrizioneService;
 import it.unibs.ingsoft.application.bacheca.NotificationService;
-import it.unibs.ingsoft.application.proposta.PropostaService;
+import it.unibs.ingsoft.application.proposta.Proposta_Service;
 import it.unibs.ingsoft.application.ConfiguratoreService;
 import it.unibs.ingsoft.application.FruitoreService;
 import it.unibs.ingsoft.application.authentication.AuthenticationService;
 import it.unibs.ingsoft.application.batch.BatchImportService;
-import it.unibs.ingsoft.application.catalogo.CampoCatalogoService;
-import it.unibs.ingsoft.application.catalogo.CatalogoService;
+import it.unibs.ingsoft.application.catalogo.CampoCatalogo_Service;
+import it.unibs.ingsoft.application.catalogo.Catalogo_Service;
 import it.unibs.ingsoft.application.catalogo.CategoriaCatalogoService;
 import it.unibs.ingsoft.application.proposta.PropostaCreationService;
 import it.unibs.ingsoft.application.proposta.PropostaLifecycleService;
-import it.unibs.ingsoft.application.proposta.PropostaPublicationService;
+import it.unibs.ingsoft.application.proposta.PropostaPublication_Service;
 import it.unibs.ingsoft.application.proposta.PropostaQueryService;
 import it.unibs.ingsoft.application.proposta.PropostaValidationService;
 import it.unibs.ingsoft.domain.AppConstants;
@@ -64,19 +64,19 @@ public final class Application {
         ISpazioPersonaleRepository spazioRepo = FileRepositoryFactory
                 .getInstance().createSpazioPersonaleRepository();
 
-        CampoCatalogoService campoCatalogoService = new CampoCatalogoService(catalogoRepo, campoFactory);
+        CampoCatalogo_Service campoCatalogoService = new CampoCatalogo_Service(catalogoRepo, campoFactory);
         CategoriaCatalogoService categoriaCatalogoService = new CategoriaCatalogoService(catalogoRepo);
-        CatalogoService catalogoService = new CatalogoService(campoCatalogoService, categoriaCatalogoService);
+        Catalogo_Service catalogoService = new Catalogo_Service(campoCatalogoService, categoriaCatalogoService);
 
         PropostaCreationService propostaCreationService = new PropostaCreationService(propostaFactory);
         PropostaValidationService propostaValidationService = new PropostaValidationService();
         PropostaQueryService propostaQueryService = new PropostaQueryService(propostaRepo);
         NotificationService notifService = new NotificationService(spazioRepo);
-        PropostaPublicationService propostaPublicationService =
-                new PropostaPublicationService(propostaRepo, propostaQueryService);
+        PropostaPublication_Service propostaPublicationService =
+                new PropostaPublication_Service(propostaRepo, propostaQueryService);
         PropostaLifecycleService propostaLifecycleService =
                 new PropostaLifecycleService(propostaRepo, notifService, notificaFactory);
-        PropostaService propostaService = new PropostaService(
+        Proposta_Service propostaService = new Proposta_Service(
                 propostaCreationService,
                 propostaValidationService,
                 propostaPublicationService,
@@ -124,7 +124,7 @@ public final class Application {
         }
     }
 
-    private void startMidnightScheduler(PropostaService propostaService) {
+    private void startMidnightScheduler(Proposta_Service propostaService) {
         ThreadFactory threadFactory = runnable -> {
             Thread thread = new Thread(runnable, "state-transition-midnight");
             thread.setDaemon(true);
@@ -147,7 +147,7 @@ public final class Application {
         return Duration.between(now, nextMidnight).toMillis();
     }
 
-    private void scheduleNextMidnightCheck(PropostaService propostaService) {
+    private void scheduleNextMidnightCheck(Proposta_Service propostaService) {
         if (midnightScheduler == null || midnightScheduler.isShutdown()) {
             return;
         }

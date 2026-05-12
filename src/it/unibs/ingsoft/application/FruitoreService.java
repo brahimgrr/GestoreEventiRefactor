@@ -2,7 +2,7 @@ package it.unibs.ingsoft.application;
 
 import it.unibs.ingsoft.application.bacheca.IscrizioneService;
 import it.unibs.ingsoft.application.bacheca.NotificationService;
-import it.unibs.ingsoft.application.proposta.PropostaService;
+import it.unibs.ingsoft.application.proposta.Proposta_Service;
 import it.unibs.ingsoft.domain.Fruitore;
 import it.unibs.ingsoft.domain.Notifica;
 import it.unibs.ingsoft.domain.Proposta;
@@ -15,11 +15,11 @@ import java.util.Objects;
  * Facade dei casi d'uso disponibili al fruitore.
  */
 public final class FruitoreService {
-    private final PropostaService propostaService;
+    private final Proposta_Service propostaService;
     private final IscrizioneService iscrizioneService;
     private final NotificationService notificationService;
 
-    public FruitoreService(PropostaService propostaService,
+    public FruitoreService(Proposta_Service propostaService,
                            IscrizioneService iscrizioneService,
                            NotificationService notificationService) {
         this.propostaService = Objects.requireNonNull(propostaService);

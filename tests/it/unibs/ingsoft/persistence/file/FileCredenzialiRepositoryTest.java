@@ -14,39 +14,41 @@ class FileCredenzialiRepositoryTest {
     Path tempDir;
 
     @Test
-    void get_conFileAssente_restituisceCredenzialiVuote() {
+    void load_conFileAssente_restituisceCredenzialiVuote() {
         FileCredenzialiRepository repository = new FileCredenzialiRepository(tempDir.resolve("utenti.json"));
 
-        Credenziali credenziali = repository.get();
+        Credenziali credenziali = repository.load();
 
         assertTrue(credenziali.getConfiguratori().isEmpty());
     }
 
     @Test
-    void get_quandoInvocatoDueVolte_restituisceStessaIstanzaCached() {
+    void load_quandoInvocatoDueVolte_restituisceIstanzeDistinte() {
         FileCredenzialiRepository repository = new FileCredenzialiRepository(tempDir.resolve("utenti.json"));
 
-        assertSame(repository.get(), repository.get());
+        assertNotSame(repository.load(), repository.load());
     }
 
     @Test
-    void save_senzaGetPrecedente_nonCreaFile() {
+    void save_conCredenzialiVuote_creaFile() {
         Path path = tempDir.resolve("utenti.json");
+
         FileCredenzialiRepository repository = new FileCredenzialiRepository(path);
+        repository.save(new Credenziali());
 
-        repository.save();
-
-        assertFalse(Files.exists(path));
+        assertTrue(Files.exists(path));
     }
 
     @Test
-    void save_dopoModificaDelleCredenzialiCached_persisteFruitore() {
+    void save_conCredenzialiModificate_persisteFruitore() {
         Path path = tempDir.resolve("utenti.json");
-        FileCredenzialiRepository repository = new FileCredenzialiRepository(path);
-        repository.get().addFruitore("Mario", "pwd");
 
-        repository.save();
-        Credenziali ricaricate = new FileCredenzialiRepository(path).get();
+        FileCredenzialiRepository repository = new FileCredenzialiRepository(path);
+        Credenziali credenziali = repository.load();
+        credenziali.addFruitore("Mario", "pwd");
+        repository.save(credenziali);
+
+        Credenziali ricaricate = new FileCredenzialiRepository(path).load();
 
         assertEquals("pwd", ricaricate.getFruitori().get("mario"));
     }

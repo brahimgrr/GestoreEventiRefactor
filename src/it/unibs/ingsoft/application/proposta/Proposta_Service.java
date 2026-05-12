@@ -15,8 +15,11 @@ import java.util.Objects;
 /**
  * Facade compatibile per creazione, validazione, pubblicazione e query delle proposte.
  */
-public final class PropostaService {
+public final class Proposta_Service {
     public static final String CAMPO_TITOLO = AppConstants.CAMPO_TITOLO;
+    /*
+    ATTRIBUTI NON USATI. HA SENSO CREARLI?
+     */
     public static final String CAMPO_TERMINE_ISCRIZIONE = AppConstants.CAMPO_TERMINE_ISCRIZIONE;
     public static final String CAMPO_DATA = AppConstants.CAMPO_DATA;
     public static final String CAMPO_DATA_CONCLUSIVA = AppConstants.CAMPO_DATA_CONCLUSIVA;
@@ -27,15 +30,15 @@ public final class PropostaService {
 
     private final PropostaCreationService creationService;
     private final PropostaValidationService validationService;
-    private final PropostaPublicationService publicationService;
+    private final PropostaPublication_Service publicationService;
     private final PropostaLifecycleService lifecycleService;
     private final PropostaQueryService queryService;
 
-    public PropostaService(PropostaCreationService creationService,
-                           PropostaValidationService validationService,
-                           PropostaPublicationService publicationService,
-                           PropostaLifecycleService lifecycleService,
-                           PropostaQueryService queryService) {
+    public Proposta_Service(PropostaCreationService creationService,
+                            PropostaValidationService validationService,
+                            PropostaPublication_Service publicationService,
+                            PropostaLifecycleService lifecycleService,
+                            PropostaQueryService queryService) {
         this.creationService = Objects.requireNonNull(creationService);
         this.validationService = Objects.requireNonNull(validationService);
         this.publicationService = Objects.requireNonNull(publicationService);
@@ -108,6 +111,9 @@ public final class PropostaService {
         return queryService.getBachecaPerCategoria();
     }
 
+    /*
+    MAI USATO
+     */
     public List<Campo> getCampiConErrore(Proposta proposta, List<ValidationError> errori) {
         return validationService.getCampiConErrore(proposta, errori);
     }

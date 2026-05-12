@@ -29,8 +29,8 @@ class Proposta_Test {
     }
 
     @Test
-    void costruttore_conCategoriaNull_lanciaIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> new Proposta(null, List.of(), List.of()));
+    void costruttore_conCategoriaNull_lanciaIllegalStateException() {
+        assertThrows(IllegalStateException.class, () -> new Proposta(null, List.of(), List.of()));
     }
 
     @Test
@@ -47,53 +47,57 @@ class Proposta_Test {
     }
 
     @Test
-    void setStato_conTransizioneValidaDaBozzaAValida_aggiornaStato() {
+    void valida_conDatiValidiDaBozzaAValida_aggiornaStato() {
         Proposta proposta = propostaConCampiBaseMinimi();
 
-        proposta.setStato(StatoProposta.VALIDA);
+        proposta.aggiornaValoriCampi(valoriValidi("2"));
+        proposta.valida();
 
         assertEquals(StatoProposta.VALIDA, proposta.getStato());
     }
 
     @Test
-    void setStato_conTransizioneValidaDaBozzaAValida_aggiungeVoceAllaCronologia() {
+    void valida_conDatiValidiDaBozzaAValida_aggiungeVoceAllaCronologia() {
         Proposta proposta = propostaConCampiBaseMinimi();
 
-        proposta.setStato(StatoProposta.VALIDA);
+        proposta.aggiornaValoriCampi(valoriValidi("2"));
+        proposta.valida();
 
         assertEquals(StatoProposta.VALIDA, proposta.getStateHistory().get(1).stato());
     }
 
     @Test
-    void setStato_conStatoNull_lanciaIllegalArgumentException() {
-        Proposta proposta = propostaConCampiBaseMinimi();
+    void pubblica_conDataValidaDaValidaAAperta_aggiornaStato() {
+        Proposta proposta = propostaValidaConCapienza("2");
 
-        assertThrows(IllegalArgumentException.class, () -> proposta.setStato(null));
+        proposta.pubblica(LocalDate.now(AppConstants.clock));
+
+        assertEquals(StatoProposta.APERTA, proposta.getStato());
     }
 
     @Test
-    void setStato_conTransizioneNonConsentitaDaBozzaAAperta_lanciaIllegalStateException() {
+    void pubblica_conPropostaInBozza_lanciaIllegalStateException() {
         Proposta proposta = propostaConCampiBaseMinimi();
 
-        assertThrows(IllegalStateException.class, () -> proposta.setStato(StatoProposta.APERTA));
+        assertThrows(IllegalStateException.class, () -> proposta.pubblica(LocalDate.now(AppConstants.clock)));
     }
 
     @Test
-    void revertToBozzaSilent_quandoStatoValida_riportaStatoABozza() {
-        Proposta proposta = propostaConCampiBaseMinimi();
-        proposta.setStato(StatoProposta.VALIDA);
+    void valida_quandoStatoValidaEValoriNonValidi_riportaStatoABozza() {
+        Proposta proposta = propostaValidaConCapienza("2");
 
-        proposta.revertToBozzaSilent();
+        proposta.aggiornaValoriCampi(Map.of(AppConstants.CAMPO_NUM_PARTECIPANTI, "0"));
+        proposta.valida();
 
         assertEquals(StatoProposta.BOZZA, proposta.getStato());
     }
 
     @Test
-    void revertToBozzaSilent_quandoStatoValida_nonAggiungeVoceAllaCronologia() {
-        Proposta proposta = propostaConCampiBaseMinimi();
-        proposta.setStato(StatoProposta.VALIDA);
+    void valida_quandoStatoValidaEValoriNonValidi_nonAggiungeVoceAllaCronologiaPerIlRitornoABozza() {
+        Proposta proposta = propostaValidaConCapienza("2");
 
-        proposta.revertToBozzaSilent();
+        proposta.aggiornaValoriCampi(Map.of(AppConstants.CAMPO_NUM_PARTECIPANTI, "0"));
+        proposta.valida();
 
         assertEquals(2, proposta.getStateHistory().size());
     }
@@ -107,7 +111,7 @@ class Proposta_Test {
         valori.put("Eta", "18");
         valori.put(AppConstants.CAMPO_TITOLO, "Torneo");
 
-        proposta.putAllValoriCampi(valori);
+        proposta.aggiornaValoriCampi(valori);
 
         assertEquals(List.of(AppConstants.CAMPO_TITOLO, "Eta", "Arbitro", "Extra legacy"),
                 proposta.getValoriCampi().keySet().stream().toList());
@@ -118,7 +122,7 @@ class Proposta_Test {
         Proposta proposta = propostaApertaConCapienza("2");
 
         assertThrows(IllegalStateException.class,
-                () -> proposta.putAllValoriCampi(Map.of(AppConstants.CAMPO_TITOLO, "Nuovo titolo")));
+                () -> proposta.aggiornaValoriCampi(Map.of(AppConstants.CAMPO_TITOLO, "Nuovo titolo")));
     }
 
     @Test
@@ -133,7 +137,7 @@ class Proposta_Test {
     void addAderente_conPropostaApertaECapienzaDisponibile_aggiungeUsername() {
         Proposta proposta = propostaApertaConCapienza("2");
 
-        proposta.addAderente("mario");
+        proposta.iscrivi("mario", LocalDate.now(AppConstants.clock));
 
         assertEquals(List.of("mario"), proposta.getListaAderenti());
     }
@@ -142,32 +146,31 @@ class Proposta_Test {
     void addAderente_conPropostaNonAperta_lanciaIllegalStateException() {
         Proposta proposta = propostaConCampiBaseMinimi();
 
-        assertThrows(IllegalStateException.class, () -> proposta.addAderente("mario"));
+        assertThrows(IllegalStateException.class, () -> proposta.iscrivi("mario", LocalDate.now(AppConstants.clock)));
     }
 
     @Test
     void addAderente_conUsernameGiaIscritto_lanciaIllegalStateException() {
         Proposta proposta = propostaApertaConCapienza("2");
-        proposta.addAderente("mario");
+        proposta.iscrivi("mario", LocalDate.now(AppConstants.clock));
 
-        assertThrows(IllegalStateException.class, () -> proposta.addAderente("mario"));
+        assertThrows(IllegalStateException.class, () -> proposta.iscrivi("mario", LocalDate.now(AppConstants.clock)));
     }
 
     @Test
     void addAderente_conCapienzaMassimaRaggiunta_lanciaIllegalStateException() {
         Proposta proposta = propostaApertaConCapienza("1");
-        proposta.addAderente("mario");
+        proposta.iscrivi("mario", LocalDate.now(AppConstants.clock));
 
-        assertThrows(IllegalStateException.class, () -> proposta.addAderente("luigi"));
+        assertThrows(IllegalStateException.class, () -> proposta.iscrivi("luigi", LocalDate.now(AppConstants.clock)));
     }
 
     @Test
     void removeAderente_conPropostaApertaETermineNonScaduto_rimuoveUsername() {
         Proposta proposta = propostaApertaConCapienza("2");
-        proposta.setTermineIscrizione(LocalDateTime.now().toLocalDate().plusDays(3));
-        proposta.addAderente("mario");
+        proposta.iscrivi("mario", LocalDate.now(AppConstants.clock));
 
-        proposta.removeAderente("mario", LocalDateTime.now().toLocalDate());
+        proposta.disiscrivi("mario", LocalDate.now(AppConstants.clock));
 
         assertTrue(proposta.getListaAderenti().isEmpty());
     }
@@ -177,23 +180,22 @@ class Proposta_Test {
         Proposta proposta = propostaConCampiBaseMinimi();
 
         assertThrows(IllegalStateException.class,
-                () -> proposta.removeAderente("mario", LocalDateTime.now().toLocalDate()));
+                () -> proposta.disiscrivi("mario", LocalDate.now(AppConstants.clock)));
     }
 
     @Test
     void removeAderente_conTermineIscrizioneScaduto_lanciaIllegalStateException() {
         Proposta proposta = propostaApertaConCapienza("2");
-        proposta.setTermineIscrizione(LocalDateTime.now().toLocalDate());
-        proposta.addAderente("mario");
+        proposta.iscrivi("mario", LocalDate.now(AppConstants.clock));
 
         assertThrows(IllegalStateException.class,
-                () -> proposta.removeAderente("mario", LocalDateTime.now().toLocalDate().plusDays(1)));
+                () -> proposta.disiscrivi("mario", LocalDate.now(AppConstants.clock).plusDays(2)));
     }
 
     @Test
     void getNumeroPartecipanti_conInteroPositivo_restituisceNumeroPartecipanti() {
         Proposta proposta = propostaConCampiBaseMinimi();
-        proposta.putAllValoriCampi(Map.of(AppConstants.CAMPO_NUM_PARTECIPANTI, " 12 "));
+        proposta.aggiornaValoriCampi(Map.of(AppConstants.CAMPO_NUM_PARTECIPANTI, " 12 "));
 
         assertEquals(12, proposta.getNumeroPartecipanti());
     }
@@ -208,7 +210,7 @@ class Proposta_Test {
     @Test
     void getNumeroPartecipanti_conValoreNonNumerico_lanciaIllegalStateException() {
         Proposta proposta = propostaConCampiBaseMinimi();
-        proposta.putAllValoriCampi(Map.of(AppConstants.CAMPO_NUM_PARTECIPANTI, "molti"));
+        proposta.aggiornaValoriCampi(Map.of(AppConstants.CAMPO_NUM_PARTECIPANTI, "molti"));
 
         assertThrows(IllegalStateException.class, proposta::getNumeroPartecipanti);
     }
@@ -216,7 +218,7 @@ class Proposta_Test {
     @Test
     void getNumeroPartecipanti_conZero_lanciaIllegalStateException() {
         Proposta proposta = propostaConCampiBaseMinimi();
-        proposta.putAllValoriCampi(Map.of(AppConstants.CAMPO_NUM_PARTECIPANTI, "0"));
+        proposta.aggiornaValoriCampi(Map.of(AppConstants.CAMPO_NUM_PARTECIPANTI, "0"));
 
         assertThrows(IllegalStateException.class, proposta::getNumeroPartecipanti);
     }
@@ -237,10 +239,9 @@ class Proposta_Test {
 
     @Test
     void getDataConclusiva_conCampoAssente_restituisceDataEvento() {
-        Proposta proposta = propostaConCampiBaseMinimi();
-        proposta.setDataEvento(LocalDateTime.now().toLocalDate());
+        Proposta proposta = propostaValidaConCapienza("2");
 
-        assertEquals(LocalDateTime.now().toLocalDate(), proposta.getDataConclusiva());
+        assertEquals(proposta.getDataEvento(), proposta.getDataConclusiva());
     }
 
     /*
@@ -260,7 +261,7 @@ class Proposta_Test {
     @Test
     void isCapienzaRaggiunta_conAderentiUgualiAllaCapienza_restituisceTrue() {
         Proposta proposta = propostaApertaConCapienza("1");
-        proposta.addAderente("mario");
+        proposta.iscrivi("mario", LocalDate.now(AppConstants.clock));
 
         assertTrue(proposta.isCapienzaRaggiunta());
     }
@@ -268,9 +269,10 @@ class Proposta_Test {
     @Test
     void isTermineIscrizioneScaduto_conOggiDopoTermine_restituisceTrue() {
         Proposta proposta = propostaConCampiBaseMinimi();
-        proposta.setTermineIscrizione(LocalDateTime.now().toLocalDate());
+        proposta.aggiornaValoriCampi(valoriValidi("2"));
+        proposta.valida();
 
-        assertTrue(proposta.isTermineIscrizioneScaduto(LocalDateTime.now().toLocalDate().plusDays(5)));
+        assertTrue(proposta.isTermineIscrizioneScaduto(LocalDate.now(AppConstants.clock).plusDays(5)));
     }
 
     @Test
@@ -295,7 +297,7 @@ class Proposta_Test {
     @Test
     void getChiaveIdentita_conValoriImpostati_restituisceChiaveNormalizzataDellaProposta() {
         Proposta proposta = propostaConCampiBaseMinimi();
-        proposta.putAllValoriCampi(Map.of(
+        proposta.aggiornaValoriCampi(Map.of(
                 AppConstants.CAMPO_TITOLO, "Torneo",
                 AppConstants.CAMPO_DATA, "25/12/2026",
                 AppConstants.CAMPO_ORA, "16:30",
@@ -306,11 +308,25 @@ class Proposta_Test {
     }
 
     private Proposta propostaApertaConCapienza(String numeroPartecipanti) {
-        Proposta proposta = propostaConCampiBaseMinimi();
-        proposta.putAllValoriCampi(Map.of(AppConstants.CAMPO_NUM_PARTECIPANTI, numeroPartecipanti));
-        proposta.setStato(StatoProposta.VALIDA);
-        proposta.setStato(StatoProposta.APERTA);
+        Proposta proposta = propostaValidaConCapienza(numeroPartecipanti);
+        proposta.pubblica(LocalDate.now(AppConstants.clock));
         return proposta;
+    }
+
+    private Proposta propostaValidaConCapienza(String numeroPartecipanti) {
+        Proposta proposta = propostaConCampiBaseMinimi();
+        proposta.aggiornaValoriCampi(valoriValidi(numeroPartecipanti));
+        proposta.valida();
+        return proposta;
+    }
+
+    private Map<String, String> valoriValidi(String numeroPartecipanti) {
+        LocalDate oggi = LocalDate.now(AppConstants.clock);
+        return Map.of(
+                AppConstants.CAMPO_NUM_PARTECIPANTI, numeroPartecipanti,
+                AppConstants.CAMPO_TERMINE_ISCRIZIONE, oggi.plusDays(1).format(AppConstants.DATE_FMT),
+                AppConstants.CAMPO_DATA, oggi.plusDays(4).format(AppConstants.DATE_FMT)
+        );
     }
 
     private Proposta propostaConCampiBaseMinimi() {

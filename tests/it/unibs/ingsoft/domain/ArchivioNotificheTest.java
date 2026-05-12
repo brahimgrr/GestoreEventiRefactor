@@ -23,8 +23,8 @@ class ArchivioNotificheTest {
     @Test
     void getSpazioDi_conUsernameGiaPresente_restituisceLaStessaIstanza() {
         ArchivioNotifiche archivio = new ArchivioNotifiche();
-        SpazioPersonale primoAccesso = archivio.getSpazioDi("mario");
 
+        SpazioPersonale primoAccesso = archivio.getSpazioDi("mario");
         SpazioPersonale secondoAccesso = archivio.getSpazioDi("mario");
 
         assertSame(primoAccesso, secondoAccesso);

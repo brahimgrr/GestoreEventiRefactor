@@ -36,14 +36,14 @@ class CampoFactoryTest {
     }
 
     @Test
-    void creaCampiBaseExtra_conListaNomiNull_lanciaNullPointerException() {
-        assertThrows(NullPointerException.class,
+    void creaCampiBaseExtra_conListaNomiNull_lanciaIllegalStateException() {
+        assertThrows(IllegalStateException.class,
                 () -> CampoFactory.getInstance().creaCampiBaseExtra(null, List.of(TipoDato.STRINGA)));
     }
 
     @Test
-    void creaCampiBaseExtra_conListeDiDimensioneDiversa_lanciaIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class,
+    void creaCampiBaseExtra_conListeDiDimensioneDiversa_lanciaIllegalStateException() {
+        assertThrows(IllegalStateException.class,
                 () -> CampoFactory.getInstance().creaCampiBaseExtra(List.of("Uno"), List.of()));
     }
 
@@ -59,8 +59,8 @@ class CampoFactoryTest {
     }
 
     @Test
-    void creaCampoSpecifico_conNomeNull_lanciaIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class,
+    void creaCampoSpecifico_conNomeNull_lanciaIllegalStateException() {
+        assertThrows(IllegalStateException.class,
                 () -> CampoFactory.getInstance().creaCampoSpecifico(null, TipoDato.STRINGA, false));
     }
 }

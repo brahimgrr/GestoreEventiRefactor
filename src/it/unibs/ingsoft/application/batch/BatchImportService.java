@@ -8,8 +8,8 @@ import it.unibs.ingsoft.application.batch.dto.CategoriaImportDTO;
 import it.unibs.ingsoft.application.batch.dto.ImportData;
 import it.unibs.ingsoft.application.batch.dto.ImportResult;
 import it.unibs.ingsoft.application.batch.dto.PropostaImportDTO;
-import it.unibs.ingsoft.application.catalogo.CatalogoService;
-import it.unibs.ingsoft.application.proposta.PropostaService;
+import it.unibs.ingsoft.application.catalogo.Catalogo_Service;
+import it.unibs.ingsoft.application.proposta.Proposta_Service;
 import it.unibs.ingsoft.domain.AppConstants;
 import it.unibs.ingsoft.domain.Campo;
 import it.unibs.ingsoft.domain.Categoria;
@@ -39,10 +39,10 @@ public final class BatchImportService {
     private static final ObjectMapper MAPPER = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-    private final CatalogoService catalogoService;
-    private final PropostaService propostaService;
+    private final Catalogo_Service catalogoService;
+    private final Proposta_Service propostaService;
 
-    public BatchImportService(CatalogoService catalogoService, PropostaService propostaService) {
+    public BatchImportService(Catalogo_Service catalogoService, Proposta_Service propostaService) {
         this.catalogoService = Objects.requireNonNull(catalogoService);
         this.propostaService = Objects.requireNonNull(propostaService);
     }

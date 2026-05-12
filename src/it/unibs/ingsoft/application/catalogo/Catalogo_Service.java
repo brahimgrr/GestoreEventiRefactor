@@ -16,27 +16,30 @@ import java.util.Objects;
 /**
  * Facade compatibile per campi e categorie del catalogo.
  */
-public final class CatalogoService {
-    private final CampoCatalogoService campoCatalogoService;
+public final class Catalogo_Service {
+    private final CampoCatalogo_Service campoCatalogoService;
     private final CategoriaCatalogoService categoriaCatalogoService;
 
-    public CatalogoService(ICatalogoRepository repo) {
+    public Catalogo_Service(ICatalogoRepository repo) {
         this(repo, CampoFactory.getInstance());
     }
 
-    public CatalogoService(ICatalogoRepository repo, CampoFactory campoFactory) {
+    public Catalogo_Service(ICatalogoRepository repo, CampoFactory campoFactory) {
         this(
-                new CampoCatalogoService(repo, campoFactory),
+                new CampoCatalogo_Service(repo, campoFactory),
                 new CategoriaCatalogoService(repo)
         );
     }
 
-    public CatalogoService(CampoCatalogoService campoCatalogoService,
-                           CategoriaCatalogoService categoriaCatalogoService) {
+    public Catalogo_Service(CampoCatalogo_Service campoCatalogoService,
+                            CategoriaCatalogoService categoriaCatalogoService) {
         this.campoCatalogoService = Objects.requireNonNull(campoCatalogoService);
         this.categoriaCatalogoService = Objects.requireNonNull(categoriaCatalogoService);
     }
 
+    /*
+    MAI USATO
+     */
     public boolean nomeEsistente(String nome) {
         return campoCatalogoService.nomeEsistente(nome);
     }
@@ -53,10 +56,16 @@ public final class CatalogoService {
         campoCatalogoService.configuraCampiBase(extra);
     }
 
+    /*
+    MAI USATO
+     */
     public void initiateCampiBase() {
         campoCatalogoService.initiateCampiBase();
     }
 
+    /*
+    MAI USATO
+     */
     public void addCampiBaseConExtra(List<String> nomi, List<TipoDato> tipi) {
         campoCatalogoService.addCampiBaseConExtra(nomi, tipi);
     }

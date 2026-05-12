@@ -14,39 +14,41 @@ class FileCatalogoRepositoryTest {
     Path tempDir;
 
     @Test
-    void get_conFileAssente_restituisceCatalogoVuoto() {
+    void load_conFileAssente_restituisceCatalogoVuoto() {
         FileCatalogoRepository repository = new FileCatalogoRepository(tempDir.resolve("catalogo.json"));
 
-        Catalogo catalogo = repository.get();
+        Catalogo catalogo = repository.load();
 
         assertTrue(catalogo.getCategorie().isEmpty());
     }
 
     @Test
-    void get_quandoInvocatoDueVolte_restituisceStessaIstanzaCached() {
+    void load_quandoInvocatoDueVolte_restituisceIstanzeDistinte() {
         FileCatalogoRepository repository = new FileCatalogoRepository(tempDir.resolve("catalogo.json"));
 
-        assertSame(repository.get(), repository.get());
+        assertNotSame(repository.load(), repository.load());
     }
 
     @Test
-    void save_senzaGetPrecedente_nonCreaFile() {
+    void save_conCatalogoVuoto_creaFile() {
         Path path = tempDir.resolve("catalogo.json");
+
         FileCatalogoRepository repository = new FileCatalogoRepository(path);
+        repository.save(new Catalogo());
 
-        repository.save();
-
-        assertFalse(Files.exists(path));
+        assertTrue(Files.exists(path));
     }
 
     @Test
-    void save_dopoModificaDelCatalogoCached_persistelaCategoria() {
+    void save_conCatalogoModificato_persisteLaCategoria() {
         Path path = tempDir.resolve("catalogo.json");
-        FileCatalogoRepository repository = new FileCatalogoRepository(path);
-        repository.get().addCategoria("Sport");
 
-        repository.save();
-        Catalogo ricaricato = new FileCatalogoRepository(path).get();
+        FileCatalogoRepository repository = new FileCatalogoRepository(path);
+        Catalogo catalogo = repository.load();
+        catalogo.addCategoria("Sport");
+        repository.save(catalogo);
+
+        Catalogo ricaricato = new FileCatalogoRepository(path).load();
 
         assertEquals("Sport", ricaricato.getCategorie().get(0).getNome());
     }

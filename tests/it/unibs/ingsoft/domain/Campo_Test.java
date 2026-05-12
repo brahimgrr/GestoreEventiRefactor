@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CampoTest {
+class Campo_Test {
     @Test
     void costruttore_conNomeValidoTrimmato_salvaNomeSenzaSpaziEsterni() {
         Campo campo = new Campo("  Nome  ", TipoCampo.COMUNE, TipoDato.STRINGA, true);
@@ -13,26 +13,26 @@ class CampoTest {
     }
 
     @Test
-    void costruttore_conNomeNull_lanciaIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class,
+    void costruttore_conNomeNull_lanciaIllegalStateException() {
+        assertThrows(IllegalStateException.class,
                 () -> new Campo(null, TipoCampo.COMUNE, TipoDato.STRINGA, true));
     }
 
     @Test
-    void costruttore_conNomeBlank_lanciaIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class,
+    void costruttore_conNomeBlank_lanciaIllegalStateException() {
+        assertThrows(IllegalStateException.class,
                 () -> new Campo("   ", TipoCampo.COMUNE, TipoDato.STRINGA, true));
     }
 
     @Test
-    void costruttore_conTipoNull_lanciaIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class,
+    void costruttore_conTipoNull_lanciaIllegalStateException() {
+        assertThrows(IllegalStateException.class,
                 () -> new Campo("Nome", null, TipoDato.STRINGA, true));
     }
 
     @Test
-    void costruttore_conTipoDatoNull_lanciaIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class,
+    void costruttore_conTipoDatoNull_lanciaIllegalStateException() {
+        assertThrows(IllegalStateException.class,
                 () -> new Campo("Nome", TipoCampo.COMUNE, null, true));
     }
 
@@ -51,6 +51,10 @@ class CampoTest {
         );
     }
 
+    /*
+    Ha senso fare questo Test? mostra che equals non fa tutto il lavoro
+    ma che parte del lavoro è delegata ad altre parti del programma
+     */
     @Test
     void equals_conStessoNomeInMaiuscoleDiverse_restituisceTrue() {
         Campo primo = new Campo("Nome", TipoCampo.COMUNE, TipoDato.STRINGA, false);

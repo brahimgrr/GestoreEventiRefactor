@@ -13,15 +13,14 @@ class FruitoreTest {
     }
 
     @Test
-    void costruttore_conUsernameNull_lanciaIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> new Fruitore(null));
+    void costruttore_conUsernameNull_lanciaIllegalStateException() {
+        assertThrows(IllegalStateException.class, () -> new Fruitore(null));
     }
 
     @Test
-    void costruttore_conUsernameBlank_lanciaIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> new Fruitore("   "));
+    void costruttore_conUsernameBlank_lanciaIllegalStateException() {
+        assertThrows(IllegalStateException.class, () -> new Fruitore("   "));
     }
-
 
     @Test
     void hashCode_conFruitoriConStessoUsername_restituisceStessoHashCode() {
