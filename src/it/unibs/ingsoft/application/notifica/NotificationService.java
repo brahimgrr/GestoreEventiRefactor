@@ -22,15 +22,11 @@ public final class NotificationService {
         SpazioPersonale sp = archivio.getOrCreateSpazioDi(username);
         sp.addNotifica(notifica);
 
-        notificaRepository.addNotificaToUser(user, notifica);
-
         repo.save(archivio);
     }
 
     public List<Notifica> getNotifiche(String username) {
         if (username == null) return List.of();
-
-        notificaRepository.getNotificheForUser(username);
 
         return repo.load()
                 .findSpazioDi(username)
