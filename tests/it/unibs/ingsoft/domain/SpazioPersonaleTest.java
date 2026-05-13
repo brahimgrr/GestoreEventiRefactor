@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -33,9 +34,9 @@ class SpazioPersonaleTest {
     @Test
     void removeNotifica_conNotificaPresente_rimuoveNotifica() {
         SpazioPersonale spazio = new SpazioPersonale();
+
         Notifica notifica = notifica("id-1");
         spazio.addNotifica(notifica);
-
         spazio.removeNotifica(notifica);
 
         assertTrue(spazio.getNotifiche().isEmpty());
@@ -66,6 +67,6 @@ class SpazioPersonaleTest {
     }
 
     private Notifica notifica(String id) {
-        return new Notifica(id, "messaggio", LocalDateTime.of(2026, 1, 1, 10, 0));
+        return new Notifica(id, NotificaType.LEGACY_MESSAGGIO, Map.of(), "messaggio", LocalDateTime.now());
     }
 }

@@ -23,8 +23,8 @@ class PropostaFactoryTest {
     }
 
     @Test
-    void creaProposta_conCategoriaNull_lanciaIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class,
+    void creaProposta_conCategoriaNull_lanciaIllegalStateException() {
+        assertThrows(IllegalStateException.class,
                 () -> PropostaFactory.getInstance().creaProposta(null, List.of(), List.of()));
     }
 }

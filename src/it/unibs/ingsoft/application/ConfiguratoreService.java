@@ -2,12 +2,12 @@ package it.unibs.ingsoft.application;
 
 import it.unibs.ingsoft.application.batch.BatchImportService;
 import it.unibs.ingsoft.application.batch.dto.ImportResult;
-import it.unibs.ingsoft.application.catalogo.CatalogoService;
+import it.unibs.ingsoft.application.catalogo.Catalogo_Service;
 import it.unibs.ingsoft.application.catalogo.dto.CampoBaseExtraRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CampoDefinitionRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CampoObbligatorietaRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CatalogoOperationResult;
-import it.unibs.ingsoft.application.proposta.PropostaService;
+import it.unibs.ingsoft.application.proposta.Proposta_Service;
 import it.unibs.ingsoft.application.proposta.dto.PropostaValidationResult;
 import it.unibs.ingsoft.domain.catalogo.Campo;
 import it.unibs.ingsoft.domain.catalogo.Categoria;
@@ -25,12 +25,12 @@ import java.util.Objects;
  * Facade dei casi d'uso disponibili al configuratore.
  */
 public final class ConfiguratoreService {
-    private final CatalogoService catalogoService;
-    private final PropostaService propostaService;
+    private final Catalogo_Service catalogoService;
+    private final Proposta_Service propostaService;
     private final BatchImportService batchImportService;
 
-    public ConfiguratoreService(CatalogoService catalogoService,
-                                PropostaService propostaService,
+    public ConfiguratoreService(Catalogo_Service catalogoService,
+                                Proposta_Service propostaService,
                                 BatchImportService batchImportService) {
         this.catalogoService = Objects.requireNonNull(catalogoService);
         this.propostaService = Objects.requireNonNull(propostaService);

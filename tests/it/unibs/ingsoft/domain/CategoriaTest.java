@@ -19,13 +19,13 @@ class CategoriaTest {
     }
 
     @Test
-    void costruttore_conNomeNull_lanciaIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> new Categoria((String) null));
+    void costruttore_conNomeNull_lanciaIllegalStateException() {
+        assertThrows(IllegalStateException.class, () -> new Categoria((String) null));
     }
 
     @Test
-    void costruttore_conNomeBlank_lanciaIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> new Categoria("   "));
+    void costruttore_conNomeBlank_lanciaIllegalStateException() {
+        assertThrows(IllegalStateException.class, () -> new Categoria("   "));
     }
 
     @Test
@@ -40,19 +40,19 @@ class CategoriaTest {
     }
 
     @Test
-    void addCampoSpecifico_conCampoComune_lanciaIllegalArgumentException() {
+    void addCampoSpecifico_conCampoComune_lanciaIllegalStateException() {
         Categoria categoria = new Categoria("Sport");
         Campo comune = new Campo("Eta", TipoCampo.COMUNE, TipoDato.INTERO, false);
 
-        assertThrows(IllegalArgumentException.class, () -> categoria.addCampoSpecifico(comune));
+        assertThrows(IllegalStateException.class, () -> categoria.addCampoSpecifico(comune));
     }
 
     @Test
-    void addCampoSpecifico_conNomeDuplicatoCaseInsensitive_lanciaIllegalArgumentException() {
+    void addCampoSpecifico_conNomeDuplicatoCaseInsensitive_lanciaIllegalStateException() {
         Categoria categoria = new Categoria("Sport");
         categoria.addCampoSpecifico(campoSpecifico("Arbitro"));
 
-        assertThrows(IllegalArgumentException.class, () -> categoria.addCampoSpecifico(campoSpecifico("arbitro")));
+        assertThrows(IllegalStateException.class, () -> categoria.addCampoSpecifico(campoSpecifico("arbitro")));
     }
 
     @Test

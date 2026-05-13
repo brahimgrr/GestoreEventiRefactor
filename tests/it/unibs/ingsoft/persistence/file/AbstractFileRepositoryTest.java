@@ -9,7 +9,7 @@ import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class AbstractFileRepository_Test {
+class AbstractFileRepositoryTest {
     @TempDir
     Path tempDir;
 
@@ -22,24 +22,22 @@ class AbstractFileRepository_Test {
         assertTrue(credenziali.getConfiguratori().isEmpty());
     }
 
-    /*
-    DA WARNING ma va a buon fine
-     */
     @Test
-    void load_conJsonMalformed_restituisceValoreDiDefault() throws Exception {
+    void load_conJsonMalformed_lanciaUncheckedIOException() throws Exception {
         Path path = tempDir.resolve("broken.json");
         Files.writeString(path, "{ json non valido");
+
         TestCredenzialiRepository repository = new TestCredenzialiRepository(path);
 
-        Credenziali credenziali = repository.loadDirect();
-
-        assertTrue(credenziali.getFruitori().isEmpty());
+        assertThrows(java.io.UncheckedIOException.class, repository::loadDirect);
     }
 
     @Test
     void save_conParentDirectoryAssente_creaDirectoryEFileJson() {
         Path path = tempDir.resolve("nested").resolve("credenziali.json");
+
         TestCredenzialiRepository repository = new TestCredenzialiRepository(path);
+
         Credenziali credenziali = new Credenziali();
         credenziali.addConfiguratore("Admin", "pwd");
 

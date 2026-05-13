@@ -52,9 +52,6 @@ class CredenzialiTest {
         );
     }
 
-    /*
-    NON DOVREBBE FUNZIONARE COSI
-     */
     @Test
     void fromJson_conMappeValorizzate_copiaConfiguratoriEFruitori() {
         Credenziali credenziali = Credenziali.fromJson(Map.of("admin", "a"), Map.of("admin", "m"));

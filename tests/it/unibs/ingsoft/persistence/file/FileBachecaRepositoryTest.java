@@ -17,39 +17,41 @@ class FileBachecaRepositoryTest {
     Path tempDir;
 
     @Test
-    void get_conFileAssente_restituisceBachecaVuota() {
+    void load_conFileAssente_restituisceBachecaVuota() {
         FileBachecaRepository repository = new FileBachecaRepository(tempDir.resolve("bacheca.json"));
 
-        Bacheca bacheca = repository.get();
+        Bacheca bacheca = repository.load();
 
         assertTrue(bacheca.getProposte().isEmpty());
     }
 
     @Test
-    void get_quandoInvocatoDueVolte_restituisceStessaIstanzaCached() {
+    void load_quandoInvocatoDueVolte_restituisceIstanzeDistinte() {
         FileBachecaRepository repository = new FileBachecaRepository(tempDir.resolve("bacheca.json"));
 
-        assertSame(repository.get(), repository.get());
+        assertNotSame(repository.load(), repository.load());
     }
 
     @Test
-    void save_senzaGetPrecedente_nonCreaFile() {
+    void save_conBachecaVuota_creaFile() throws Exception {
         Path path = tempDir.resolve("bacheca.json");
+
         FileBachecaRepository repository = new FileBachecaRepository(path);
+        repository.save(new Bacheca());
 
-        repository.save();
-
-        assertFalse(Files.exists(path));
+        assertTrue(Files.exists(path));
     }
 
     @Test
-    void save_dopoModificaDellaBachecaCached_persistelaProposta() {
+    void save_conBachecaModificata_persisteLaProposta() {
         Path path = tempDir.resolve("bacheca.json");
-        FileBachecaRepository repository = new FileBachecaRepository(path);
-        repository.get().addProposta(new Proposta(new Categoria("Sport"), List.of(), List.of()));
 
-        repository.save();
-        Bacheca ricaricata = new FileBachecaRepository(path).get();
+        FileBachecaRepository repository = new FileBachecaRepository(path);
+        Bacheca bacheca = repository.load();
+        bacheca.addProposta(new Proposta(new Categoria("Sport"), List.of(), List.of()));
+        repository.save(bacheca);
+
+        Bacheca ricaricata = new FileBachecaRepository(path).load();
 
         assertEquals(1, ricaricata.getProposte().size());
     }

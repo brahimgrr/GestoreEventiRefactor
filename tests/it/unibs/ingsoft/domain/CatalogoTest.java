@@ -11,8 +11,8 @@ class CatalogoTest {
     @Test
     void fissareCampiBase_conListaValida_salvaCampiEImpostaFlagFissati() {
         Catalogo catalogo = new Catalogo();
-        Campo base = campo("Titolo", TipoCampo.BASE, TipoDato.STRINGA, true);
 
+        Campo base = campo("Titolo", TipoCampo.BASE, TipoDato.STRINGA, true);
         catalogo.fissareCampiBase(List.of(base), null);
 
         assertAll(
@@ -22,10 +22,10 @@ class CatalogoTest {
     }
 
     @Test
-    void fissareCampiBase_conDuplicatoCaseInsensitive_lanciaIllegalArgumentException() {
+    void fissareCampiBase_conDuplicatoCaseInsensitive_lanciaIllegalStateException() {
         Catalogo catalogo = new Catalogo();
 
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(IllegalStateException.class,
                 () -> catalogo.fissareCampiBase(List.of(
                         campo("Titolo", TipoCampo.BASE, TipoDato.STRINGA, true),
                         campo("titolo", TipoCampo.BASE, TipoDato.STRINGA, true)
@@ -42,7 +42,7 @@ class CatalogoTest {
     }
 
     @Test
-    void addCampoComune_conNomeNonEsistente_aggiungeCampoComune() {
+    void addCampoComune_conNomeNuovo_aggiungeCampoComune() {
         Catalogo catalogo = new Catalogo();
         Campo campo = campo("Eta", TipoCampo.COMUNE, TipoDato.INTERO, false);
 
@@ -52,11 +52,11 @@ class CatalogoTest {
     }
 
     @Test
-    void addCampoComune_conNomeGiaPresenteNeiCampiBase_lanciaIllegalArgumentException() {
+    void addCampoComune_conNomeGiaPresente_lanciaIllegalStateException() {
         Catalogo catalogo = new Catalogo();
         catalogo.fissareCampiBase(List.of(campo("Titolo", TipoCampo.BASE, TipoDato.STRINGA, true)), null);
 
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(IllegalStateException.class,
                 () -> catalogo.addCampoComune(campo("titolo", TipoCampo.COMUNE, TipoDato.STRINGA, false)));
     }
 
@@ -106,46 +106,46 @@ class CatalogoTest {
     }
 
     @Test
-    void addCategoria_conNomeDuplicatoCaseInsensitive_lanciaIllegalArgumentException() {
+    void addCategoria_conNomeDuplicatoCaseInsensitive_lanciaIllegalStateException() {
         Catalogo catalogo = new Catalogo();
         catalogo.addCategoria("Sport");
 
-        assertThrows(IllegalArgumentException.class, () -> catalogo.addCategoria("sport"));
+        assertThrows(IllegalStateException.class, () -> catalogo.addCategoria("sport"));
     }
 
     @Test
-    void getCategoriaOrThrow_conCategoriaAssente_lanciaIllegalArgumentException() {
+    void getCategoriaOrThrow_conCategoriaAssente_lanciaIllegalStateException() {
         Catalogo catalogo = new Catalogo();
 
-        assertThrows(IllegalArgumentException.class, () -> catalogo.getCategoriaOrThrow("Sport"));
+        assertThrows(IllegalStateException.class, () -> catalogo.getCategoriaOrThrow("Sport"));
     }
 
     @Test
     void addCampoSpecifico_conCategoriaEsistente_aggiungeCampoAllaCategoriaIndicata() {
         Catalogo catalogo = new Catalogo();
         catalogo.addCategoria("Sport");
-        Campo specifico = campo("Arbitro", TipoCampo.SPECIFICO, TipoDato.BOOLEANO, false);
 
+        Campo specifico = campo("Arbitro", TipoCampo.SPECIFICO, TipoDato.BOOLEANO, false);
         catalogo.addCampoSpecifico("sport", specifico);
 
         assertEquals(List.of(specifico), catalogo.getCategoriaOrThrow("Sport").getCampiSpecifici());
     }
 
     @Test
-    void addCampoSpecifico_conNomeGiaPresenteNeiCampiComuni_lanciaIllegalArgumentException() {
+    void addCampoSpecifico_conNomeGiaPresenteNeiCampiComuni_lanciaIllegalStateException() {
         Catalogo catalogo = new Catalogo();
         catalogo.addCategoria("Sport");
         catalogo.addCampoComune(campo("Eta", TipoCampo.COMUNE, TipoDato.INTERO, false));
 
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(IllegalStateException.class,
                 () -> catalogo.addCampoSpecifico("Sport", campo("eta", TipoCampo.SPECIFICO, TipoDato.INTERO, false)));
     }
 
     @Test
-    void removeCampoSpecifico_conCategoriaAssente_lanciaIllegalArgumentException() {
+    void removeCampoSpecifico_conCategoriaAssente_lanciaIllegalStateException() {
         Catalogo catalogo = new Catalogo();
 
-        assertThrows(IllegalArgumentException.class, () -> catalogo.removeCampoSpecifico("Sport", "Eta"));
+        assertThrows(IllegalStateException.class, () -> catalogo.removeCampoSpecifico("Sport", "Eta"));
     }
 
     private Campo campo(String nome, TipoCampo tipo, TipoDato tipoDato, boolean obbligatorio) {

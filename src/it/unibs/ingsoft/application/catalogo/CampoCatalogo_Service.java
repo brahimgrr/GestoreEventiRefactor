@@ -19,11 +19,11 @@ import java.util.stream.Collectors;
 /**
  * Gestisce la configurazione dei campi del catalogo.
  */
-public final class CampoCatalogoService {
+public final class CampoCatalogo_Service {
     private final ICatalogoRepository repo;
     private final CampoFactory campoFactory;
 
-    public CampoCatalogoService(ICatalogoRepository repo, CampoFactory campoFactory) {
+    public CampoCatalogo_Service(ICatalogoRepository repo, CampoFactory campoFactory) {
         this.repo = Objects.requireNonNull(repo);
         this.campoFactory = Objects.requireNonNull(campoFactory);
     }
@@ -127,6 +127,9 @@ public final class CampoCatalogoService {
                 : CatalogoOperationResult.NON_TROVATO;
     }
 
+    /*
+    MAI USATO
+     */
     public boolean setObbligatorietaCampoComune(String nome, boolean obbligatorio) {
         Catalogo catalogo = repo.load();
         boolean changed = catalogo.updateCampoComune(nome, obbligatorio);
@@ -183,6 +186,9 @@ public final class CampoCatalogoService {
                 : CatalogoOperationResult.NON_TROVATO;
     }
 
+    /*
+    MAI USATO
+     */
     public boolean setObbligatorietaCampoSpecifico(String categoria, String nome, boolean obbligatorio) {
         Catalogo catalogo = repo.load();
         boolean changed = catalogo.updateCampoSpecifico(categoria, nome, obbligatorio);

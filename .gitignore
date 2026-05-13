@@ -4,8 +4,8 @@
 !docs/use_case_test_mapping.md
 !docs/testing_summary.md
 !docs/design_review_brainstorming.md
-!unit_tests/
-!unit_tests/**
+!tests/
+!tests/**
 !integration_tests/
 !integration_tests/**
 !src/

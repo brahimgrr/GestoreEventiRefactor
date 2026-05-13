@@ -21,13 +21,13 @@ class UtenteFactoryTest {
     }
 
     @Test
-    void creaConfiguratore_conUsernameBlank_lanciaIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> UtenteFactory.getInstance().creaConfiguratore("   "));
+    void creaConfiguratore_conUsernameBlank_lanciaIllegalStateException() {
+        assertThrows(IllegalStateException.class, () -> UtenteFactory.getInstance().creaConfiguratore("   "));
     }
 
     @Test
-    void creaConfiguratore_conUsernameNull_lanciaIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> UtenteFactory.getInstance().creaConfiguratore(null));
+    void creaConfiguratore_conUsernameNull_lanciaIllegalStateException() {
+        assertThrows(IllegalStateException.class, () -> UtenteFactory.getInstance().creaConfiguratore(null));
     }
 
     @Test
@@ -38,12 +38,12 @@ class UtenteFactoryTest {
     }
 
     @Test
-    void creaFruitore_conUsernameBlank_lanciaIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> UtenteFactory.getInstance().creaFruitore("   "));
+    void creaFruitore_conUsernameBlank_lanciaIllegalStateException() {
+        assertThrows(IllegalStateException.class, () -> UtenteFactory.getInstance().creaFruitore("   "));
     }
 
     @Test
-    void creaFruitore_conUsernameNull_lanciaIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> UtenteFactory.getInstance().creaFruitore(null));
+    void creaFruitore_conUsernameNull_lanciaIllegalStateException() {
+        assertThrows(IllegalStateException.class, () -> UtenteFactory.getInstance().creaFruitore(null));
     }
 }
