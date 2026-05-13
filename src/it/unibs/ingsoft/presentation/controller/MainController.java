@@ -5,7 +5,7 @@ import it.unibs.ingsoft.application.authentication.AuthenticationService;
 import it.unibs.ingsoft.domain.Configuratore;
 import it.unibs.ingsoft.domain.Fruitore;
 import it.unibs.ingsoft.domain.error.DomainException;
-import it.unibs.ingsoft.presentation.view.interfaces.IMainView;
+import it.unibs.ingsoft.presentation.view.interfaces.common.auth.IMainView;
 
 import java.util.Objects;
 import java.util.Optional;

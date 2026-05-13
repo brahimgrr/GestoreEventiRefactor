@@ -6,7 +6,16 @@ import it.unibs.ingsoft.domain.Campo;
 import it.unibs.ingsoft.domain.Categoria;
 import it.unibs.ingsoft.domain.Proposta;
 import it.unibs.ingsoft.domain.error.DomainException;
-import it.unibs.ingsoft.presentation.view.interfaces.IConfiguratoreView;
+import it.unibs.ingsoft.presentation.view.interfaces.configuratore.batch.IBatchImportView;
+import it.unibs.ingsoft.presentation.view.interfaces.configuratore.campo.ICampoConfigView;
+import it.unibs.ingsoft.presentation.view.interfaces.configuratore.catalogo.ICatalogoConfigView;
+import it.unibs.ingsoft.presentation.view.interfaces.configuratore.categoria.ICategoriaConfigView;
+import it.unibs.ingsoft.presentation.view.interfaces.configuratore.error.IConfiguratoreFeedbackView;
+import it.unibs.ingsoft.presentation.view.interfaces.configuratore.menu.IConfiguratoreView;
+import it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta.IPropostaBrowsingView;
+import it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta.IPropostaCreationView;
+import it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta.IPropostaLifecycleView;
+import it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta.IPropostaPublicationView;
 
 import java.io.IOException;
 import java.util.Map;
@@ -14,19 +23,46 @@ import java.util.Objects;
 import java.util.Optional;
 
 public final class ConfiguratoreController {
-    private final IConfiguratoreView view;
+    private final IConfiguratoreView mainView;
+    private final ICatalogoConfigView catalogoView;
+    private final ICategoriaConfigView categoriaView;
+    private final ICampoConfigView campoView;
+    private final IPropostaCreationView propostaCreationView;
+    private final IPropostaPublicationView propostaPublicationView;
+    private final IPropostaLifecycleView propostaLifecycleView;
+    private final IPropostaBrowsingView propostaBrowsingView;
+    private final IBatchImportView batchImportView;
+    private final IConfiguratoreFeedbackView feedbackView;
     private final ConfiguratoreService configuratoreService;
 
     public ConfiguratoreController(
-            IConfiguratoreView view,
+            IConfiguratoreView mainView,
+            ICatalogoConfigView catalogoView,
+            ICategoriaConfigView categoriaView,
+            ICampoConfigView campoView,
+            IPropostaCreationView propostaCreationView,
+            IPropostaPublicationView propostaPublicationView,
+            IPropostaLifecycleView propostaLifecycleView,
+            IPropostaBrowsingView propostaBrowsingView,
+            IBatchImportView batchImportView,
+            IConfiguratoreFeedbackView feedbackView,
             ConfiguratoreService configuratoreService) {
-        this.view = Objects.requireNonNull(view);
+        this.mainView = Objects.requireNonNull(mainView);
+        this.catalogoView = Objects.requireNonNull(catalogoView);
+        this.categoriaView = Objects.requireNonNull(categoriaView);
+        this.campoView = Objects.requireNonNull(campoView);
+        this.propostaCreationView = Objects.requireNonNull(propostaCreationView);
+        this.propostaPublicationView = Objects.requireNonNull(propostaPublicationView);
+        this.propostaLifecycleView = Objects.requireNonNull(propostaLifecycleView);
+        this.propostaBrowsingView = Objects.requireNonNull(propostaBrowsingView);
+        this.batchImportView = Objects.requireNonNull(batchImportView);
+        this.feedbackView = Objects.requireNonNull(feedbackView);
         this.configuratoreService = Objects.requireNonNull(configuratoreService);
     }
 
     public void run() {
         while (configuratoreService.isPrimaConfigurazioneNecessaria()) {
-            view.mostraPrimaConfigurazioneRichiesta();
+            catalogoView.mostraPrimaConfigurazioneRichiesta();
             configuraCampiBase();
         }
         menuPrincipale();
@@ -34,18 +70,18 @@ public final class ConfiguratoreController {
 
     private void menuPrincipale() {
         while (true) {
-            switch (view.scegliAzionePrincipale()) {
+            switch (mainView.scegliAzionePrincipale()) {
                 case CAMPI_COMUNI -> gestisciCampiComuni();
                 case CATEGORIE -> gestisciCategorie();
-                case VISUALIZZA -> view.mostraCatalogo(
+                case VISUALIZZA -> catalogoView.mostraCatalogo(
                         configuratoreService.getCampiBase(),
                         configuratoreService.getCampiComuni(),
                         configuratoreService.getCategorie());
                 case CREA_PROPOSTA -> creaProposta();
                 case PUBBLICA_PROPOSTA -> pubblicaProposta();
-                case BACHECA -> view.mostraBacheca(configuratoreService.getBachecaPerCategoria());
+                case BACHECA -> propostaBrowsingView.mostraBacheca(configuratoreService.getBachecaPerCategoria());
                 case RITIRA_PROPOSTA -> ritiraProposta();
-                case ARCHIVIO -> view.mostraArchivioProposte(configuratoreService.getPropostePerStato());
+                case ARCHIVIO -> propostaBrowsingView.mostraArchivioProposte(configuratoreService.getPropostePerStato());
                 case IMPORTA -> importaDati();
                 case LOGOUT -> {
                     configuratoreService.clearProposteValide();
@@ -56,23 +92,23 @@ public final class ConfiguratoreController {
     }
 
     private void configuraCampiBase() {
-        view.acquisisciCampiBaseExtra(configuratoreService.getCampiBasePredefiniti())
+        catalogoView.acquisisciCampiBaseExtra(configuratoreService.getCampiBasePredefiniti())
                 .ifPresentOrElse(
                         extra -> esegui(
                                 () -> configuratoreService.configuraCampiBase(extra),
-                                () -> view.mostraEsitoCatalogo(CatalogoOperationResult.SUCCESSO)),
-                        view::mostraOperazioneAnnullata);
+                                () -> catalogoView.mostraEsitoCatalogo(CatalogoOperationResult.SUCCESSO)),
+                        feedbackView::mostraOperazioneAnnullata);
     }
 
     private void gestisciCategorie() {
         while (true) {
-            switch (view.scegliAzioneCategorie(configuratoreService.getCategorie())) {
-                case CREA -> view.acquisisciNomeCategoria()
+            switch (categoriaView.scegliAzioneCategorie(configuratoreService.getCategorie())) {
+                case CREA -> categoriaView.acquisisciNomeCategoria()
                         .ifPresent(nome -> esegui(
                                 () -> configuratoreService.createCategoria(nome),
-                                () -> view.mostraEsitoCatalogo(CatalogoOperationResult.SUCCESSO)));
+                                () -> catalogoView.mostraEsitoCatalogo(CatalogoOperationResult.SUCCESSO)));
                 case RIMUOVI -> rimuoviCategoria();
-                case CAMPI_SPECIFICI -> view.selezionaCategoriaPerCampiSpecifici(configuratoreService.getCategorie())
+                case CAMPI_SPECIFICI -> categoriaView.selezionaCategoriaPerCampiSpecifici(configuratoreService.getCategorie())
                         .ifPresent(this::gestisciCampiSpecifici);
                 case TORNA -> {
                     return;
@@ -82,22 +118,22 @@ public final class ConfiguratoreController {
     }
 
     private void rimuoviCategoria() {
-        view.selezionaCategoriaDaRimuovere(configuratoreService.getCategorie())
-                .filter(view::confermaRimozioneCategoria)
-                .ifPresent(categoria -> view.mostraEsitoCatalogo(
+        categoriaView.selezionaCategoriaDaRimuovere(configuratoreService.getCategorie())
+                .filter(categoriaView::confermaRimozioneCategoria)
+                .ifPresent(categoria -> catalogoView.mostraEsitoCatalogo(
                         configuratoreService.rimuoviCategoria(categoria.getNome())));
     }
 
     private void gestisciCampiComuni() {
         while (true) {
-            switch (view.scegliAzioneCampiComuni(configuratoreService.getCampiComuni())) {
-                case AGGIUNGI -> view.acquisisciNuovoCampo()
+            switch (campoView.scegliAzioneCampiComuni(configuratoreService.getCampiComuni())) {
+                case AGGIUNGI -> campoView.acquisisciNuovoCampo()
                         .ifPresent(request -> esegui(
                                 () -> configuratoreService.addCampoComune(request),
-                                () -> view.mostraEsitoCatalogo(CatalogoOperationResult.SUCCESSO)));
+                                () -> catalogoView.mostraEsitoCatalogo(CatalogoOperationResult.SUCCESSO)));
                 case RIMUOVI -> rimuoviCampoComune();
-                case CAMBIA_OBBLIGATORIETA -> view.acquisisciObbligatorietaCampo(configuratoreService.getCampiComuni())
-                        .ifPresent(request -> view.mostraEsitoCatalogo(
+                case CAMBIA_OBBLIGATORIETA -> campoView.acquisisciObbligatorietaCampo(configuratoreService.getCampiComuni())
+                        .ifPresent(request -> catalogoView.mostraEsitoCatalogo(
                                 configuratoreService.setObbligatorietaCampoComune(request)));
                 case TORNA -> {
                     return;
@@ -108,14 +144,14 @@ public final class ConfiguratoreController {
 
     private void gestisciCampiSpecifici(Categoria categoria) {
         while (true) {
-            switch (view.scegliAzioneCampiSpecifici(categoria)) {
-                case AGGIUNGI -> view.acquisisciNuovoCampo()
+            switch (campoView.scegliAzioneCampiSpecifici(categoria)) {
+                case AGGIUNGI -> campoView.acquisisciNuovoCampo()
                         .ifPresent(request -> esegui(
                                 () -> configuratoreService.addCampoSpecifico(categoria.getNome(), request),
-                                () -> view.mostraEsitoCatalogo(CatalogoOperationResult.SUCCESSO)));
+                                () -> catalogoView.mostraEsitoCatalogo(CatalogoOperationResult.SUCCESSO)));
                 case RIMUOVI -> rimuoviCampoSpecifico(categoria);
-                case CAMBIA_OBBLIGATORIETA -> view.acquisisciObbligatorietaCampo(categoria.getCampiSpecifici())
-                        .ifPresent(request -> view.mostraEsitoCatalogo(
+                case CAMBIA_OBBLIGATORIETA -> campoView.acquisisciObbligatorietaCampo(categoria.getCampiSpecifici())
+                        .ifPresent(request -> catalogoView.mostraEsitoCatalogo(
                                 configuratoreService.setObbligatorietaCampoSpecifico(categoria.getNome(), request)));
                 case TORNA -> {
                     return;
@@ -125,28 +161,28 @@ public final class ConfiguratoreController {
     }
 
     private void rimuoviCampoComune() {
-        view.selezionaCampoDaRimuovere(configuratoreService.getCampiComuni())
-                .filter(view::confermaRimozioneCampo)
+        campoView.selezionaCampoDaRimuovere(configuratoreService.getCampiComuni())
+                .filter(campoView::confermaRimozioneCampo)
                 .map(Campo::getNome)
-                .ifPresent(nome -> view.mostraEsitoCatalogo(configuratoreService.rimuoviCampoComune(nome)));
+                .ifPresent(nome -> catalogoView.mostraEsitoCatalogo(configuratoreService.rimuoviCampoComune(nome)));
     }
 
     private void rimuoviCampoSpecifico(Categoria categoria) {
-        view.selezionaCampoDaRimuovere(categoria.getCampiSpecifici())
-                .filter(view::confermaRimozioneCampo)
+        campoView.selezionaCampoDaRimuovere(categoria.getCampiSpecifici())
+                .filter(campoView::confermaRimozioneCampo)
                 .map(Campo::getNome)
-                .ifPresent(nome -> view.mostraEsitoCatalogo(
+                .ifPresent(nome -> catalogoView.mostraEsitoCatalogo(
                         configuratoreService.rimuoviCampoSpecifico(categoria.getNome(), nome)));
     }
 
     private void creaProposta() {
-        view.selezionaCategoriaPerProposta(configuratoreService.getCategorie())
+        propostaCreationView.selezionaCategoriaPerProposta(configuratoreService.getCategorie())
                 .ifPresent(categoria -> {
                     Proposta proposta = configuratoreService.creaProposta(categoria);
-                    view.acquisisciValoriProposta(proposta, configuratoreService::validaCampo)
+                    propostaCreationView.acquisisciValoriProposta(proposta, configuratoreService::validaCampo)
                             .ifPresentOrElse(
                                     valori -> validaESalvaProposta(proposta, valori),
-                                    view::mostraOperazioneAnnullata);
+                                    feedbackView::mostraOperazioneAnnullata);
                 });
     }
 
@@ -154,7 +190,7 @@ public final class ConfiguratoreController {
         var result = configuratoreService.applicaValoriEValida(proposta, valori);
         while (!result.valida()) {
             Optional<Map<String, String>> correzioni =
-                    view.correggiValoriProposta(proposta, result, configuratoreService::validaCampo);
+                    propostaCreationView.correggiValoriProposta(proposta, result, configuratoreService::validaCampo);
             if (correzioni.isEmpty()) {
                 return;
             }
@@ -162,32 +198,32 @@ public final class ConfiguratoreController {
         }
         esegui(
                 () -> configuratoreService.salvaProposta(proposta),
-                () -> view.mostraPropostaSalvata(proposta));
+                () -> propostaCreationView.mostraPropostaSalvata(proposta));
     }
 
     private void pubblicaProposta() {
-        view.selezionaPropostaDaPubblicare(configuratoreService.getProposteValide())
-                .filter(view::confermaPubblicazione)
+        propostaPublicationView.selezionaPropostaDaPubblicare(configuratoreService.getProposteValide())
+                .filter(propostaPublicationView::confermaPubblicazione)
                 .ifPresent(proposta -> esegui(
                         () -> configuratoreService.pubblicaProposta(proposta),
-                        () -> view.mostraPropostaPubblicata(proposta)));
+                        () -> propostaPublicationView.mostraPropostaPubblicata(proposta)));
     }
 
     private void ritiraProposta() {
-        view.selezionaPropostaDaRitirare(configuratoreService.getProposteRitirabili())
-                .filter(view::confermaRitiro)
+        propostaLifecycleView.selezionaPropostaDaRitirare(configuratoreService.getProposteRitirabili())
+                .filter(propostaLifecycleView::confermaRitiro)
                 .ifPresent(proposta -> esegui(
                         () -> configuratoreService.ritiraProposta(proposta),
-                        () -> view.mostraEsitoCatalogo(CatalogoOperationResult.SUCCESSO)));
+                        () -> catalogoView.mostraEsitoCatalogo(CatalogoOperationResult.SUCCESSO)));
     }
 
     private void importaDati() {
-        view.acquisisciPercorsoImportazione()
+        batchImportView.acquisisciPercorsoImportazione()
                 .ifPresent(path -> {
                     try {
-                        view.mostraRisultatoImportazione(configuratoreService.importa(path));
+                        batchImportView.mostraRisultatoImportazione(configuratoreService.importa(path));
                     } catch (IOException | DomainException e) {
-                        view.mostraErrore(e);
+                        feedbackView.mostraErrore(e);
                     }
                 });
     }
@@ -197,7 +233,7 @@ public final class ConfiguratoreController {
             action.run();
             onSuccess.run();
         } catch (IllegalArgumentException | IllegalStateException e) {
-            view.mostraErrore(e);
+            feedbackView.mostraErrore(e);
         }
     }
 }
