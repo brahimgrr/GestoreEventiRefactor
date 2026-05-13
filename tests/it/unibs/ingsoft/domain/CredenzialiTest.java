@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.domain;
 
-import it.unibs.ingsoft.domain.utente.Credenziali;
+import it.unibs.ingsoft.persistence.dto.CredenzialiDTO;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class CredenzialiTest {
     @Test
     void addConfiguratore_conUsernameMaiuscoloESpazi_salvaChiaveMinuscolaTrimmata() {
-        Credenziali credenziali = new Credenziali();
+        CredenzialiDTO credenziali = new CredenzialiDTO();
 
         credenziali.addConfiguratore("  Admin  ", "pwd");
 
@@ -19,7 +19,7 @@ class CredenzialiTest {
 
     @Test
     void addFruitore_conUsernameMaiuscoloESpazi_salvaChiaveMinuscolaTrimmata() {
-        Credenziali credenziali = new Credenziali();
+        CredenzialiDTO credenziali = new CredenzialiDTO();
 
         credenziali.addFruitore("  Mario  ", "pwd");
 
@@ -28,7 +28,7 @@ class CredenzialiTest {
 
     @Test
     void getConfiguratori_quandoSiModificaMappaRestituita_lanciaUnsupportedOperationException() {
-        Credenziali credenziali = new Credenziali();
+        CredenzialiDTO credenziali = new CredenzialiDTO();
 
         assertThrows(UnsupportedOperationException.class,
                 () -> credenziali.getConfiguratori().put("admin", "pwd"));
@@ -36,7 +36,7 @@ class CredenzialiTest {
 
     @Test
     void getFruitori_quandoSiModificaMappaRestituita_lanciaUnsupportedOperationException() {
-        Credenziali credenziali = new Credenziali();
+        CredenzialiDTO credenziali = new CredenzialiDTO();
 
         assertThrows(UnsupportedOperationException.class,
                 () -> credenziali.getFruitori().put("mario", "pwd"));
@@ -44,7 +44,7 @@ class CredenzialiTest {
 
     @Test
     void fromJson_conMappeNull_creaCredenzialiVuote() {
-        Credenziali credenziali = Credenziali.fromJson(null, null);
+        CredenzialiDTO credenziali = CredenzialiDTO.fromJson(null, null);
 
         assertAll(
                 () -> assertTrue(credenziali.getConfiguratori().isEmpty()),
@@ -54,7 +54,7 @@ class CredenzialiTest {
 
     @Test
     void fromJson_conMappeValorizzate_copiaConfiguratoriEFruitori() {
-        Credenziali credenziali = Credenziali.fromJson(Map.of("admin", "a"), Map.of("admin", "m"));
+        CredenzialiDTO credenziali = CredenzialiDTO.fromJson(Map.of("admin", "a"), Map.of("admin", "m"));
 
         assertAll(
                 () -> assertEquals("a", credenziali.getConfiguratori().get("admin")),

@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.persistence.file;
 
-import it.unibs.ingsoft.domain.proposta.Bacheca;
+import it.unibs.ingsoft.persistence.dto.BachecaDTO;
 import it.unibs.ingsoft.persistence.interfaces.IBachecaRepository;
 
 import java.nio.file.Path;
@@ -9,20 +9,20 @@ import java.nio.file.Path;
  * Implementazione JSON su file di {@link IBachecaRepository}.
  */
 public final class FileBachecaRepository
-        extends AbstractFileRepository<Bacheca>
+        extends AbstractFileRepository<BachecaDTO>
         implements IBachecaRepository {
 
     public FileBachecaRepository(Path path) {
-        super(path, Bacheca.class, Bacheca::new);
+        super(path, BachecaDTO.class, BachecaDTO::new);
     }
 
     @Override
-    public Bacheca load() {
+    public BachecaDTO load() {
         return super.load();
     }
 
     @Override
-    public void save(Bacheca bacheca) {
+    public void save(BachecaDTO bacheca) {
         super.save(bacheca);
     }
 }

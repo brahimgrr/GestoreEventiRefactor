@@ -1,9 +1,9 @@
 package it.unibs.ingsoft.persistence.file;
 
-import it.unibs.ingsoft.domain.notifica.ArchivioNotifiche;
+import it.unibs.ingsoft.persistence.dto.ArchivioNotificheDTO;
 import it.unibs.ingsoft.domain.notifica.Notifica;
 import it.unibs.ingsoft.domain.notifica.NotificaType;
-import it.unibs.ingsoft.domain.utente.SpazioPersonale;
+import it.unibs.ingsoft.persistence.dto.SpazioPersonaleDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -22,7 +22,7 @@ class FileSpazioPersonaleRepository_Test {
     void load_conFileAssente_restituisceArchivioNotificheVuoto() {
         FileSpazioPersonaleRepository repository = new FileSpazioPersonaleRepository(tempDir.resolve("notifiche.json"));
 
-        ArchivioNotifiche archivio = repository.load();
+        ArchivioNotificheDTO archivio = repository.load();
 
         assertTrue(archivio.getUtenti().isEmpty());
     }
@@ -33,7 +33,7 @@ class FileSpazioPersonaleRepository_Test {
     @Test
     void getSpazioDi_conStessoUsernameDueVolte_restituisceStessaIstanzaNelloStessoArchivio() {
         FileSpazioPersonaleRepository repository = new FileSpazioPersonaleRepository(tempDir.resolve("notifiche.json"));
-        ArchivioNotifiche archivio = repository.load();
+        ArchivioNotificheDTO archivio = repository.load();
 
         assertSame(archivio.getSpazioDi("mario"), archivio.getSpazioDi("mario"));
     }
@@ -41,7 +41,7 @@ class FileSpazioPersonaleRepository_Test {
     @Test
     void getSpazioDi_conUsernameDiversi_restituisceSpaziPersonaliDiversi() {
         FileSpazioPersonaleRepository repository = new FileSpazioPersonaleRepository(tempDir.resolve("notifiche.json"));
-        ArchivioNotifiche archivio = repository.load();
+        ArchivioNotificheDTO archivio = repository.load();
 
         assertNotSame(archivio.getSpazioDi("mario"), archivio.getSpazioDi("luigi"));
     }
@@ -51,7 +51,7 @@ class FileSpazioPersonaleRepository_Test {
         Path path = tempDir.resolve("notifiche.json");
 
         FileSpazioPersonaleRepository repository = new FileSpazioPersonaleRepository(path);
-        repository.save(new ArchivioNotifiche());
+        repository.save(new ArchivioNotificheDTO());
 
         assertTrue(Files.exists(path));
     }
@@ -61,12 +61,12 @@ class FileSpazioPersonaleRepository_Test {
         Path path = tempDir.resolve("notifiche.json");
 
         FileSpazioPersonaleRepository repository = new FileSpazioPersonaleRepository(path);
-        ArchivioNotifiche archivio = repository.load();
+        ArchivioNotificheDTO archivio = repository.load();
         archivio.getSpazioDi("mario").addNotifica(
                 new Notifica("id-1", NotificaType.LEGACY_MESSAGGIO, Map.of(), "messaggio", LocalDateTime.of(2026, 5, 6, 10, 0)));
         repository.save(archivio);
 
-        SpazioPersonale ricaricato = new FileSpazioPersonaleRepository(path).load().getSpazioDi("mario");
+        SpazioPersonaleDTO ricaricato = new FileSpazioPersonaleRepository(path).load().getSpazioDi("mario");
 
         assertEquals("id-1", ricaricato.getNotifiche().get(0).id());
     }

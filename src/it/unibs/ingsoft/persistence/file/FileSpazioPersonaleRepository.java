@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.persistence.file;
 
-import it.unibs.ingsoft.domain.notifica.ArchivioNotifiche;
+import it.unibs.ingsoft.persistence.dto.ArchivioNotificheDTO;
 import it.unibs.ingsoft.persistence.interfaces.ISpazioPersonaleRepository;
 
 import java.nio.file.Path;
@@ -8,20 +8,20 @@ import java.nio.file.Path;
 /**
  * Implementazione JSON su file di {@link ISpazioPersonaleRepository}.
  */
-public final class FileSpazioPersonaleRepository extends AbstractFileRepository<ArchivioNotifiche> implements ISpazioPersonaleRepository {
+public final class FileSpazioPersonaleRepository extends AbstractFileRepository<ArchivioNotificheDTO> implements ISpazioPersonaleRepository {
 
     public FileSpazioPersonaleRepository(Path path) {
-        super(path, ArchivioNotifiche.class, ArchivioNotifiche::new);
+        super(path, ArchivioNotificheDTO.class, ArchivioNotificheDTO::new);
     }
 
     @Override
-    public ArchivioNotifiche load() {
+    public ArchivioNotificheDTO load() {
         return super.load();
     }
 
 
     @Override
-    public void save(ArchivioNotifiche archivio) {
+    public void save(ArchivioNotificheDTO archivio) {
         super.save(archivio);
     }
 }

@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.application.catalogo;
 
 import it.unibs.ingsoft.application.catalogo.dto.CatalogoOperationResult;
-import it.unibs.ingsoft.domain.catalogo.Catalogo;
+import it.unibs.ingsoft.persistence.dto.CatalogoDTO;
 import it.unibs.ingsoft.domain.catalogo.Categoria;
 import it.unibs.ingsoft.persistence.interfaces.ICatalogoRepository;
 
@@ -18,19 +18,19 @@ public final class CategoriaCatalogoService {
         this.repo = Objects.requireNonNull(repo);
     }
 
-    private Catalogo catalogo() {
+    private CatalogoDTO catalogo() {
         return repo.load();
     }
 
     public Categoria createCategoria(String nome) {
-        Catalogo catalogo = repo.load();
+        CatalogoDTO catalogo = repo.load();
         Categoria categoria = catalogo.addCategoria(nome);
         repo.save(catalogo);
         return categoria;
     }
 
     public boolean removeCategoria(String nome) {
-        Catalogo catalogo = repo.load();
+        CatalogoDTO catalogo = repo.load();
         boolean changed = catalogo.removeCategoria(nome);
         if (changed) repo.save(catalogo);
         return changed;

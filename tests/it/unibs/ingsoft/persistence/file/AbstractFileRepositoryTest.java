@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.persistence.file;
 
-import it.unibs.ingsoft.domain.utente.Credenziali;
+import it.unibs.ingsoft.persistence.dto.CredenzialiDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -17,7 +17,7 @@ class AbstractFileRepositoryTest {
     void load_conFileAssente_restituisceValoreDiDefault() {
         TestCredenzialiRepository repository = new TestCredenzialiRepository(tempDir.resolve("missing.json"));
 
-        Credenziali credenziali = repository.loadDirect();
+        CredenzialiDTO credenziali = repository.loadDirect();
 
         assertTrue(credenziali.getConfiguratori().isEmpty());
     }
@@ -38,7 +38,7 @@ class AbstractFileRepositoryTest {
 
         TestCredenzialiRepository repository = new TestCredenzialiRepository(path);
 
-        Credenziali credenziali = new Credenziali();
+        CredenzialiDTO credenziali = new CredenzialiDTO();
         credenziali.addConfiguratore("Admin", "pwd");
 
         repository.saveDirect(credenziali);
@@ -53,16 +53,16 @@ class AbstractFileRepositoryTest {
         assertThrows(NullPointerException.class, () -> repository.saveDirect(null));
     }
 
-    private static final class TestCredenzialiRepository extends AbstractFileRepository<Credenziali> {
+    private static final class TestCredenzialiRepository extends AbstractFileRepository<CredenzialiDTO> {
         private TestCredenzialiRepository(Path path) {
-            super(path, Credenziali.class, Credenziali::new);
+            super(path, CredenzialiDTO.class, CredenzialiDTO::new);
         }
 
-        private Credenziali loadDirect() {
+        private CredenzialiDTO loadDirect() {
             return load();
         }
 
-        private void saveDirect(Credenziali credenziali) {
+        private void saveDirect(CredenzialiDTO credenziali) {
             save(credenziali);
         }
     }

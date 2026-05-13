@@ -1,7 +1,9 @@
-package it.unibs.ingsoft.domain.proposta;
+package it.unibs.ingsoft.persistence.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import it.unibs.ingsoft.domain.proposta.Proposta;
+import it.unibs.ingsoft.domain.proposta.PropostaIdentityPolicy;
 import it.unibs.ingsoft.domain.shared.error.DomainErrorCode;
 import it.unibs.ingsoft.domain.shared.error.DomainException;
 
@@ -14,11 +16,11 @@ import java.util.Optional;
 /**
  * Raccolta serializzabile delle proposte. Contiene proposte in qualsiasi stato.
  */
-public final class Bacheca {
+public final class BachecaDTO {
     private final List<Proposta> proposte;
     private final PropostaIdentityPolicy duplicatePolicy = PropostaIdentityPolicy.DEFAULT;
 
-    public Bacheca() {
+    public BachecaDTO() {
         this.proposte = new ArrayList<>();
     }
 
@@ -26,9 +28,9 @@ public final class Bacheca {
      * Factory di deserializzazione Jackson.
      */
     @JsonCreator
-    public static Bacheca fromJson(
+    public static BachecaDTO fromJson(
             @JsonProperty("proposte") List<Proposta> proposte) {
-        Bacheca bacheca = new Bacheca();
+        BachecaDTO bacheca = new BachecaDTO();
         if (proposte != null) bacheca.proposte.addAll(proposte);
         return bacheca;
     }

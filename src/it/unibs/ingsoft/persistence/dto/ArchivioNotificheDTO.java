@@ -1,8 +1,7 @@
-package it.unibs.ingsoft.domain.notifica;
+package it.unibs.ingsoft.persistence.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import it.unibs.ingsoft.domain.utente.SpazioPersonale;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,37 +12,37 @@ import java.util.Optional;
  * Mappa {@code username → SpazioPersonale} persistita su file.
  * Crea uno spazio vuoto al primo accesso se l'utente non esiste ancora.
  */
-public final class ArchivioNotifiche {
-    private final Map<String, SpazioPersonale> utenti;
+public final class ArchivioNotificheDTO {
+    private final Map<String, SpazioPersonaleDTO> utenti;
 
-    public ArchivioNotifiche() {
+    public ArchivioNotificheDTO() {
         this.utenti = new HashMap<>();
     }
 
     @JsonCreator
-    public static ArchivioNotifiche fromJson(
-            @JsonProperty("utenti") Map<String, SpazioPersonale> utenti
+    public static ArchivioNotificheDTO fromJson(
+            @JsonProperty("utenti") Map<String, SpazioPersonaleDTO> utenti
     ) {
-        ArchivioNotifiche a = new ArchivioNotifiche();
+        ArchivioNotificheDTO a = new ArchivioNotificheDTO();
         if (utenti != null) {
             a.utenti.putAll(utenti);
         }
         return a;
     }
 
-    public Map<String, SpazioPersonale> getUtenti() {
+    public Map<String, SpazioPersonaleDTO> getUtenti() {
         return Collections.unmodifiableMap(utenti);
     }
 
-    public Optional<SpazioPersonale> findSpazioDi(String username) {
+    public Optional<SpazioPersonaleDTO> findSpazioDi(String username) {
         if (username == null) {
             return Optional.empty();
         }
         return Optional.ofNullable(utenti.get(username));
     }
 
-    public SpazioPersonale getOrCreateSpazioDi(String username) {
-        return utenti.computeIfAbsent(username, k -> new SpazioPersonale());
+    public SpazioPersonaleDTO getOrCreateSpazioDi(String username) {
+        return utenti.computeIfAbsent(username, k -> new SpazioPersonaleDTO());
     }
 
     /**
@@ -52,7 +51,7 @@ public final class ArchivioNotifiche {
      * @pre username != null
      * @post result != null
      */
-    public SpazioPersonale getSpazioDi(String username) {
+    public SpazioPersonaleDTO getSpazioDi(String username) {
         return getOrCreateSpazioDi(username);
     }
 }

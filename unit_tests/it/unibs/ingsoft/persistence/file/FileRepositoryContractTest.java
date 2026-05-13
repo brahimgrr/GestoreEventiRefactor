@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.persistence.file;
 
-import it.unibs.ingsoft.domain.catalogo.Catalogo;
 import it.unibs.ingsoft.domain.catalogo.Categoria;
+import it.unibs.ingsoft.persistence.dto.CatalogoDTO;
 import it.unibs.ingsoft.persistence.interfaces.ICatalogoRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -22,7 +22,7 @@ class FileRepositoryContractTest {
     void loadReturnsEmptyAggregateWhenFileDoesNotExist() {
         ICatalogoRepository repository = new FileCatalogoRepository(tempDir.resolve("catalogo.json"));
 
-        Catalogo catalogo = repository.load();
+        CatalogoDTO catalogo = repository.load();
 
         assertNotNull(catalogo);
         assertTrue(catalogo.getCategorie().isEmpty());
@@ -32,7 +32,7 @@ class FileRepositoryContractTest {
     void savePersistsTheAggregatePassedAsParameter() {
         Path path = tempDir.resolve("catalogo.json");
         ICatalogoRepository writer = new FileCatalogoRepository(path);
-        Catalogo catalogo = new Catalogo();
+        CatalogoDTO catalogo = new CatalogoDTO();
         catalogo.addCategoria("Cinema");
 
         writer.save(catalogo);

@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.application.proposta;
 
-import it.unibs.ingsoft.domain.proposta.Bacheca;
+import it.unibs.ingsoft.persistence.dto.BachecaDTO;
 import it.unibs.ingsoft.domain.proposta.Proposta;
 import it.unibs.ingsoft.domain.proposta.PropostaIdentityPolicy;
 import it.unibs.ingsoft.domain.shared.error.DomainErrorCode;
@@ -62,7 +62,7 @@ public final class PropostaPublicationService {
         commandLock.runLocked(() -> {
             LocalDate oggi = LocalDate.now(AppConstants.clock);
             proposta.verificaPubblicabile(oggi);
-            Bacheca bacheca = bachecaRepo.load();
+            BachecaDTO bacheca = bachecaRepo.load();
             rilevaDuplicato(proposta, bacheca);
 
             proposta.pubblica(oggi);
@@ -85,7 +85,7 @@ public final class PropostaPublicationService {
         }
     }
 
-    private void rilevaDuplicato(Proposta proposta, Bacheca bacheca) {
+    private void rilevaDuplicato(Proposta proposta, BachecaDTO bacheca) {
         String chiave = duplicatePolicy.chiaveDuplicato(proposta);
 
         if (bacheca.containsChiaveDuplicato(chiave)) {

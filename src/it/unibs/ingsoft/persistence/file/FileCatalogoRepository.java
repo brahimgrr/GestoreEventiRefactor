@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.persistence.file;
 
-import it.unibs.ingsoft.domain.catalogo.Catalogo;
+import it.unibs.ingsoft.persistence.dto.CatalogoDTO;
 import it.unibs.ingsoft.persistence.interfaces.ICatalogoRepository;
 
 import java.nio.file.Path;
@@ -9,20 +9,20 @@ import java.nio.file.Path;
  * Implementazione JSON su file di {@link ICatalogoRepository}.
  */
 public final class FileCatalogoRepository
-        extends AbstractFileRepository<Catalogo>
+        extends AbstractFileRepository<CatalogoDTO>
         implements ICatalogoRepository {
 
     public FileCatalogoRepository(Path path) {
-        super(path, Catalogo.class, Catalogo::new);
+        super(path, CatalogoDTO.class, CatalogoDTO::new);
     }
 
     @Override
-    public Catalogo load() {
+    public CatalogoDTO load() {
         return super.load();
     }
 
     @Override
-    public void save(Catalogo catalogo) {
+    public void save(CatalogoDTO catalogo) {
         super.save(catalogo);
     }
 }

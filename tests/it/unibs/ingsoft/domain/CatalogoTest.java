@@ -1,6 +1,7 @@
 package it.unibs.ingsoft.domain;
 
 import it.unibs.ingsoft.domain.catalogo.*;
+import it.unibs.ingsoft.persistence.dto.CatalogoDTO;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class CatalogoTest {
     @Test
     void fissareCampiBase_conListaValida_salvaCampiEImpostaFlagFissati() {
-        Catalogo catalogo = new Catalogo();
+        CatalogoDTO catalogo = new CatalogoDTO();
 
         Campo base = campo("Titolo", TipoCampo.BASE, TipoDato.STRINGA, true);
         catalogo.fissareCampiBase(List.of(base), null);
@@ -23,7 +24,7 @@ class CatalogoTest {
 
     @Test
     void fissareCampiBase_conDuplicatoCaseInsensitive_lanciaIllegalStateException() {
-        Catalogo catalogo = new Catalogo();
+        CatalogoDTO catalogo = new CatalogoDTO();
 
         assertThrows(IllegalStateException.class,
                 () -> catalogo.fissareCampiBase(List.of(
@@ -34,7 +35,7 @@ class CatalogoTest {
 
     @Test
     void fissareCampiBase_quandoGiaFissati_lanciaIllegalStateException() {
-        Catalogo catalogo = new Catalogo();
+        CatalogoDTO catalogo = new CatalogoDTO();
         catalogo.fissareCampiBase(List.of(campo("Titolo", TipoCampo.BASE, TipoDato.STRINGA, true)), null);
 
         assertThrows(IllegalStateException.class,
@@ -43,7 +44,7 @@ class CatalogoTest {
 
     @Test
     void addCampoComune_conNomeNuovo_aggiungeCampoComune() {
-        Catalogo catalogo = new Catalogo();
+        CatalogoDTO catalogo = new CatalogoDTO();
         Campo campo = campo("Eta", TipoCampo.COMUNE, TipoDato.INTERO, false);
 
         catalogo.addCampoComune(campo);
@@ -53,7 +54,7 @@ class CatalogoTest {
 
     @Test
     void addCampoComune_conNomeGiaPresente_lanciaIllegalStateException() {
-        Catalogo catalogo = new Catalogo();
+        CatalogoDTO catalogo = new CatalogoDTO();
         catalogo.fissareCampiBase(List.of(campo("Titolo", TipoCampo.BASE, TipoDato.STRINGA, true)), null);
 
         assertThrows(IllegalStateException.class,
@@ -62,7 +63,7 @@ class CatalogoTest {
 
     @Test
     void removeCampoComune_conNomePresenteRimuoveCampo_restituisceTrue() {
-        Catalogo catalogo = new Catalogo();
+        CatalogoDTO catalogo = new CatalogoDTO();
         catalogo.addCampoComune(campo("Eta", TipoCampo.COMUNE, TipoDato.INTERO, false));
 
         boolean rimosso = catalogo.removeCampoComune("eta");
@@ -75,7 +76,7 @@ class CatalogoTest {
 
     @Test
     void updateCampoComune_conNomePresenteCambiaObbligatorieta_restituisceTrue() {
-        Catalogo catalogo = new Catalogo();
+        CatalogoDTO catalogo = new CatalogoDTO();
         catalogo.addCampoComune(campo("Eta", TipoCampo.COMUNE, TipoDato.INTERO, false));
 
         boolean aggiornato = catalogo.updateCampoComune("eta", true);
@@ -88,14 +89,14 @@ class CatalogoTest {
 
     @Test
     void updateCampoComune_conNomeAssente_restituisceFalse() {
-        Catalogo catalogo = new Catalogo();
+        CatalogoDTO catalogo = new CatalogoDTO();
 
         assertFalse(catalogo.updateCampoComune("Eta", true));
     }
 
     @Test
     void addCategoria_conNomeNuovo_aggiungeCategoriaERestituisceIstanzaAggiunta() {
-        Catalogo catalogo = new Catalogo();
+        CatalogoDTO catalogo = new CatalogoDTO();
 
         Categoria categoria = catalogo.addCategoria("Sport");
 
@@ -107,7 +108,7 @@ class CatalogoTest {
 
     @Test
     void addCategoria_conNomeDuplicatoCaseInsensitive_lanciaIllegalStateException() {
-        Catalogo catalogo = new Catalogo();
+        CatalogoDTO catalogo = new CatalogoDTO();
         catalogo.addCategoria("Sport");
 
         assertThrows(IllegalStateException.class, () -> catalogo.addCategoria("sport"));
@@ -115,14 +116,14 @@ class CatalogoTest {
 
     @Test
     void getCategoriaOrThrow_conCategoriaAssente_lanciaIllegalStateException() {
-        Catalogo catalogo = new Catalogo();
+        CatalogoDTO catalogo = new CatalogoDTO();
 
         assertThrows(IllegalStateException.class, () -> catalogo.getCategoriaOrThrow("Sport"));
     }
 
     @Test
     void addCampoSpecifico_conCategoriaEsistente_aggiungeCampoAllaCategoriaIndicata() {
-        Catalogo catalogo = new Catalogo();
+        CatalogoDTO catalogo = new CatalogoDTO();
         catalogo.addCategoria("Sport");
 
         Campo specifico = campo("Arbitro", TipoCampo.SPECIFICO, TipoDato.BOOLEANO, false);
@@ -133,7 +134,7 @@ class CatalogoTest {
 
     @Test
     void addCampoSpecifico_conNomeGiaPresenteNeiCampiComuni_lanciaIllegalStateException() {
-        Catalogo catalogo = new Catalogo();
+        CatalogoDTO catalogo = new CatalogoDTO();
         catalogo.addCategoria("Sport");
         catalogo.addCampoComune(campo("Eta", TipoCampo.COMUNE, TipoDato.INTERO, false));
 
@@ -143,7 +144,7 @@ class CatalogoTest {
 
     @Test
     void removeCampoSpecifico_conCategoriaAssente_lanciaIllegalStateException() {
-        Catalogo catalogo = new Catalogo();
+        CatalogoDTO catalogo = new CatalogoDTO();
 
         assertThrows(IllegalStateException.class, () -> catalogo.removeCampoSpecifico("Sport", "Eta"));
     }

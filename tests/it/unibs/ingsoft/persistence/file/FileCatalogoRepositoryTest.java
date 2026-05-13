@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.persistence.file;
 
-import it.unibs.ingsoft.domain.catalogo.Catalogo;
+import it.unibs.ingsoft.persistence.dto.CatalogoDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -17,7 +17,7 @@ class FileCatalogoRepositoryTest {
     void load_conFileAssente_restituisceCatalogoVuoto() {
         FileCatalogoRepository repository = new FileCatalogoRepository(tempDir.resolve("catalogo.json"));
 
-        Catalogo catalogo = repository.load();
+        CatalogoDTO catalogo = repository.load();
 
         assertTrue(catalogo.getCategorie().isEmpty());
     }
@@ -34,7 +34,7 @@ class FileCatalogoRepositoryTest {
         Path path = tempDir.resolve("catalogo.json");
 
         FileCatalogoRepository repository = new FileCatalogoRepository(path);
-        repository.save(new Catalogo());
+        repository.save(new CatalogoDTO());
 
         assertTrue(Files.exists(path));
     }
@@ -44,11 +44,11 @@ class FileCatalogoRepositoryTest {
         Path path = tempDir.resolve("catalogo.json");
 
         FileCatalogoRepository repository = new FileCatalogoRepository(path);
-        Catalogo catalogo = repository.load();
+        CatalogoDTO catalogo = repository.load();
         catalogo.addCategoria("Sport");
         repository.save(catalogo);
 
-        Catalogo ricaricato = new FileCatalogoRepository(path).load();
+        CatalogoDTO ricaricato = new FileCatalogoRepository(path).load();
 
         assertEquals("Sport", ricaricato.getCategorie().get(0).getNome());
     }

@@ -1,13 +1,15 @@
-package it.unibs.ingsoft.domain.catalogo;
+package it.unibs.ingsoft.persistence.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import it.unibs.ingsoft.domain.catalogo.Campo;
+import it.unibs.ingsoft.domain.catalogo.Categoria;
 import it.unibs.ingsoft.domain.shared.error.DomainErrorCode;
 import it.unibs.ingsoft.domain.shared.error.DomainException;
 
 import java.util.*;
 
-public final class Catalogo {
+public final class CatalogoDTO {
     private final List<Campo> campiBase = new ArrayList<>();
     private final List<Campo> campiComuni = new ArrayList<>();
     private final List<Categoria> categorie = new ArrayList<>();
@@ -18,13 +20,13 @@ public final class Catalogo {
      * Factory di deserializzazione Jackson.
      */
     @JsonCreator
-    public static Catalogo fromJson(
+    public static CatalogoDTO fromJson(
             @JsonProperty("campiBase") List<Campo> campiBase,
             @JsonProperty("campiBaseFissati") boolean campiBaseFissati,
             @JsonProperty("campiComuni") List<Campo> campiComuni,
             @JsonProperty("categorie") List<Categoria> categorie
     ) {
-        Catalogo d = new Catalogo();
+        CatalogoDTO d = new CatalogoDTO();
         if (campiBase != null) d.campiBase.addAll(campiBase);
         if (campiBaseFissati) d.campiBaseFissati = true;
         if (campiComuni != null) d.campiComuni.addAll(campiComuni);

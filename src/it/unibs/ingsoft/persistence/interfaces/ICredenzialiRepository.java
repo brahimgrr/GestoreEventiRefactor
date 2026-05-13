@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.persistence.interfaces;
 
-import it.unibs.ingsoft.domain.utente.Credenziali;
+import it.unibs.ingsoft.persistence.dto.CredenzialiDTO;
 
 /**
  * Astrazione del repository per le credenziali degli utenti.
@@ -11,10 +11,10 @@ public interface ICredenzialiRepository {
      *
      * @return le credenziali correnti; mai {@code null}
      */
-    Credenziali load();
+    CredenzialiDTO load();
 
     /**
      * Persiste lo stato corrente delle credenziali.
      */
-    void save(Credenziali credenziali);
+    void save(CredenzialiDTO credenziali);
 }

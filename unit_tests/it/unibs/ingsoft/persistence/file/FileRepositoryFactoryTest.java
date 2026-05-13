@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.persistence.file;
 
-import it.unibs.ingsoft.domain.catalogo.Catalogo;
+import it.unibs.ingsoft.persistence.dto.CatalogoDTO;
 import it.unibs.ingsoft.persistence.interfaces.ICatalogoRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -19,7 +19,7 @@ class FileRepositoryFactoryTest {
         FileRepositoryFactory factory = new FileRepositoryFactory(tempDir);
         ICatalogoRepository catalogoRepository = factory.createCatalogoRepository();
 
-        catalogoRepository.save(new Catalogo());
+        catalogoRepository.save(new CatalogoDTO());
 
         assertTrue(Files.exists(tempDir.resolve("catalogo.json")));
     }

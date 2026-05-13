@@ -3,13 +3,13 @@ package it.unibs.ingsoft.domain;
 import it.unibs.ingsoft.domain.catalogo.Campo;
 import it.unibs.ingsoft.domain.catalogo.CampoFactory;
 import it.unibs.ingsoft.domain.catalogo.Categoria;
-import it.unibs.ingsoft.domain.proposta.Bacheca;
 import it.unibs.ingsoft.domain.proposta.Proposta;
 import it.unibs.ingsoft.domain.proposta.PropostaStateChange;
 import it.unibs.ingsoft.domain.proposta.StatoProposta;
 import it.unibs.ingsoft.domain.shared.AppConstants;
 import it.unibs.ingsoft.domain.shared.error.DomainErrorCode;
 import it.unibs.ingsoft.domain.shared.error.DomainException;
+import it.unibs.ingsoft.persistence.dto.BachecaDTO;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -26,7 +26,7 @@ class BachecaIdentityLookupTest {
     void findsPersistedProposalByIdentityKey() {
         Proposta persisted = propostaConValori("Rassegna");
         Proposta selected = propostaConValori("  rassegna ");
-        Bacheca bacheca = new Bacheca();
+        BachecaDTO bacheca = new BachecaDTO();
         bacheca.addProposta(persisted);
 
         Proposta found = bacheca.findSameIdentityAs(selected);
@@ -38,7 +38,7 @@ class BachecaIdentityLookupTest {
     void findsPersistedProposalByStableIdBeforeNaturalKey() {
         Proposta persisted = propostaConValori("Rassegna");
         Proposta selected = propostaFromJsonWithId(persisted.getId(), "Titolo diverso");
-        Bacheca bacheca = new Bacheca();
+        BachecaDTO bacheca = new BachecaDTO();
         bacheca.addProposta(persisted);
 
         Proposta found = bacheca.findSameIdentityAs(selected);
@@ -50,7 +50,7 @@ class BachecaIdentityLookupTest {
     void fallsBackToNaturalKeyWhenStableIdDoesNotMatchPersistedData() {
         Proposta persisted = propostaConValori("Rassegna");
         Proposta selected = propostaConValori("  rassegna ");
-        Bacheca bacheca = new Bacheca();
+        BachecaDTO bacheca = new BachecaDTO();
         bacheca.addProposta(persisted);
 
         Proposta found = bacheca.findSameIdentityAs(selected);
@@ -60,7 +60,7 @@ class BachecaIdentityLookupTest {
 
     @Test
     void throwsDomainErrorWhenProposalIsNull() {
-        Bacheca bacheca = new Bacheca();
+        BachecaDTO bacheca = new BachecaDTO();
 
         DomainException exception = assertThrows(
                 DomainException.class,

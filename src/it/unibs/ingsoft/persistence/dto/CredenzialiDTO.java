@@ -1,4 +1,4 @@
-package it.unibs.ingsoft.domain.utente;
+package it.unibs.ingsoft.persistence.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,20 +11,20 @@ import java.util.Map;
  * DTO per le credenziali degli utenti (configuratori e fruitori).
  * Le chiavi sono memorizzate in minuscolo.
  */
-public final class Credenziali {
+public final class CredenzialiDTO {
     private final Map<String, String> configuratori;
     private final Map<String, String> fruitori;
 
-    public Credenziali() {
+    public CredenzialiDTO() {
         this.configuratori = new HashMap<>();
         this.fruitori = new HashMap<>();
     }
 
     @JsonCreator
-    public static Credenziali fromJson(
+    public static CredenzialiDTO fromJson(
             @JsonProperty("configuratori") Map<String, String> configuratori,
             @JsonProperty("fruitori") Map<String, String> fruitori) {
-        Credenziali d = new Credenziali();
+        CredenzialiDTO d = new CredenzialiDTO();
         if (configuratori != null)
             d.configuratori.putAll(configuratori);
         if (fruitori != null)

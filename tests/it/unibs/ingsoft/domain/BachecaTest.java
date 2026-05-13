@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.domain;
 
 import it.unibs.ingsoft.domain.catalogo.Categoria;
-import it.unibs.ingsoft.domain.proposta.Bacheca;
+import it.unibs.ingsoft.persistence.dto.BachecaDTO;
 import it.unibs.ingsoft.domain.proposta.Proposta;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class BachecaTest {
     @Test
     void addProposta_conPropostaValida_aggiungePropostaAllaBacheca() {
-        Bacheca bacheca = new Bacheca();
+        BachecaDTO bacheca = new BachecaDTO();
         Proposta proposta = propostaMinima();
 
         bacheca.addProposta(proposta);
@@ -22,7 +22,7 @@ class BachecaTest {
 
     @Test
     void getProposte_quandoSiModificaListaRestituita_lanciaUnsupportedOperationException() {
-        Bacheca bacheca = new Bacheca();
+        BachecaDTO bacheca = new BachecaDTO();
 
         assertThrows(UnsupportedOperationException.class,
                 () -> bacheca.getProposte().add(propostaMinima()));
@@ -30,7 +30,7 @@ class BachecaTest {
 
     @Test
     void fromJson_conListaNull_creaBachecaVuota() {
-        Bacheca bacheca = Bacheca.fromJson(null);
+        BachecaDTO bacheca = BachecaDTO.fromJson(null);
 
         assertTrue(bacheca.getProposte().isEmpty());
     }
@@ -39,7 +39,7 @@ class BachecaTest {
     void fromJson_conListaValorizzata_copiaLeProposteNellaBacheca() {
         Proposta proposta = propostaMinima();
 
-        Bacheca bacheca = Bacheca.fromJson(List.of(proposta));
+        BachecaDTO bacheca = BachecaDTO.fromJson(List.of(proposta));
 
         assertEquals(List.of(proposta), bacheca.getProposte());
     }

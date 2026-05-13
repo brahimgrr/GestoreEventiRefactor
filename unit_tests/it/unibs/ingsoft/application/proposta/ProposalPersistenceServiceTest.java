@@ -4,10 +4,10 @@ import it.unibs.ingsoft.application.notifica.NotificationService;
 import it.unibs.ingsoft.domain.catalogo.Categoria;
 import it.unibs.ingsoft.domain.catalogo.CampoFactory;
 import it.unibs.ingsoft.domain.notifica.NotificaFactory;
-import it.unibs.ingsoft.domain.proposta.Bacheca;
 import it.unibs.ingsoft.domain.proposta.Proposta;
 import it.unibs.ingsoft.domain.proposta.PropostaIdentityPolicy;
 import it.unibs.ingsoft.domain.shared.AppConstants;
+import it.unibs.ingsoft.persistence.dto.BachecaDTO;
 import it.unibs.ingsoft.persistence.file.FileBachecaRepository;
 import it.unibs.ingsoft.persistence.file.FileSpazioPersonaleRepository;
 import it.unibs.ingsoft.persistence.interfaces.IBachecaRepository;
@@ -54,7 +54,7 @@ class ProposalPersistenceServiceTest {
         Fixture fixture = Fixture.create(tempDir, 1);
         Proposta selected = new PropostaQueryService(fixture.bachecaRepo).getBacheca().get(0);
         selected.iscrivi("alice", LocalDate.now(AppConstants.clock));
-        Bacheca bacheca = fixture.bachecaRepo.load();
+        BachecaDTO bacheca = fixture.bachecaRepo.load();
         bacheca.findByChiaveDuplicato(IDENTITY.chiaveDuplicato(selected))
                 .orElseThrow()
                 .iscrivi("alice", LocalDate.now(AppConstants.clock));
@@ -123,7 +123,7 @@ class ProposalPersistenceServiceTest {
                     NotificaFactory.getInstance()
             );
             Proposta proposta = publishedProposal(numeroPartecipanti);
-            Bacheca bacheca = new Bacheca();
+            BachecaDTO bacheca = new BachecaDTO();
             bacheca.addProposta(proposta);
             bachecaRepo.save(bacheca);
 

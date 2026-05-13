@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.persistence.interfaces;
 
-import it.unibs.ingsoft.domain.notifica.ArchivioNotifiche;
+import it.unibs.ingsoft.persistence.dto.ArchivioNotificheDTO;
 
 /**
  * Astrazione del repository per gli spazi personali (notifiche) dei fruitori.
@@ -11,10 +11,10 @@ public interface ISpazioPersonaleRepository {
      *
      * @post result != null
      */
-    ArchivioNotifiche load();
+    ArchivioNotificheDTO load();
 
     /**
      * Persiste tutti gli spazi personali.
      */
-    void save(ArchivioNotifiche archivio);
+    void save(ArchivioNotificheDTO archivio);
 }

@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.persistence.file;
 
-import it.unibs.ingsoft.domain.proposta.Bacheca;
+import it.unibs.ingsoft.persistence.dto.BachecaDTO;
 import it.unibs.ingsoft.domain.catalogo.Categoria;
 import it.unibs.ingsoft.domain.proposta.Proposta;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ class FileBachecaRepositoryTest {
     void load_conFileAssente_restituisceBachecaVuota() {
         FileBachecaRepository repository = new FileBachecaRepository(tempDir.resolve("bacheca.json"));
 
-        Bacheca bacheca = repository.load();
+        BachecaDTO bacheca = repository.load();
 
         assertTrue(bacheca.getProposte().isEmpty());
     }
@@ -37,7 +37,7 @@ class FileBachecaRepositoryTest {
         Path path = tempDir.resolve("bacheca.json");
 
         FileBachecaRepository repository = new FileBachecaRepository(path);
-        repository.save(new Bacheca());
+        repository.save(new BachecaDTO());
 
         assertTrue(Files.exists(path));
     }
@@ -47,11 +47,11 @@ class FileBachecaRepositoryTest {
         Path path = tempDir.resolve("bacheca.json");
 
         FileBachecaRepository repository = new FileBachecaRepository(path);
-        Bacheca bacheca = repository.load();
+        BachecaDTO bacheca = repository.load();
         bacheca.addProposta(new Proposta(new Categoria("Sport"), List.of(), List.of()));
         repository.save(bacheca);
 
-        Bacheca ricaricata = new FileBachecaRepository(path).load();
+        BachecaDTO ricaricata = new FileBachecaRepository(path).load();
 
         assertEquals(1, ricaricata.getProposte().size());
     }

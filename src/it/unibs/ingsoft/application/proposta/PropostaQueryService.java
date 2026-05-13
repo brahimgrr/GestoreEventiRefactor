@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.application.proposta;
 
-import it.unibs.ingsoft.domain.proposta.Bacheca;
+import it.unibs.ingsoft.persistence.dto.BachecaDTO;
 import it.unibs.ingsoft.domain.proposta.Proposta;
 import it.unibs.ingsoft.domain.proposta.StatoProposta;
 import it.unibs.ingsoft.persistence.interfaces.IBachecaRepository;
@@ -23,7 +23,7 @@ public final class PropostaQueryService {
         this.bachecaRepo = Objects.requireNonNull(bachecaRepo);
     }
 
-    private Bacheca bacheca() {
+    private BachecaDTO bacheca() {
         return bachecaRepo.load();
     }
 
@@ -48,7 +48,7 @@ public final class PropostaQueryService {
     }
 
     public List<Proposta> getProposteRitirabili() {
-        Bacheca bacheca = bacheca();
+        BachecaDTO bacheca = bacheca();
         List<Proposta> ritirabili = new ArrayList<>();
         for (Proposta proposta : bacheca.getProposte()) {
             if (proposta.isAperta() || proposta.isConfermata()) {

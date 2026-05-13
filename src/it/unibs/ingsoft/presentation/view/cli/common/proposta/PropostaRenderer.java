@@ -8,7 +8,7 @@ import it.unibs.ingsoft.presentation.view.interfaces.common.IAppView;
 import java.util.List;
 import java.util.Map;
 
-public final class PropostaRenderer {
+public final class PropostaRenderer  {
     private static final String SEPARATORE = "-".repeat(60);
 
     private final IAppView ui;

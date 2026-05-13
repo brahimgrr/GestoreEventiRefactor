@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.persistence.file;
 
 import it.unibs.ingsoft.domain.notifica.Notifica;
-import it.unibs.ingsoft.domain.utente.SpazioPersonale;
+import it.unibs.ingsoft.persistence.dto.SpazioPersonaleDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -19,7 +19,7 @@ class FileSpazioPersonaleRepositoryTest {
     void get_conFileAssente_restituisceSpazioPersonaleVuoto() {
         FileSpazioPersonaleRepository repository = new FileSpazioPersonaleRepository(tempDir.resolve("notifiche.json"));
 
-        SpazioPersonale spazio = repository.get("mario");
+        SpazioPersonaleDTO spazio = repository.get("mario");
 
         assertTrue(spazio.getNotifiche().isEmpty());
     }
@@ -55,7 +55,7 @@ class FileSpazioPersonaleRepositoryTest {
         repository.get("mario").addNotifica(new Notifica("id-1", "messaggio", LocalDateTime.of(2026, 5, 6, 10, 0)));
 
         repository.save();
-        SpazioPersonale ricaricato = new FileSpazioPersonaleRepository(path).get("mario");
+        SpazioPersonaleDTO ricaricato = new FileSpazioPersonaleRepository(path).get("mario");
 
         assertEquals("id-1", ricaricato.getNotifiche().get(0).id());
     }

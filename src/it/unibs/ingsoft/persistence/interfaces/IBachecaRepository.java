@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.persistence.interfaces;
 
-import it.unibs.ingsoft.domain.proposta.Bacheca;
+import it.unibs.ingsoft.persistence.dto.BachecaDTO;
 
 /**
  * Repository per la bacheca delle proposte.
@@ -9,10 +9,10 @@ public interface IBachecaRepository {
     /**
      * @return la bacheca corrente; mai {@code null}
      */
-    Bacheca load();
+    BachecaDTO load();
 
     /**
      * Persiste lo stato corrente della bacheca.
      */
-    void save(Bacheca bacheca);
+    void save(BachecaDTO bacheca);
 }

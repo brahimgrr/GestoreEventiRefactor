@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.application.authentication;
 
 import it.unibs.ingsoft.domain.utente.Configuratore;
-import it.unibs.ingsoft.domain.utente.Credenziali;
+import it.unibs.ingsoft.persistence.dto.CredenzialiDTO;
 import it.unibs.ingsoft.domain.utente.Fruitore;
 import it.unibs.ingsoft.domain.shared.error.DomainErrorCode;
 import it.unibs.ingsoft.domain.shared.error.DomainException;
@@ -53,7 +53,7 @@ public final class AuthenticationService {
             throw new DomainException(DomainErrorCode.AUTH_PASSWORD_TROPPO_CORTA, MIN_PASSWORD_LENGTH);
     }
 
-    private Credenziali credenziali() {
+    private CredenzialiDTO credenziali() {
         return repo.load();
     }
 
@@ -123,7 +123,7 @@ public final class AuthenticationService {
      * @throws IllegalArgumentException se le credenziali sono riservate, duplicate o troppo corte
      */
     public Configuratore registraNuovoConfiguratore(String username, String password) {
-        Credenziali credenziali = repo.load();
+        CredenzialiDTO credenziali = repo.load();
         validaNuovoAccount(username, password, credenziali);
 
         String normalized = username.trim();
@@ -139,7 +139,7 @@ public final class AuthenticationService {
      * @post esisteUsername(username)
      */
     public Fruitore registraNuovoFruitore(String username, String password) {
-        Credenziali credenziali = repo.load();
+        CredenzialiDTO credenziali = repo.load();
         validaNuovoAccount(username, password, credenziali);
 
         String normalized = username.trim();
@@ -152,7 +152,7 @@ public final class AuthenticationService {
         validaNuovoAccount(username, password, repo.load());
     }
 
-    private void validaNuovoAccount(String username, String password, Credenziali credenziali) {
+    private void validaNuovoAccount(String username, String password, CredenzialiDTO credenziali) {
         validaCredenziali(username, password);
 
         if (USERNAME_PREDEFINITO.equalsIgnoreCase(username))
@@ -169,7 +169,7 @@ public final class AuthenticationService {
         return esisteUsername(username, repo.load());
     }
 
-    private boolean esisteUsername(String username, Credenziali credenziali) {
+    private boolean esisteUsername(String username, CredenzialiDTO credenziali) {
         if (username == null) return false;
         String u = username.trim().toLowerCase();
         return credenziali.getConfiguratori().containsKey(u) ||

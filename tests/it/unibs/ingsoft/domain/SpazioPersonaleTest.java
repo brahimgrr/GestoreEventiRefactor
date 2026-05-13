@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.domain;
 
 import it.unibs.ingsoft.domain.notifica.Notifica;
-import it.unibs.ingsoft.domain.utente.SpazioPersonale;
+import it.unibs.ingsoft.persistence.dto.SpazioPersonaleDTO;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class SpazioPersonaleTest {
     @Test
     void addNotifica_conNotificaNuova_aggiungeNotifica() {
-        SpazioPersonale spazio = new SpazioPersonale();
+        SpazioPersonaleDTO spazio = new SpazioPersonaleDTO();
         Notifica notifica = notifica("id-1");
 
         spazio.addNotifica(notifica);
@@ -23,7 +23,7 @@ class SpazioPersonaleTest {
 
     @Test
     void addNotifica_conNotificaGiaPresentePerId_nonAggiungeDuplicato() {
-        SpazioPersonale spazio = new SpazioPersonale();
+        SpazioPersonaleDTO spazio = new SpazioPersonaleDTO();
         spazio.addNotifica(notifica("id-1"));
 
         spazio.addNotifica(notifica("id-1"));
@@ -33,7 +33,7 @@ class SpazioPersonaleTest {
 
     @Test
     void removeNotifica_conNotificaPresente_rimuoveNotifica() {
-        SpazioPersonale spazio = new SpazioPersonale();
+        SpazioPersonaleDTO spazio = new SpazioPersonaleDTO();
 
         Notifica notifica = notifica("id-1");
         spazio.addNotifica(notifica);
@@ -44,7 +44,7 @@ class SpazioPersonaleTest {
 
     @Test
     void removeNotifica_conNotificaAssente_nonModificaLaLista() {
-        SpazioPersonale spazio = new SpazioPersonale();
+        SpazioPersonaleDTO spazio = new SpazioPersonaleDTO();
 
         spazio.removeNotifica(notifica("id-1"));
 
@@ -53,7 +53,7 @@ class SpazioPersonaleTest {
 
     @Test
     void getNotifiche_quandoSiModificaListaRestituita_lanciaUnsupportedOperationException() {
-        SpazioPersonale spazio = new SpazioPersonale();
+        SpazioPersonaleDTO spazio = new SpazioPersonaleDTO();
 
         assertThrows(UnsupportedOperationException.class,
                 () -> spazio.getNotifiche().add(notifica("id-1")));
@@ -61,7 +61,7 @@ class SpazioPersonaleTest {
 
     @Test
     void fromJson_conListaNull_creaSpazioPersonaleSenzaNotifiche() {
-        SpazioPersonale spazio = SpazioPersonale.fromJson(null);
+        SpazioPersonaleDTO spazio = SpazioPersonaleDTO.fromJson(null);
 
         assertTrue(spazio.getNotifiche().isEmpty());
     }

@@ -1,8 +1,8 @@
 package it.unibs.ingsoft.application.notifica;
 
-import it.unibs.ingsoft.domain.notifica.ArchivioNotifiche;
+import it.unibs.ingsoft.persistence.dto.ArchivioNotificheDTO;
 import it.unibs.ingsoft.domain.notifica.Notifica;
-import it.unibs.ingsoft.domain.utente.SpazioPersonale;
+import it.unibs.ingsoft.persistence.dto.SpazioPersonaleDTO;
 import it.unibs.ingsoft.persistence.interfaces.ISpazioPersonaleRepository;
 
 import java.util.List;
@@ -18,8 +18,8 @@ public final class NotificationService {
 
     public void inviaNotifica(String username, Notifica notifica) {
         if (username == null || notifica == null) return;
-        ArchivioNotifiche archivio = repo.load();
-        SpazioPersonale sp = archivio.getOrCreateSpazioDi(username);
+        ArchivioNotificheDTO archivio = repo.load();
+        SpazioPersonaleDTO sp = archivio.getOrCreateSpazioDi(username);
         sp.addNotifica(notifica);
 
         repo.save(archivio);
@@ -30,14 +30,14 @@ public final class NotificationService {
 
         return repo.load()
                 .findSpazioDi(username)
-                .map(SpazioPersonale::getNotifiche)
+                .map(SpazioPersonaleDTO::getNotifiche)
                 .orElseGet(List::of);
     }
 
     public void cancellaNotifica(String username, Notifica notifica) {
         if (username == null || notifica == null) return;
-        ArchivioNotifiche archivio = repo.load();
-        SpazioPersonale sp = archivio.findSpazioDi(username).orElse(null);
+        ArchivioNotificheDTO archivio = repo.load();
+        SpazioPersonaleDTO sp = archivio.findSpazioDi(username).orElse(null);
         if (sp != null && sp.removeNotifica(notifica)) {
             repo.save(archivio);
         }

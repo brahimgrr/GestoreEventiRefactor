@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.persistence.interfaces;
 
-import it.unibs.ingsoft.domain.catalogo.Catalogo;
+import it.unibs.ingsoft.persistence.dto.CatalogoDTO;
 
 /**
  * Astrazione del repository per il catalogo.
@@ -13,11 +13,11 @@ public interface ICatalogoRepository {
      *
      * @return il catalogo corrente; mai {@code null}
      */
-    Catalogo load();
+    CatalogoDTO load();
 
     /**
      * Persiste lo stato corrente del catalogo.
      */
-    void save(Catalogo catalogo);
+    void save(CatalogoDTO catalogo);
 
 }

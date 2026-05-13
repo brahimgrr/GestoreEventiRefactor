@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.persistence.file;
 
-import it.unibs.ingsoft.domain.utente.Credenziali;
+import it.unibs.ingsoft.persistence.dto.CredenzialiDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -17,7 +17,7 @@ class FileCredenzialiRepositoryTest {
     void load_conFileAssente_restituisceCredenzialiVuote() {
         FileCredenzialiRepository repository = new FileCredenzialiRepository(tempDir.resolve("utenti.json"));
 
-        Credenziali credenziali = repository.load();
+        CredenzialiDTO credenziali = repository.load();
 
         assertTrue(credenziali.getConfiguratori().isEmpty());
     }
@@ -34,7 +34,7 @@ class FileCredenzialiRepositoryTest {
         Path path = tempDir.resolve("utenti.json");
 
         FileCredenzialiRepository repository = new FileCredenzialiRepository(path);
-        repository.save(new Credenziali());
+        repository.save(new CredenzialiDTO());
 
         assertTrue(Files.exists(path));
     }
@@ -44,11 +44,11 @@ class FileCredenzialiRepositoryTest {
         Path path = tempDir.resolve("utenti.json");
 
         FileCredenzialiRepository repository = new FileCredenzialiRepository(path);
-        Credenziali credenziali = repository.load();
+        CredenzialiDTO credenziali = repository.load();
         credenziali.addFruitore("Mario", "pwd");
         repository.save(credenziali);
 
-        Credenziali ricaricate = new FileCredenzialiRepository(path).load();
+        CredenzialiDTO ricaricate = new FileCredenzialiRepository(path).load();
 
         assertEquals("pwd", ricaricate.getFruitori().get("mario"));
     }

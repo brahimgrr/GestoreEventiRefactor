@@ -1,8 +1,9 @@
-package it.unibs.ingsoft.domain.utente;
+package it.unibs.ingsoft.persistence.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import it.unibs.ingsoft.domain.notifica.Notifica;
+import it.unibs.ingsoft.domain.utente.Fruitore;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,17 +12,17 @@ import java.util.List;
 /**
  * Contenitore delle notifiche personali di un {@link Fruitore}.
  */
-public final class SpazioPersonale {
+public final class SpazioPersonaleDTO {
     private final List<Notifica> notifiche;
 
-    public SpazioPersonale() {
+    public SpazioPersonaleDTO() {
         this.notifiche = new ArrayList<>();
     }
 
     @JsonCreator
-    public static SpazioPersonale fromJson(
+    public static SpazioPersonaleDTO fromJson(
             @JsonProperty("notifiche") List<Notifica> notifiche) {
-        SpazioPersonale s = new SpazioPersonale();
+        SpazioPersonaleDTO s = new SpazioPersonaleDTO();
         if (notifiche != null) {
             s.notifiche.addAll(notifiche);
         }

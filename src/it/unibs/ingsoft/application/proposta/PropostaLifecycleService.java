@@ -2,7 +2,7 @@ package it.unibs.ingsoft.application.proposta;
 
 import it.unibs.ingsoft.application.notifica.NotificationService;
 import it.unibs.ingsoft.domain.shared.AppConstants;
-import it.unibs.ingsoft.domain.proposta.Bacheca;
+import it.unibs.ingsoft.persistence.dto.BachecaDTO;
 import it.unibs.ingsoft.domain.proposta.EsitoTransizioneProposta;
 import it.unibs.ingsoft.domain.notifica.Notifica;
 import it.unibs.ingsoft.domain.proposta.Proposta;
@@ -43,7 +43,7 @@ public final class PropostaLifecycleService {
             LocalDate oggi = LocalDate.now(AppConstants.clock);
             boolean changed = false;
 
-            Bacheca bacheca = bachecaRepo.load();
+            BachecaDTO bacheca = bachecaRepo.load();
             for (Proposta p : bacheca.getProposte()) {
                 EsitoTransizioneProposta esito = p.applicaTransizionePerScadenza(oggi);
                 if (esito == EsitoTransizioneProposta.CONFERMATA) {
@@ -65,7 +65,7 @@ public final class PropostaLifecycleService {
 
     public void confermaProposta(Proposta p) {
         commandLock.runLocked(() -> {
-            Bacheca bacheca = bachecaRepo.load();
+            BachecaDTO bacheca = bachecaRepo.load();
             Proposta propostaPersistita = bacheca.findSameIdentityAs(p);
             if (confermaPropostaCaricata(propostaPersistita)) {
                 bachecaRepo.save(bacheca);
@@ -81,7 +81,7 @@ public final class PropostaLifecycleService {
 
     public void ritiraProposta(Proposta p) {
         commandLock.runLocked(() -> {
-            Bacheca bacheca = bachecaRepo.load();
+            BachecaDTO bacheca = bachecaRepo.load();
             Proposta propostaPersistita = bacheca.findSameIdentityAs(p);
             LocalDate oggi = LocalDate.now(AppConstants.clock);
             propostaPersistita.ritira(oggi);
@@ -93,7 +93,7 @@ public final class PropostaLifecycleService {
 
     public void iscrivi(Proposta p, String username) {
         commandLock.runLocked(() -> {
-            Bacheca bacheca = bachecaRepo.load();
+            BachecaDTO bacheca = bachecaRepo.load();
             Proposta propostaPersistita = bacheca.findSameIdentityAs(p);
             LocalDate oggi = LocalDate.now(AppConstants.clock);
             propostaPersistita.iscrivi(username, oggi);
@@ -108,7 +108,7 @@ public final class PropostaLifecycleService {
 
     public void disiscrivi(Proposta p, String username) {
         commandLock.runLocked(() -> {
-            Bacheca bacheca = bachecaRepo.load();
+            BachecaDTO bacheca = bachecaRepo.load();
             Proposta propostaPersistita = bacheca.findSameIdentityAs(p);
             propostaPersistita.disiscrivi(username, LocalDate.now(AppConstants.clock));
             bachecaRepo.save(bacheca);

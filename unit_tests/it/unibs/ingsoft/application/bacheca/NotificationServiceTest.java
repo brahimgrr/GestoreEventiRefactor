@@ -1,8 +1,8 @@
 package it.unibs.ingsoft.application.notifica;
 
-import it.unibs.ingsoft.domain.notifica.ArchivioNotifiche;
 import it.unibs.ingsoft.domain.notifica.Notifica;
-import it.unibs.ingsoft.domain.utente.SpazioPersonale;
+import it.unibs.ingsoft.persistence.dto.ArchivioNotificheDTO;
+import it.unibs.ingsoft.persistence.dto.SpazioPersonaleDTO;
 import it.unibs.ingsoft.persistence.interfaces.ISpazioPersonaleRepository;
 import org.junit.jupiter.api.Test;
 
@@ -31,7 +31,7 @@ class NotificationServiceTest {
 
         service.inviaNotifica("alice", notifica);
 
-        SpazioPersonale spazio = repository.load().findSpazioDi("alice").orElseThrow();
+        SpazioPersonaleDTO spazio = repository.load().findSpazioDi("alice").orElseThrow();
         assertEquals(List.of(notifica), spazio.getNotifiche());
         assertEquals(1, repository.saveCount);
     }
@@ -48,16 +48,16 @@ class NotificationServiceTest {
     }
 
     private static final class InMemorySpazioPersonaleRepository implements ISpazioPersonaleRepository {
-        private ArchivioNotifiche archivio = new ArchivioNotifiche();
+        private ArchivioNotificheDTO archivio = new ArchivioNotificheDTO();
         private int saveCount;
 
         @Override
-        public ArchivioNotifiche load() {
+        public ArchivioNotificheDTO load() {
             return archivio;
         }
 
         @Override
-        public void save(ArchivioNotifiche archivio) {
+        public void save(ArchivioNotificheDTO archivio) {
             this.archivio = archivio;
             saveCount++;
         }
