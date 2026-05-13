@@ -28,14 +28,42 @@ import it.unibs.ingsoft.persistence.file.FileRepositoryFactory;
 import it.unibs.ingsoft.presentation.controller.ConfiguratoreController;
 import it.unibs.ingsoft.presentation.controller.FruitoreController;
 import it.unibs.ingsoft.presentation.controller.MainController;
-import it.unibs.ingsoft.presentation.view.cli.ConfiguratoreCliView;
-import it.unibs.ingsoft.presentation.view.cli.ConsoleUI;
-import it.unibs.ingsoft.presentation.view.cli.FruitoreCliView;
-import it.unibs.ingsoft.presentation.view.cli.MainCliView;
-import it.unibs.ingsoft.presentation.view.interfaces.IAppView;
-import it.unibs.ingsoft.presentation.view.interfaces.IConfiguratoreView;
-import it.unibs.ingsoft.presentation.view.interfaces.IFruitoreView;
-import it.unibs.ingsoft.presentation.view.interfaces.IMainView;
+import it.unibs.ingsoft.presentation.view.cli.fruitore.bacheca.BachecaView;
+import it.unibs.ingsoft.presentation.view.cli.configuratore.batch.BatchImportView;
+import it.unibs.ingsoft.presentation.view.cli.configuratore.campo.CampoConfigView;
+import it.unibs.ingsoft.presentation.view.cli.configuratore.campo.CampoRenderer;
+import it.unibs.ingsoft.presentation.view.cli.configuratore.catalogo.CatalogoConfigView;
+import it.unibs.ingsoft.presentation.view.cli.configuratore.categoria.CategoriaConfigView;
+import it.unibs.ingsoft.presentation.view.cli.configuratore.categoria.CategoriaRenderer;
+import it.unibs.ingsoft.presentation.view.cli.configuratore.error.ConfiguratoreFeedbackView;
+import it.unibs.ingsoft.presentation.view.cli.configuratore.menu.ConfiguratoreCliView;
+import it.unibs.ingsoft.presentation.view.cli.common.ConsoleUI;
+import it.unibs.ingsoft.presentation.view.cli.fruitore.menu.FruitoreCliView;
+import it.unibs.ingsoft.presentation.view.cli.fruitore.proposta.IscrizioneView;
+import it.unibs.ingsoft.presentation.view.cli.common.auth.MainCliView;
+import it.unibs.ingsoft.presentation.view.cli.configuratore.proposta.PropostaBrowsingView;
+import it.unibs.ingsoft.presentation.view.cli.configuratore.proposta.PropostaCreationView;
+import it.unibs.ingsoft.presentation.view.cli.configuratore.proposta.PropostaFormView;
+import it.unibs.ingsoft.presentation.view.cli.configuratore.proposta.PropostaLifecycleView;
+import it.unibs.ingsoft.presentation.view.cli.configuratore.proposta.PropostaPublicationView;
+import it.unibs.ingsoft.presentation.view.cli.common.proposta.PropostaRenderer;
+import it.unibs.ingsoft.presentation.view.cli.fruitore.notifica.SpazioPersonaleView;
+import it.unibs.ingsoft.presentation.view.interfaces.fruitore.bacheca.IBachecaView;
+import it.unibs.ingsoft.presentation.view.interfaces.configuratore.batch.IBatchImportView;
+import it.unibs.ingsoft.presentation.view.interfaces.configuratore.campo.ICampoConfigView;
+import it.unibs.ingsoft.presentation.view.interfaces.configuratore.catalogo.ICatalogoConfigView;
+import it.unibs.ingsoft.presentation.view.interfaces.configuratore.categoria.ICategoriaConfigView;
+import it.unibs.ingsoft.presentation.view.interfaces.common.IAppView;
+import it.unibs.ingsoft.presentation.view.interfaces.configuratore.error.IConfiguratoreFeedbackView;
+import it.unibs.ingsoft.presentation.view.interfaces.configuratore.menu.IConfiguratoreView;
+import it.unibs.ingsoft.presentation.view.interfaces.fruitore.menu.IFruitoreView;
+import it.unibs.ingsoft.presentation.view.interfaces.fruitore.proposta.IIscrizioneView;
+import it.unibs.ingsoft.presentation.view.interfaces.common.auth.IMainView;
+import it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta.IPropostaBrowsingView;
+import it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta.IPropostaCreationView;
+import it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta.IPropostaLifecycleView;
+import it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta.IPropostaPublicationView;
+import it.unibs.ingsoft.presentation.view.interfaces.fruitore.notifica.ISpazioPersonaleView;
 
 import java.time.Duration;
 import java.time.ZonedDateTime;
@@ -97,16 +125,45 @@ public final class Application {
                 notifService);
 
         IAppView ui = new ConsoleUI(new Scanner(System.in));
+        CampoRenderer campoRenderer = new CampoRenderer(ui);
+        CategoriaRenderer categoriaRenderer = new CategoriaRenderer(ui, campoRenderer);
+        PropostaRenderer propostaRenderer = new PropostaRenderer(ui);
+        PropostaFormView propostaFormView = new PropostaFormView(ui);
         IMainView mainView = new MainCliView(ui);
         IConfiguratoreView configuratoreView = new ConfiguratoreCliView(ui);
+        ICatalogoConfigView catalogoConfigView = new CatalogoConfigView(ui, campoRenderer, categoriaRenderer);
+        ICategoriaConfigView categoriaConfigView = new CategoriaConfigView(ui, categoriaRenderer);
+        ICampoConfigView campoConfigView = new CampoConfigView(ui, campoRenderer);
+        IPropostaCreationView propostaCreationView =
+                new PropostaCreationView(ui, categoriaRenderer, propostaFormView, propostaRenderer);
+        IPropostaPublicationView propostaPublicationView = new PropostaPublicationView(ui, propostaRenderer);
+        IPropostaLifecycleView propostaLifecycleView = new PropostaLifecycleView(ui, propostaRenderer);
+        IPropostaBrowsingView propostaBrowsingView = new PropostaBrowsingView(ui, propostaRenderer);
+        IBatchImportView batchImportView = new BatchImportView(ui);
+        IConfiguratoreFeedbackView configuratoreFeedbackView = new ConfiguratoreFeedbackView(ui);
         IFruitoreView fruitoreView = new FruitoreCliView(ui);
+        IBachecaView bachecaView = new BachecaView(ui, propostaRenderer);
+        IIscrizioneView iscrizioneView = new IscrizioneView(ui, propostaRenderer);
+        ISpazioPersonaleView spazioPersonaleView = new SpazioPersonaleView(ui);
 
         ConfiguratoreController configuratoreController = new ConfiguratoreController(
                 configuratoreView,
+                catalogoConfigView,
+                categoriaConfigView,
+                campoConfigView,
+                propostaCreationView,
+                propostaPublicationView,
+                propostaLifecycleView,
+                propostaBrowsingView,
+                batchImportView,
+                configuratoreFeedbackView,
                 configuratoreService);
 
         FruitoreController fruitoreController = new FruitoreController(
                 fruitoreView,
+                bachecaView,
+                iscrizioneView,
+                spazioPersonaleView,
                 fruitoreService);
 
         MainController mainController = new MainController(
