@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.presentation.view.interfaces.fruitore.menu;
 
-import it.unibs.ingsoft.domain.Fruitore;
+import it.unibs.ingsoft.domain.utente.Fruitore;
 
 public interface IFruitoreView {
     enum MainAction {

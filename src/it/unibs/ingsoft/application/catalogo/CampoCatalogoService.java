@@ -19,11 +19,11 @@ import java.util.stream.Collectors;
 /**
  * Gestisce la configurazione dei campi del catalogo.
  */
-public final class CampoCatalogo_Service {
+public final class CampoCatalogoService {
     private final ICatalogoRepository repo;
     private final CampoFactory campoFactory;
 
-    public CampoCatalogo_Service(ICatalogoRepository repo, CampoFactory campoFactory) {
+    public CampoCatalogoService(ICatalogoRepository repo, CampoFactory campoFactory) {
         this.repo = Objects.requireNonNull(repo);
         this.campoFactory = Objects.requireNonNull(campoFactory);
     }

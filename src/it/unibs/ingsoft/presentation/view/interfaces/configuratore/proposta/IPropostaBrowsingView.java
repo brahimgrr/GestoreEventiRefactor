@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta;
 
-import it.unibs.ingsoft.domain.Proposta;
-import it.unibs.ingsoft.domain.StatoProposta;
+import it.unibs.ingsoft.domain.proposta.Proposta;
+import it.unibs.ingsoft.domain.proposta.StatoProposta;
 
 import java.util.List;
 import java.util.Map;

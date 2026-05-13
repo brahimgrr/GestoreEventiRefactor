@@ -2,9 +2,9 @@ package it.unibs.ingsoft.presentation.view.cli.configuratore.campo;
 
 import it.unibs.ingsoft.application.catalogo.dto.CampoDefinitionRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CampoObbligatorietaRequest;
-import it.unibs.ingsoft.domain.Campo;
-import it.unibs.ingsoft.domain.Categoria;
-import it.unibs.ingsoft.domain.TipoDato;
+import it.unibs.ingsoft.domain.catalogo.Campo;
+import it.unibs.ingsoft.domain.catalogo.Categoria;
+import it.unibs.ingsoft.domain.catalogo.TipoDato;
 import it.unibs.ingsoft.presentation.view.interfaces.common.IAppView;
 import it.unibs.ingsoft.presentation.view.interfaces.configuratore.campo.ICampoConfigView;
 import it.unibs.ingsoft.presentation.view.interfaces.common.OperationCancelledException;

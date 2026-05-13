@@ -1,8 +1,8 @@
 package it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta;
 
 import it.unibs.ingsoft.application.proposta.dto.PropostaValidationResult;
-import it.unibs.ingsoft.domain.Categoria;
-import it.unibs.ingsoft.domain.Proposta;
+import it.unibs.ingsoft.domain.catalogo.Categoria;
+import it.unibs.ingsoft.domain.proposta.Proposta;
 
 import java.util.List;
 import java.util.Map;

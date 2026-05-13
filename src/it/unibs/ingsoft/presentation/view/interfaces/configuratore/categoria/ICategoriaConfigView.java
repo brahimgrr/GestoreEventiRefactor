@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.presentation.view.interfaces.configuratore.categoria;
 
-import it.unibs.ingsoft.domain.Categoria;
+import it.unibs.ingsoft.domain.catalogo.Categoria;
 
 import java.util.List;
 import java.util.Optional;

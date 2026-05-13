@@ -2,10 +2,10 @@ package it.unibs.ingsoft.presentation.controller;
 
 import it.unibs.ingsoft.application.ConfiguratoreService;
 import it.unibs.ingsoft.application.catalogo.dto.CatalogoOperationResult;
-import it.unibs.ingsoft.domain.Campo;
-import it.unibs.ingsoft.domain.Categoria;
-import it.unibs.ingsoft.domain.Proposta;
-import it.unibs.ingsoft.domain.error.DomainException;
+import it.unibs.ingsoft.domain.catalogo.Campo;
+import it.unibs.ingsoft.domain.catalogo.Categoria;
+import it.unibs.ingsoft.domain.proposta.Proposta;
+import it.unibs.ingsoft.domain.shared.error.DomainException;
 import it.unibs.ingsoft.presentation.view.interfaces.configuratore.batch.IBatchImportView;
 import it.unibs.ingsoft.presentation.view.interfaces.configuratore.campo.ICampoConfigView;
 import it.unibs.ingsoft.presentation.view.interfaces.configuratore.catalogo.ICatalogoConfigView;

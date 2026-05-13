@@ -263,15 +263,12 @@ public final class Proposta {
         if (!isAperta()) {
             throw new DomainException(DomainErrorCode.PROPOSTA_NOT_OPEN_FOR_SUBSCRIPTION);
         }
-
         if (isTermineIscrizioneScaduto(oggi)) {
             throw DomainException.subscriptionDeadlineExpired(termineIscrizione);
         }
-
         if (isIscritto(username)) {
             throw new DomainException(DomainErrorCode.PROPOSTA_ALREADY_SUBSCRIBED);
         }
-
         int numeroPartecipantiPrevisto = getNumeroPartecipanti();
         if (listaAderenti.size() >= numeroPartecipantiPrevisto) {
             throw new DomainException(DomainErrorCode.PROPOSTA_FULL);

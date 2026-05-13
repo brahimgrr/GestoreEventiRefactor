@@ -16,23 +16,23 @@ import java.util.Objects;
 /**
  * Facade compatibile per campi e categorie del catalogo.
  */
-public final class Catalogo_Service {
-    private final CampoCatalogo_Service campoCatalogoService;
+public final class CatalogoService {
+    private final CampoCatalogoService campoCatalogoService;
     private final CategoriaCatalogoService categoriaCatalogoService;
 
-    public Catalogo_Service(ICatalogoRepository repo) {
+    public CatalogoService(ICatalogoRepository repo) {
         this(repo, CampoFactory.getInstance());
     }
 
-    public Catalogo_Service(ICatalogoRepository repo, CampoFactory campoFactory) {
+    public CatalogoService(ICatalogoRepository repo, CampoFactory campoFactory) {
         this(
-                new CampoCatalogo_Service(repo, campoFactory),
+                new CampoCatalogoService(repo, campoFactory),
                 new CategoriaCatalogoService(repo)
         );
     }
 
-    public Catalogo_Service(CampoCatalogo_Service campoCatalogoService,
-                            CategoriaCatalogoService categoriaCatalogoService) {
+    public CatalogoService(CampoCatalogoService campoCatalogoService,
+                           CategoriaCatalogoService categoriaCatalogoService) {
         this.campoCatalogoService = Objects.requireNonNull(campoCatalogoService);
         this.categoriaCatalogoService = Objects.requireNonNull(categoriaCatalogoService);
     }

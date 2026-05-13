@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.persistence.file;
 
-import it.unibs.ingsoft.domain.Catalogo;
+import it.unibs.ingsoft.domain.catalogo.Catalogo;
 import it.unibs.ingsoft.persistence.interfaces.ICatalogoRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;

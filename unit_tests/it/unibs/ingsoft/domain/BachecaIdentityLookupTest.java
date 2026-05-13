@@ -1,8 +1,15 @@
 package it.unibs.ingsoft.domain;
 
-import it.unibs.ingsoft.domain.error.DomainErrorCode;
-import it.unibs.ingsoft.domain.error.DomainException;
-import it.unibs.ingsoft.domain.factory.CampoFactory;
+import it.unibs.ingsoft.domain.catalogo.Campo;
+import it.unibs.ingsoft.domain.catalogo.CampoFactory;
+import it.unibs.ingsoft.domain.catalogo.Categoria;
+import it.unibs.ingsoft.domain.proposta.Bacheca;
+import it.unibs.ingsoft.domain.proposta.Proposta;
+import it.unibs.ingsoft.domain.proposta.PropostaStateChange;
+import it.unibs.ingsoft.domain.proposta.StatoProposta;
+import it.unibs.ingsoft.domain.shared.AppConstants;
+import it.unibs.ingsoft.domain.shared.error.DomainErrorCode;
+import it.unibs.ingsoft.domain.shared.error.DomainException;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;

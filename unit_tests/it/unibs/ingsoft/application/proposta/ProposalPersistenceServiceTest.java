@@ -1,9 +1,13 @@
 package it.unibs.ingsoft.application.proposta;
 
 import it.unibs.ingsoft.application.notifica.NotificationService;
-import it.unibs.ingsoft.domain.*;
-import it.unibs.ingsoft.domain.factory.CampoFactory;
-import it.unibs.ingsoft.domain.factory.NotificaFactory;
+import it.unibs.ingsoft.domain.catalogo.Categoria;
+import it.unibs.ingsoft.domain.catalogo.CampoFactory;
+import it.unibs.ingsoft.domain.notifica.NotificaFactory;
+import it.unibs.ingsoft.domain.proposta.Bacheca;
+import it.unibs.ingsoft.domain.proposta.Proposta;
+import it.unibs.ingsoft.domain.proposta.PropostaIdentityPolicy;
+import it.unibs.ingsoft.domain.shared.AppConstants;
 import it.unibs.ingsoft.persistence.file.FileBachecaRepository;
 import it.unibs.ingsoft.persistence.file.FileSpazioPersonaleRepository;
 import it.unibs.ingsoft.persistence.interfaces.IBachecaRepository;

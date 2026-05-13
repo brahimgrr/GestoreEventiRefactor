@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.presentation.view.cli.configuratore.campo;
 
-import it.unibs.ingsoft.domain.Campo;
-import it.unibs.ingsoft.domain.TipoDato;
+import it.unibs.ingsoft.domain.catalogo.Campo;
+import it.unibs.ingsoft.domain.catalogo.TipoDato;
 import it.unibs.ingsoft.presentation.view.interfaces.common.IAppView;
 
 import java.util.List;

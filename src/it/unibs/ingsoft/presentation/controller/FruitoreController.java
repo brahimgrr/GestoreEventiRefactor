@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.presentation.controller;
 
 import it.unibs.ingsoft.application.FruitoreService;
-import it.unibs.ingsoft.domain.Fruitore;
+import it.unibs.ingsoft.domain.utente.Fruitore;
 import it.unibs.ingsoft.presentation.view.interfaces.fruitore.bacheca.IBachecaView;
 import it.unibs.ingsoft.presentation.view.interfaces.fruitore.menu.IFruitoreView;
 import it.unibs.ingsoft.presentation.view.interfaces.fruitore.proposta.IIscrizioneView;
