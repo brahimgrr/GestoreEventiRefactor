@@ -4,10 +4,10 @@ import it.unibs.ingsoft.domain.catalogo.Campo;
 import it.unibs.ingsoft.domain.catalogo.CampoFactory;
 import it.unibs.ingsoft.domain.catalogo.Categoria;
 import it.unibs.ingsoft.domain.proposta.Proposta;
+import it.unibs.ingsoft.domain.proposta.ProposalFailure;
 import it.unibs.ingsoft.domain.proposta.PropostaStateChange;
 import it.unibs.ingsoft.domain.proposta.StatoProposta;
 import it.unibs.ingsoft.domain.shared.AppConstants;
-import it.unibs.ingsoft.domain.shared.error.DomainErrorCode;
 import it.unibs.ingsoft.domain.shared.error.DomainException;
 import it.unibs.ingsoft.persistence.dto.BachecaDTO;
 import org.junit.jupiter.api.Test;
@@ -67,7 +67,7 @@ class BachecaIdentityLookupTest {
                 () -> bacheca.findSameIdentityAs(null)
         );
 
-        assertEquals(DomainErrorCode.PROPOSTA_NON_TROVATA, exception.code());
+        assertEquals(new ProposalFailure.NotFound(), exception.failure());
     }
 
     private static Proposta propostaConValori(String titolo) {

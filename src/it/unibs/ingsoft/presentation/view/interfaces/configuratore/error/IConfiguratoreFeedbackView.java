@@ -1,7 +1,9 @@
 package it.unibs.ingsoft.presentation.view.interfaces.configuratore.error;
 
+import it.unibs.ingsoft.domain.shared.error.Failure;
+
 public interface IConfiguratoreFeedbackView {
-    void mostraErrore(Exception e);
+    void mostraErrore(Failure failure);
 
     void mostraOperazioneAnnullata();
 }

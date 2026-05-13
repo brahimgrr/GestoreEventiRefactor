@@ -1,6 +1,7 @@
 package it.unibs.ingsoft.presentation.view.interfaces.fruitore.proposta;
 
 import it.unibs.ingsoft.domain.proposta.Proposta;
+import it.unibs.ingsoft.domain.shared.error.Failure;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,5 +17,5 @@ public interface IIscrizioneView {
 
     void mostraDisiscrizioneEffettuata(Proposta proposta);
 
-    void mostraErrore(Exception e);
+    void mostraErrore(Failure failure);
 }

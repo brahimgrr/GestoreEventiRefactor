@@ -1,6 +1,5 @@
 package it.unibs.ingsoft.domain.utente;
 
-import it.unibs.ingsoft.domain.shared.error.DomainErrorCode;
 import it.unibs.ingsoft.domain.shared.error.DomainException;
 
 /**
@@ -17,7 +16,7 @@ public abstract class Persona {
      */
     protected Persona(String username) {
         if (username == null || username.isBlank())
-            throw new DomainException(DomainErrorCode.PERSONA_USERNAME_NON_VALIDO);
+            throw new DomainException(new UserFailure.UsernameInvalid());
         this.username = username.trim();
     }
 

@@ -4,9 +4,9 @@ import it.unibs.ingsoft.application.proposta.dto.PropostaValidationResult;
 import it.unibs.ingsoft.domain.catalogo.Campo;
 import it.unibs.ingsoft.domain.catalogo.Categoria;
 import it.unibs.ingsoft.domain.proposta.Proposta;
+import it.unibs.ingsoft.presentation.view.cli.common.error.FailureMessageRegistry;
 import it.unibs.ingsoft.presentation.view.cli.common.proposta.PropostaRenderer;
 import it.unibs.ingsoft.presentation.view.cli.configuratore.categoria.CategoriaRenderer;
-import it.unibs.ingsoft.presentation.view.cli.configuratore.proposta.ValidationErrorMessageMapper;
 import it.unibs.ingsoft.presentation.view.interfaces.common.IAppView;
 import it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta.IPropostaCreationView;
 import it.unibs.ingsoft.presentation.view.interfaces.common.OperationCancelledException;
@@ -23,16 +23,27 @@ public final class PropostaCreationView implements IPropostaCreationView {
     private final CategoriaRenderer categoriaRenderer;
     private final PropostaFormView propostaFormView;
     private final PropostaRenderer propostaRenderer;
+    private final FailureMessageRegistry messages;
 
     public PropostaCreationView(
             IAppView ui,
             CategoriaRenderer categoriaRenderer,
             PropostaFormView propostaFormView,
             PropostaRenderer propostaRenderer) {
+        this(ui, categoriaRenderer, propostaFormView, propostaRenderer, FailureMessageRegistry.cliDefault());
+    }
+
+    public PropostaCreationView(
+            IAppView ui,
+            CategoriaRenderer categoriaRenderer,
+            PropostaFormView propostaFormView,
+            PropostaRenderer propostaRenderer,
+            FailureMessageRegistry messages) {
         this.ui = ui;
         this.categoriaRenderer = categoriaRenderer;
         this.propostaFormView = propostaFormView;
         this.propostaRenderer = propostaRenderer;
+        this.messages = messages;
     }
 
     @Override
@@ -67,7 +78,7 @@ public final class PropostaCreationView implements IPropostaCreationView {
         ui.newLine();
         ui.stampa("La proposta NON e valida per i seguenti motivi:");
         for (var errore : result.errori()) {
-            ui.stampaErrore(ValidationErrorMessageMapper.message(errore));
+            ui.stampaErrore(messages.message(errore.failure()));
         }
         ui.newLine();
 

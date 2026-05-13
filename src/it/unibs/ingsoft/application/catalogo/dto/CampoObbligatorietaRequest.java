@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.application.catalogo.dto;
 
-import it.unibs.ingsoft.domain.shared.error.DomainErrorCode;
+import it.unibs.ingsoft.domain.catalogo.CatalogFailure;
 import it.unibs.ingsoft.domain.shared.error.DomainException;
 
 /**
@@ -9,7 +9,7 @@ import it.unibs.ingsoft.domain.shared.error.DomainException;
 public record CampoObbligatorietaRequest(String nomeCampo, boolean obbligatorio) {
     public CampoObbligatorietaRequest {
         if (nomeCampo == null || nomeCampo.isBlank())
-            throw new DomainException(DomainErrorCode.CAMPO_NOME_NON_VALIDO);
+            throw new DomainException(new CatalogFailure.FieldNameInvalid());
 
         nomeCampo = nomeCampo.trim();
     }

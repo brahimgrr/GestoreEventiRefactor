@@ -5,12 +5,13 @@ import it.unibs.ingsoft.domain.shared.AppConstants;
 import it.unibs.ingsoft.domain.catalogo.Campo;
 import it.unibs.ingsoft.domain.catalogo.Categoria;
 import it.unibs.ingsoft.domain.proposta.Proposta;
+import it.unibs.ingsoft.domain.proposta.ProposalValidationFailure;
 import it.unibs.ingsoft.domain.proposta.PropostaValidator;
 import it.unibs.ingsoft.domain.proposta.StatoProposta;
 import it.unibs.ingsoft.domain.catalogo.TipoCampo;
 import it.unibs.ingsoft.domain.catalogo.TipoDato;
-import it.unibs.ingsoft.domain.shared.error.DomainErrorCode;
 import it.unibs.ingsoft.domain.shared.error.ValidationError;
+import it.unibs.ingsoft.domain.shared.validation.TypeValidationFailure;
 import it.unibs.ingsoft.domain.catalogo.CampoFactory;
 import org.junit.jupiter.api.Test;
 
@@ -53,7 +54,7 @@ class PropostaValidationServiceTest {
         assertFalse(result.valida());
         assertEquals(StatoProposta.BOZZA, proposta.getStato());
         assertTrue(result.errori().stream().anyMatch(error ->
-                error.code() == DomainErrorCode.CAMPO_OBBLIGATORIO_MANCANTE &&
+                error.failure() instanceof ProposalValidationFailure.RequiredFieldMissing &&
                         AppConstants.CAMPO_TITOLO.equals(error.fieldName())));
     }
 
@@ -70,7 +71,7 @@ class PropostaValidationServiceTest {
         );
 
         assertTrue(errors.stream().anyMatch(error ->
-                error.code() == DomainErrorCode.TERMINE_ISCRIZIONE_NON_FUTURO &&
+                error.failure() instanceof ProposalValidationFailure.SubscriptionDeadlineNotFuture &&
                         AppConstants.CAMPO_TERMINE_ISCRIZIONE.equals(error.fieldName())));
     }
 
@@ -84,7 +85,7 @@ class PropostaValidationServiceTest {
 
         assertFalse(result.valida());
         assertTrue(result.errori().stream().anyMatch(error ->
-                error.code() == DomainErrorCode.NUMERO_PARTECIPANTI_NON_POSITIVO &&
+                error.failure() instanceof ProposalValidationFailure.ParticipantsNotPositive &&
                         AppConstants.CAMPO_NUM_PARTECIPANTI.equals(error.fieldName())));
     }
 
@@ -103,16 +104,16 @@ class PropostaValidationServiceTest {
 
         assertFalse(result.valida());
         assertTrue(result.errori().stream().anyMatch(error ->
-                error.code() == DomainErrorCode.TIPO_DATA_NON_VALIDA &&
+                error.failure() instanceof TypeValidationFailure.InvalidDate &&
                         AppConstants.CAMPO_DATA.equals(error.fieldName())));
         assertTrue(result.errori().stream().anyMatch(error ->
-                error.code() == DomainErrorCode.TIPO_ORA_NON_VALIDA &&
+                error.failure() instanceof TypeValidationFailure.InvalidTime &&
                         AppConstants.CAMPO_ORA.equals(error.fieldName())));
         assertTrue(result.errori().stream().anyMatch(error ->
-                error.code() == DomainErrorCode.TIPO_DECIMALE_NON_VALIDO &&
+                error.failure() instanceof TypeValidationFailure.InvalidDecimal &&
                         AppConstants.CAMPO_QUOTA.equals(error.fieldName())));
         assertTrue(result.errori().stream().anyMatch(error ->
-                error.code() == DomainErrorCode.TIPO_INTERO_NON_VALIDO &&
+                error.failure() instanceof TypeValidationFailure.InvalidInteger &&
                         "Numero tessera".equals(error.fieldName())));
     }
 
@@ -128,7 +129,7 @@ class PropostaValidationServiceTest {
         );
 
         assertTrue(errors.stream().anyMatch(error ->
-                error.code() == DomainErrorCode.TIPO_ORA_NON_VALIDA &&
+                error.failure() instanceof TypeValidationFailure.InvalidTime &&
                         AppConstants.CAMPO_ORA.equals(error.fieldName())));
     }
 
@@ -144,7 +145,7 @@ class PropostaValidationServiceTest {
         );
 
         assertTrue(errors.stream().anyMatch(error ->
-                error.code() == DomainErrorCode.NUMERO_PARTECIPANTI_NON_INTERO &&
+                error.failure() instanceof ProposalValidationFailure.ParticipantsNotInteger &&
                         AppConstants.CAMPO_NUM_PARTECIPANTI.equals(error.fieldName())));
     }
 

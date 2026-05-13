@@ -1,10 +1,10 @@
 package it.unibs.ingsoft.presentation.view.cli.common.auth;
 
 import it.unibs.ingsoft.application.authentication.dto.CredenzialiRequest;
+import it.unibs.ingsoft.domain.shared.error.Failure;
 import it.unibs.ingsoft.domain.utente.Configuratore;
 import it.unibs.ingsoft.domain.utente.Fruitore;
-import it.unibs.ingsoft.domain.shared.error.DomainException;
-import it.unibs.ingsoft.presentation.view.cli.common.error.DomainErrorMessageMapper;
+import it.unibs.ingsoft.presentation.view.cli.common.error.FailureMessageRegistry;
 import it.unibs.ingsoft.presentation.view.interfaces.common.auth.CredentialFieldValidator;
 import it.unibs.ingsoft.presentation.view.interfaces.common.IAppView;
 import it.unibs.ingsoft.presentation.view.interfaces.common.auth.IMainView;
@@ -20,9 +20,15 @@ public final class MainCliView implements IMainView {
     };
 
     private final IAppView ui;
+    private final FailureMessageRegistry messages;
 
     public MainCliView(IAppView ui) {
+        this(ui, FailureMessageRegistry.cliDefault());
+    }
+
+    public MainCliView(IAppView ui, FailureMessageRegistry messages) {
         this.ui = ui;
+        this.messages = messages;
     }
 
     @Override
@@ -112,24 +118,22 @@ public final class MainCliView implements IMainView {
     private String raccogliCampo(String prompt, CredentialFieldValidator validator) {
         while (true) {
             String value = ui.acquisisciStringa(prompt);
-            try {
-                validator.validate(value);
+            Optional<Failure> failure = validator.validate(value);
+            if (failure.isEmpty()) {
                 return value;
-            } catch (DomainException e) {
-                ui.stampaErrore(DomainErrorMessageMapper.message(e));
             }
+            ui.stampaErrore(messages.message(failure.get()));
         }
     }
 
     private String raccogliPassword(CredentialFieldValidator validator) {
         while (true) {
             String value = ui.acquisisciPassword("Nuova password: ");
-            try {
-                validator.validate(value);
+            Optional<Failure> failure = validator.validate(value);
+            if (failure.isEmpty()) {
                 return value;
-            } catch (DomainException e) {
-                ui.stampaErrore(DomainErrorMessageMapper.message(e));
             }
+            ui.stampaErrore(messages.message(failure.get()));
         }
     }
 
@@ -192,8 +196,8 @@ public final class MainCliView implements IMainView {
     }
 
     @Override
-    public void mostraErrore(Exception e) {
-        ui.stampaErrore(DomainErrorMessageMapper.message(e));
+    public void mostraErrore(Failure failure) {
+        ui.stampaErrore(messages.message(failure));
         ui.newLine();
     }
 }

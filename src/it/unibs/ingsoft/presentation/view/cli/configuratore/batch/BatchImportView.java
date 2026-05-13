@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.presentation.view.cli.configuratore.batch;
 
 import it.unibs.ingsoft.application.batch.dto.ImportResult;
-import it.unibs.ingsoft.presentation.view.cli.configuratore.batch.ImportErrorMessageMapper;
+import it.unibs.ingsoft.presentation.view.cli.common.error.FailureMessageRegistry;
 import it.unibs.ingsoft.presentation.view.interfaces.common.IAppView;
 import it.unibs.ingsoft.presentation.view.interfaces.configuratore.batch.IBatchImportView;
 import it.unibs.ingsoft.presentation.view.interfaces.common.OperationCancelledException;
@@ -11,9 +11,15 @@ import java.util.Optional;
 
 public final class BatchImportView implements IBatchImportView {
     private final IAppView ui;
+    private final FailureMessageRegistry messages;
 
     public BatchImportView(IAppView ui) {
+        this(ui, FailureMessageRegistry.cliDefault());
+    }
+
+    public BatchImportView(IAppView ui, FailureMessageRegistry messages) {
         this.ui = ui;
+        this.messages = messages;
     }
 
     @Override
@@ -51,7 +57,7 @@ public final class BatchImportView implements IBatchImportView {
         if (result.hasErrors()) {
             ui.stampaAvviso("Errori riscontrati (" + result.getErrori().size() + "):");
             for (var errore : result.getErrori()) {
-                ui.stampaErrore(ImportErrorMessageMapper.message(errore));
+                ui.stampaErrore(messages.message(errore.failure()));
             }
             ui.newLine();
         }

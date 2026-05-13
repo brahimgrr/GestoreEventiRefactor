@@ -5,7 +5,7 @@ import it.unibs.ingsoft.application.catalogo.dto.CatalogoOperationResult;
 import it.unibs.ingsoft.domain.catalogo.Campo;
 import it.unibs.ingsoft.domain.catalogo.Categoria;
 import it.unibs.ingsoft.domain.proposta.Proposta;
-import it.unibs.ingsoft.domain.shared.error.DomainException;
+import it.unibs.ingsoft.domain.shared.error.FailureException;
 import it.unibs.ingsoft.presentation.view.interfaces.configuratore.batch.IBatchImportView;
 import it.unibs.ingsoft.presentation.view.interfaces.configuratore.campo.ICampoConfigView;
 import it.unibs.ingsoft.presentation.view.interfaces.configuratore.catalogo.ICatalogoConfigView;
@@ -17,7 +17,6 @@ import it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta.IPro
 import it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta.IPropostaLifecycleView;
 import it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta.IPropostaPublicationView;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -222,8 +221,8 @@ public final class ConfiguratoreController {
                 .ifPresent(path -> {
                     try {
                         batchImportView.mostraRisultatoImportazione(configuratoreService.importa(path));
-                    } catch (IOException | DomainException e) {
-                        feedbackView.mostraErrore(e);
+                    } catch (FailureException e) {
+                        feedbackView.mostraErrore(e.failure());
                     }
                 });
     }
@@ -232,8 +231,8 @@ public final class ConfiguratoreController {
         try {
             action.run();
             onSuccess.run();
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            feedbackView.mostraErrore(e);
+        } catch (FailureException e) {
+            feedbackView.mostraErrore(e.failure());
         }
     }
 }

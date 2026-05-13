@@ -6,7 +6,6 @@ import it.unibs.ingsoft.persistence.interfaces.ICatalogoRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import java.io.UncheckedIOException;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -53,7 +52,8 @@ class FileRepositoryContractTest {
         Files.writeString(path, "{ not valid json");
         ICatalogoRepository repository = new FileCatalogoRepository(path);
 
-        assertThrows(UncheckedIOException.class, repository::load);
+        PersistenceException exception = assertThrows(PersistenceException.class, repository::load);
+        assertEquals(new PersistenceFailure.ReadFailed(path), exception.failure());
     }
 
     @Test
@@ -66,6 +66,18 @@ class FileRepositoryContractTest {
         StoredName saved = repository.load();
         assertEquals("Cinema", saved.name());
         assertTrue(repository.usedReplaceMove());
+    }
+
+    @Test
+    void saveThrowsTypedFailureWhenWriteFails() {
+        Path path = tempDir.resolve("failing-write.json");
+        FailingWriteRepository repository = new FailingWriteRepository(path);
+
+        PersistenceException exception = assertThrows(
+                PersistenceException.class,
+                () -> repository.save(new StoredName("Cinema")));
+
+        assertEquals(new PersistenceFailure.WriteFailed(path), exception.failure());
     }
 
     private static final class FallbackMoveRepository extends AbstractFileRepository<StoredName> {
@@ -88,6 +100,22 @@ class FileRepositoryContractTest {
 
         boolean usedReplaceMove() {
             return usedReplaceMove;
+        }
+    }
+
+    private static final class FailingWriteRepository extends AbstractFileRepository<StoredName> {
+        private FailingWriteRepository(Path path) {
+            super(path, StoredName.class, () -> new StoredName(""));
+        }
+
+        @Override
+        protected void moveAtomically(Path tmp, Path target) throws java.io.IOException {
+            throw new java.io.IOException("forced write failure");
+        }
+
+        @Override
+        protected void moveReplacing(Path tmp, Path target) throws java.io.IOException {
+            throw new java.io.IOException("forced write failure");
         }
     }
 

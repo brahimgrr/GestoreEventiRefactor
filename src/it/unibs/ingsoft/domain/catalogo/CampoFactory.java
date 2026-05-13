@@ -1,6 +1,5 @@
 package it.unibs.ingsoft.domain.catalogo;
 
-import it.unibs.ingsoft.domain.shared.error.DomainErrorCode;
 import it.unibs.ingsoft.domain.shared.error.DomainException;
 
 import java.util.ArrayList;
@@ -39,11 +38,11 @@ public final class CampoFactory {
 
     public List<Campo> creaCampiBaseExtra(List<String> nomiExtra, List<TipoDato> tipiExtra) {
         if (nomiExtra == null || tipiExtra == null) {
-            throw new DomainException(DomainErrorCode.CAMPO_EXTRA_DATI_NON_VALIDI);
+            throw new DomainException(new CatalogFailure.ExtraFieldDataInvalid());
         }
 
         if (nomiExtra.size() != tipiExtra.size()) {
-            throw new DomainException(DomainErrorCode.CAMPO_EXTRA_DIMENSIONI_NON_COHERENTI);
+            throw new DomainException(new CatalogFailure.ExtraFieldDimensionsMismatch());
         }
 
         return IntStream.range(0, nomiExtra.size())

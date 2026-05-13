@@ -3,7 +3,7 @@ package it.unibs.ingsoft.application.proposta;
 import it.unibs.ingsoft.persistence.dto.BachecaDTO;
 import it.unibs.ingsoft.domain.proposta.Proposta;
 import it.unibs.ingsoft.domain.proposta.PropostaIdentityPolicy;
-import it.unibs.ingsoft.domain.shared.error.DomainErrorCode;
+import it.unibs.ingsoft.domain.proposta.ProposalFailure;
 import it.unibs.ingsoft.domain.shared.error.DomainException;
 import it.unibs.ingsoft.domain.shared.AppConstants;
 import it.unibs.ingsoft.persistence.interfaces.IBachecaRepository;
@@ -81,7 +81,7 @@ public final class PropostaPublicationService {
                 .anyMatch(e -> duplicatePolicy.chiaveDuplicato(e).equals(chiave));
 
         if (inBacheca || inValide) {
-            throw new DomainException(DomainErrorCode.PROPOSTA_DUPLICATA);
+            throw new DomainException(new ProposalFailure.Duplicate());
         }
     }
 
@@ -89,7 +89,7 @@ public final class PropostaPublicationService {
         String chiave = duplicatePolicy.chiaveDuplicato(proposta);
 
         if (bacheca.containsChiaveDuplicato(chiave)) {
-            throw new DomainException(DomainErrorCode.PROPOSTA_DUPLICATA);
+            throw new DomainException(new ProposalFailure.Duplicate());
         }
     }
 }

@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import it.unibs.ingsoft.domain.catalogo.Campo;
 import it.unibs.ingsoft.domain.catalogo.Categoria;
-import it.unibs.ingsoft.domain.shared.error.DomainErrorCode;
 import it.unibs.ingsoft.domain.shared.error.DomainException;
 import it.unibs.ingsoft.domain.shared.AppConstants;
 
@@ -34,7 +33,7 @@ public final class Proposta {
 
     private Proposta(String id, Categoria categoria, List<Campo> campiBase, List<Campo> campiComuni) {
         if (categoria == null)
-            throw new DomainException(DomainErrorCode.NULL_PROPOSTA_CATEGORY);
+            throw new DomainException(new ProposalFailure.NullCategory());
         this.id = normalizzaId(id);
         this.categoria = new Categoria(categoria);
         this.campiBase = campiBase == null
@@ -107,9 +106,9 @@ public final class Proposta {
 
     private void cambiaStato(StatoProposta next) {
         if (next == null)
-            throw new DomainException(DomainErrorCode.NULL_STATO_PROPOSTA);
+            throw new DomainException(new ProposalFailure.NullState());
         if (!stato.canTransitionTo(next))
-            throw DomainException.invalidStateTransition(stato, next);
+            throw new DomainException(new ProposalFailure.InvalidStateTransition(stato, next));
         this.stato = next;
         this.stateHistory.add(new PropostaStateChange(next, LocalDate.now(AppConstants.clock)));
     }
@@ -177,17 +176,17 @@ public final class Proposta {
 
     public void verificaSalvabile() {
         if (!isValida()) {
-            throw new DomainException(DomainErrorCode.PROPOSTA_NOT_SALVABILE);
+            throw new DomainException(new ProposalFailure.NotSavable());
         }
     }
 
     public void verificaPubblicabile(LocalDate oggi) {
         if (!isValida()) {
-            throw new DomainException(DomainErrorCode.PROPOSTA_NOT_VALID_FOR_PUBLICATION);
+            throw new DomainException(new ProposalFailure.NotValidForPublication());
         }
 
         if (termineIscrizione != null && !termineIscrizione.isAfter(oggi)) {
-            throw DomainException.publicationDeadlineExpired(termineIscrizione);
+            throw new DomainException(new ProposalFailure.PublicationDeadlineExpired(termineIscrizione));
         }
     }
 
@@ -217,11 +216,11 @@ public final class Proposta {
 
     public void ritira(LocalDate oggi) {
         if (!isRitirabile()) {
-            throw new DomainException(DomainErrorCode.PROPOSTA_NOT_WITHDRAWABLE);
+            throw new DomainException(new ProposalFailure.NotWithdrawable());
         }
 
         if (dataEvento != null && !oggi.isBefore(dataEvento)) {
-            throw new DomainException(DomainErrorCode.PROPOSTA_WITHDRAWAL_TOO_LATE);
+            throw new DomainException(new ProposalFailure.WithdrawalTooLate());
         }
 
         cambiaStato(StatoProposta.RITIRATA);
@@ -261,17 +260,17 @@ public final class Proposta {
 
     public void iscrivi(String username, LocalDate oggi) {
         if (!isAperta()) {
-            throw new DomainException(DomainErrorCode.PROPOSTA_NOT_OPEN_FOR_SUBSCRIPTION);
+            throw new DomainException(new ProposalFailure.NotOpenForSubscription());
         }
         if (isTermineIscrizioneScaduto(oggi)) {
-            throw DomainException.subscriptionDeadlineExpired(termineIscrizione);
+            throw new DomainException(new ProposalFailure.SubscriptionDeadlineExpired(termineIscrizione));
         }
         if (isIscritto(username)) {
-            throw new DomainException(DomainErrorCode.PROPOSTA_ALREADY_SUBSCRIBED);
+            throw new DomainException(new ProposalFailure.AlreadySubscribed());
         }
         int numeroPartecipantiPrevisto = getNumeroPartecipanti();
         if (listaAderenti.size() >= numeroPartecipantiPrevisto) {
-            throw new DomainException(DomainErrorCode.PROPOSTA_FULL);
+            throw new DomainException(new ProposalFailure.Full());
         }
 
         listaAderenti.add(username);
@@ -279,15 +278,15 @@ public final class Proposta {
 
     public void disiscrivi(String username, LocalDate oggi) {
         if (!isAperta()) {
-            throw new DomainException(DomainErrorCode.PROPOSTA_NOT_OPEN_FOR_UNSUBSCRIPTION);
+            throw new DomainException(new ProposalFailure.NotOpenForUnsubscription());
         }
 
         if (isTermineIscrizioneScaduto(oggi)) {
-            throw DomainException.unsubscriptionDeadlineExpired(termineIscrizione);
+            throw new DomainException(new ProposalFailure.UnsubscriptionDeadlineExpired(termineIscrizione));
         }
 
         if (!isIscritto(username)) {
-            throw new DomainException(DomainErrorCode.PROPOSTA_NOT_SUBSCRIBED);
+            throw new DomainException(new ProposalFailure.NotSubscribed());
         }
 
         listaAderenti.remove(username);
@@ -322,7 +321,7 @@ public final class Proposta {
 
     public void aggiornaValoriCampi(Map<String, String> valori) {
         if (stato != StatoProposta.BOZZA && stato != StatoProposta.VALIDA)
-            throw DomainException.fieldsNotModifiable(stato);
+            throw new DomainException(new ProposalFailure.FieldsNotModifiable(stato));
         valoriCampi.putAll(valori);
 
         Map<String, String> temp = new HashMap<>(valoriCampi);
@@ -358,14 +357,14 @@ public final class Proposta {
     public int getNumeroPartecipanti() {
         String s = valoriCampi.get(AppConstants.CAMPO_NUM_PARTECIPANTI);
         if (s == null || s.isBlank())
-            throw new DomainException(DomainErrorCode.PROPOSTA_PARTICIPANTS_MISSING);
+            throw new DomainException(new ProposalFailure.ParticipantsMissing());
         try {
             int n = Integer.parseInt(s.trim());
             if (n <= 0)
-                throw new DomainException(DomainErrorCode.PROPOSTA_PARTICIPANTS_NOT_POSITIVE);
+                throw new DomainException(new ProposalFailure.ParticipantsNotPositive());
             return n;
         } catch (NumberFormatException e) {
-            throw DomainException.participantsNotInteger(s);
+            throw new DomainException(new ProposalFailure.ParticipantsNotInteger(s));
         }
     }
 

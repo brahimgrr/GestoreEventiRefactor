@@ -2,7 +2,6 @@ package it.unibs.ingsoft.domain.catalogo;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import it.unibs.ingsoft.domain.shared.error.DomainErrorCode;
 import it.unibs.ingsoft.domain.shared.error.DomainException;
 
 import java.util.ArrayList;
@@ -17,7 +16,7 @@ public final class Categoria {
 
     public Categoria(String nome) {
         if (nome == null || nome.isBlank())
-            throw new DomainException(DomainErrorCode.CATEGORIA_NOME_NON_VALIDO);
+            throw new DomainException(new CatalogFailure.CategoryNameInvalid());
         this.nome = nome.trim();
         this.campiSpecifici = new ArrayList<>();
     }
@@ -49,9 +48,9 @@ public final class Categoria {
 
     public void addCampoSpecifico(Campo campoSpecifico) {
         if (campoSpecifico.getTipo() != TipoCampo.SPECIFICO)
-            throw new DomainException(DomainErrorCode.CATEGORIA_CAMPO_NON_SPECIFICO);
+            throw new DomainException(new CatalogFailure.CategoryFieldNotSpecific());
         if (containsCampo(campoSpecifico.getNome()))
-            throw new DomainException(DomainErrorCode.CATEGORIA_CAMPO_DUPLICATO, nome, campoSpecifico.getNome());
+            throw new DomainException(new CatalogFailure.CategoryFieldDuplicated(nome, campoSpecifico.getNome()));
 
         campiSpecifici.add(campoSpecifico);
         campiSpecifici.sort(Comparator.comparing(Campo::getNome, String.CASE_INSENSITIVE_ORDER));

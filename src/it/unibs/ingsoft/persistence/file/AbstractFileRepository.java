@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -84,7 +83,7 @@ abstract class AbstractFileRepository<T> {
         try {
             return MAPPER.readValue(path.toFile(), type);
         } catch (IOException e) {
-            throw new UncheckedIOException("Impossibile leggere i dati da: " + path, e);
+            throw new PersistenceException(new PersistenceFailure.ReadFailed(path), e);
         }
     }
 
@@ -103,7 +102,7 @@ abstract class AbstractFileRepository<T> {
                 moveReplacing(tmp, path);
             }
         } catch (IOException e) {
-            throw new UncheckedIOException("Impossibile salvare i dati in: " + path, e);
+            throw new PersistenceException(new PersistenceFailure.WriteFailed(path), e);
         }
     }
 

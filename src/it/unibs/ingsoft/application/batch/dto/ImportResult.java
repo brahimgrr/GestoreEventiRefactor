@@ -1,7 +1,5 @@
 package it.unibs.ingsoft.application.batch.dto;
 
-import it.unibs.ingsoft.domain.shared.error.ImportError;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

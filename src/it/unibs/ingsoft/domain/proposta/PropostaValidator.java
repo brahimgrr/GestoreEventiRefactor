@@ -1,7 +1,6 @@
 package it.unibs.ingsoft.domain.proposta;
 
 import it.unibs.ingsoft.domain.catalogo.Campo;
-import it.unibs.ingsoft.domain.shared.error.DomainErrorCode;
 import it.unibs.ingsoft.domain.shared.error.ValidationError;
 import it.unibs.ingsoft.domain.shared.AppConstants;
 import it.unibs.ingsoft.domain.shared.validation.DefaultTypeValidator;
@@ -80,9 +79,9 @@ public final class PropostaValidator {
             String valore = proposta.getValoriCampi().get(campo.getNome());
             if (campo.isObbligatorio()) {
                 if (valore == null || valore.isBlank()) {
-                    errori.add(ValidationError.error(
+                    errori.add(new ValidationError(
                             campo.getNome(),
-                            DomainErrorCode.CAMPO_OBBLIGATORIO_MANCANTE));
+                            new ProposalValidationFailure.RequiredFieldMissing(campo.getNome())));
                 }
             }
             controllaTipoCampo(campo, valore, errori);
@@ -107,10 +106,9 @@ public final class PropostaValidator {
             return;
         }
 
-        ValidationError errore = DefaultTypeValidator.INSTANCE.validate(valore, campo.getTipoDato());
-        if (errore != null) {
-            errori.add(ValidationError.error(campo.getNome(), errore.code()));
-        }
+        DefaultTypeValidator.INSTANCE.validate(valore, campo.getTipoDato())
+                .map(errore -> new ValidationError(campo.getNome(), errore.failure()))
+                .ifPresent(errori::add);
     }
 
     private void controllaNumeroPartecipanti(Map<String, String> valori, List<ValidationError> errori) {
@@ -122,14 +120,14 @@ public final class PropostaValidator {
         try {
             int value = Integer.parseInt(raw.trim());
             if (value <= 0) {
-                errori.add(ValidationError.error(
+                errori.add(new ValidationError(
                         AppConstants.CAMPO_NUM_PARTECIPANTI,
-                        DomainErrorCode.NUMERO_PARTECIPANTI_NON_POSITIVO));
+                        new ProposalValidationFailure.ParticipantsNotPositive()));
             }
         } catch (NumberFormatException e) {
-            errori.add(ValidationError.error(
+            errori.add(new ValidationError(
                     AppConstants.CAMPO_NUM_PARTECIPANTI,
-                    DomainErrorCode.NUMERO_PARTECIPANTI_NON_INTERO));
+                    new ProposalValidationFailure.ParticipantsNotInteger()));
         }
     }
 
@@ -142,13 +140,13 @@ public final class PropostaValidator {
         }
 
         if (includeOggiNelDettaglio) {
-            errori.add(ValidationError.termineIscrizioneNonFuturo(
+            errori.add(new ValidationError(
                     AppConstants.CAMPO_TERMINE_ISCRIZIONE,
-                    fields.oggi()));
+                    new ProposalValidationFailure.SubscriptionDeadlineNotFuture(fields.oggi())));
         } else {
-            errori.add(ValidationError.error(
+            errori.add(new ValidationError(
                     AppConstants.CAMPO_TERMINE_ISCRIZIONE,
-                    DomainErrorCode.TERMINE_ISCRIZIONE_NON_FUTURO));
+                    new ProposalValidationFailure.SubscriptionDeadlineNotFuture(null)));
         }
     }
 
@@ -156,9 +154,9 @@ public final class PropostaValidator {
         if (fields.termineIscrizione() != null
                 && fields.dataEvento() != null
                 && !fields.dataEvento().isAfter(fields.termineIscrizione().plusDays(1))) {
-            errori.add(ValidationError.error(
+            errori.add(new ValidationError(
                     AppConstants.CAMPO_DATA,
-                    DomainErrorCode.DATA_EVENTO_TROPPO_PRESTO));
+                    new ProposalValidationFailure.EventDateTooEarly()));
         }
     }
 
@@ -166,9 +164,9 @@ public final class PropostaValidator {
         if (fields.dataEvento() != null
                 && fields.dataConclusiva() != null
                 && fields.dataConclusiva().isBefore(fields.dataEvento())) {
-            errori.add(ValidationError.error(
+            errori.add(new ValidationError(
                     AppConstants.CAMPO_DATA_CONCLUSIVA,
-                    DomainErrorCode.DATA_CONCLUSIVA_PRECEDENTE));
+                    new ProposalValidationFailure.ClosingDateBeforeEvent()));
         }
     }
 

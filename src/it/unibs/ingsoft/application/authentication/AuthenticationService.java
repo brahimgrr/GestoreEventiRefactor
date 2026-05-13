@@ -1,10 +1,10 @@
 package it.unibs.ingsoft.application.authentication;
 
+import it.unibs.ingsoft.application.error.ApplicationException;
+import it.unibs.ingsoft.domain.shared.error.Failure;
 import it.unibs.ingsoft.domain.utente.Configuratore;
 import it.unibs.ingsoft.persistence.dto.CredenzialiDTO;
 import it.unibs.ingsoft.domain.utente.Fruitore;
-import it.unibs.ingsoft.domain.shared.error.DomainErrorCode;
-import it.unibs.ingsoft.domain.shared.error.DomainException;
 import it.unibs.ingsoft.domain.utente.UtenteFactory;
 import it.unibs.ingsoft.persistence.interfaces.ICredenzialiRepository;
 
@@ -42,15 +42,15 @@ public final class AuthenticationService {
 
     private static void validaCredenziali(String username, String password) {
         if (username == null || username.isBlank())
-            throw new DomainException(DomainErrorCode.AUTH_USERNAME_NON_VALIDO);
+            throw new ApplicationException(new AuthenticationFailure.UsernameInvalid());
 
         if (password == null || password.isBlank())
-            throw new DomainException(DomainErrorCode.AUTH_PASSWORD_NON_VALIDA);
+            throw new ApplicationException(new AuthenticationFailure.PasswordInvalid());
 
         if (username.length() < MIN_USERNAME_LENGTH)
-            throw new DomainException(DomainErrorCode.AUTH_USERNAME_TROPPO_CORTO, MIN_USERNAME_LENGTH);
+            throw new ApplicationException(new AuthenticationFailure.UsernameTooShort(MIN_USERNAME_LENGTH));
         if (password.length() < MIN_PASSWORD_LENGTH)
-            throw new DomainException(DomainErrorCode.AUTH_PASSWORD_TROPPO_CORTA, MIN_PASSWORD_LENGTH);
+            throw new ApplicationException(new AuthenticationFailure.PasswordTooShort(MIN_PASSWORD_LENGTH));
     }
 
     private CredenzialiDTO credenziali() {
@@ -62,20 +62,23 @@ public final class AuthenticationService {
                 USERNAME_PREDEFINITO.equals(configuratore.getUsername());
     }
 
-    public void validaNuovoUsername(String username) {
+    public Optional<Failure> validaNuovoUsername(String username) {
         if (username == null || username.isBlank() || username.trim().length() < MIN_USERNAME_LENGTH)
-            throw new DomainException(DomainErrorCode.AUTH_USERNAME_TROPPO_CORTO, MIN_USERNAME_LENGTH);
+            return Optional.of(new AuthenticationFailure.UsernameTooShort(MIN_USERNAME_LENGTH));
 
         if (USERNAME_PREDEFINITO.equalsIgnoreCase(username.trim()))
-            throw new DomainException(DomainErrorCode.AUTH_USERNAME_RISERVATO);
+            return Optional.of(new AuthenticationFailure.UsernameReserved(username));
 
         if (esisteUsername(username))
-            throw new DomainException(DomainErrorCode.AUTH_USERNAME_GIA_IN_USO);
+            return Optional.of(new AuthenticationFailure.UsernameAlreadyInUse(username));
+
+        return Optional.empty();
     }
 
-    public void validaNuovaPassword(String password) {
+    public Optional<Failure> validaNuovaPassword(String password) {
         if (password == null || password.isBlank() || password.trim().length() < MIN_PASSWORD_LENGTH)
-            throw new DomainException(DomainErrorCode.AUTH_PASSWORD_TROPPO_CORTA, MIN_PASSWORD_LENGTH);
+            return Optional.of(new AuthenticationFailure.PasswordTooShort(MIN_PASSWORD_LENGTH));
+        return Optional.empty();
     }
 
     /**
@@ -156,10 +159,10 @@ public final class AuthenticationService {
         validaCredenziali(username, password);
 
         if (USERNAME_PREDEFINITO.equalsIgnoreCase(username))
-            throw new DomainException(DomainErrorCode.AUTH_USERNAME_RISERVATO, username);
+            throw new ApplicationException(new AuthenticationFailure.UsernameReserved(username));
 
         if (esisteUsername(username, credenziali))
-            throw new DomainException(DomainErrorCode.AUTH_USERNAME_GIA_IN_USO, username);
+            throw new ApplicationException(new AuthenticationFailure.UsernameAlreadyInUse(username));
     }
 
     /**

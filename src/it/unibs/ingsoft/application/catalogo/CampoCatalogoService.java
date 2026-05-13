@@ -9,6 +9,7 @@ import it.unibs.ingsoft.persistence.dto.CatalogoDTO;
 import it.unibs.ingsoft.domain.catalogo.Categoria;
 import it.unibs.ingsoft.domain.catalogo.TipoDato;
 import it.unibs.ingsoft.domain.catalogo.CampoFactory;
+import it.unibs.ingsoft.domain.shared.error.FailureException;
 import it.unibs.ingsoft.persistence.interfaces.ICatalogoRepository;
 
 import java.util.Collections;
@@ -59,7 +60,7 @@ public final class CampoCatalogoService {
                     richieste.stream().map(CampoBaseExtraRequest::tipoDato).collect(Collectors.toList())
             );
             repo.save(catalogo);
-        } catch (IllegalArgumentException | IllegalStateException e) {
+        } catch (FailureException e) {
             CatalogoDTO fallback = repo.load();
             if (!fallback.isCampiBaseFissati()) {
                 initiateCampiBase(fallback);

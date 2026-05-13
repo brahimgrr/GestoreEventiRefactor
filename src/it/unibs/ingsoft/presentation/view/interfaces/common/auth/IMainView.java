@@ -1,6 +1,7 @@
 package it.unibs.ingsoft.presentation.view.interfaces.common.auth;
 
 import it.unibs.ingsoft.application.authentication.dto.CredenzialiRequest;
+import it.unibs.ingsoft.domain.shared.error.Failure;
 import it.unibs.ingsoft.domain.utente.Configuratore;
 import it.unibs.ingsoft.domain.utente.Fruitore;
 
@@ -48,5 +49,5 @@ public interface IMainView {
 
     void mostraUscita();
 
-    void mostraErrore(Exception e);
+    void mostraErrore(Failure failure);
 }

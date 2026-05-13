@@ -1,7 +1,8 @@
 package it.unibs.ingsoft.presentation.view.cli.fruitore.proposta;
 
 import it.unibs.ingsoft.domain.proposta.Proposta;
-import it.unibs.ingsoft.presentation.view.cli.common.error.DomainErrorMessageMapper;
+import it.unibs.ingsoft.domain.shared.error.Failure;
+import it.unibs.ingsoft.presentation.view.cli.common.error.FailureMessageRegistry;
 import it.unibs.ingsoft.presentation.view.cli.common.proposta.PropostaRenderer;
 import it.unibs.ingsoft.presentation.view.interfaces.common.IAppView;
 import it.unibs.ingsoft.presentation.view.interfaces.fruitore.proposta.IIscrizioneView;
@@ -13,10 +14,16 @@ import java.util.Optional;
 public final class IscrizioneView implements IIscrizioneView {
     private final IAppView ui;
     private final PropostaRenderer propostaRenderer;
+    private final FailureMessageRegistry messages;
 
     public IscrizioneView(IAppView ui, PropostaRenderer propostaRenderer) {
+        this(ui, propostaRenderer, FailureMessageRegistry.cliDefault());
+    }
+
+    public IscrizioneView(IAppView ui, PropostaRenderer propostaRenderer, FailureMessageRegistry messages) {
         this.ui = ui;
         this.propostaRenderer = propostaRenderer;
+        this.messages = messages;
     }
 
     @Override
@@ -88,8 +95,8 @@ public final class IscrizioneView implements IIscrizioneView {
     }
 
     @Override
-    public void mostraErrore(Exception e) {
-        ui.stampaErrore(DomainErrorMessageMapper.message(e));
+    public void mostraErrore(Failure failure) {
+        ui.stampaErrore(messages.message(failure));
         ui.pausaConSpaziatura();
     }
 

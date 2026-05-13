@@ -2,6 +2,7 @@ package it.unibs.ingsoft.presentation.controller;
 
 import it.unibs.ingsoft.application.FruitoreService;
 import it.unibs.ingsoft.domain.utente.Fruitore;
+import it.unibs.ingsoft.domain.shared.error.FailureException;
 import it.unibs.ingsoft.presentation.view.interfaces.fruitore.bacheca.IBachecaView;
 import it.unibs.ingsoft.presentation.view.interfaces.fruitore.menu.IFruitoreView;
 import it.unibs.ingsoft.presentation.view.interfaces.fruitore.proposta.IIscrizioneView;
@@ -80,8 +81,8 @@ public final class FruitoreController {
         try {
             action.run();
             onSuccess.run();
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            iscrizioneView.mostraErrore(e);
+        } catch (FailureException e) {
+            iscrizioneView.mostraErrore(e.failure());
         }
     }
 }

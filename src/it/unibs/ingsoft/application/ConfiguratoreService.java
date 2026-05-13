@@ -15,7 +15,6 @@ import it.unibs.ingsoft.domain.proposta.Proposta;
 import it.unibs.ingsoft.domain.proposta.StatoProposta;
 import it.unibs.ingsoft.domain.shared.error.ValidationError;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -137,7 +136,7 @@ public final class ConfiguratoreService {
         propostaService.clearProposteValide();
     }
 
-    public ImportResult importa(Path path) throws IOException {
+    public ImportResult importa(Path path) {
         return batchImportService.importa(path);
     }
 }

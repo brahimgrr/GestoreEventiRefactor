@@ -1,5 +1,6 @@
-package it.unibs.ingsoft.application.notifica;
+package it.unibs.ingsoft.application.bacheca;
 
+import it.unibs.ingsoft.application.notifica.NotificationService;
 import it.unibs.ingsoft.domain.notifica.Notifica;
 import it.unibs.ingsoft.persistence.dto.ArchivioNotificheDTO;
 import it.unibs.ingsoft.persistence.dto.SpazioPersonaleDTO;

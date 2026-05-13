@@ -2,7 +2,6 @@ package it.unibs.ingsoft.domain.catalogo;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import it.unibs.ingsoft.domain.shared.error.DomainErrorCode;
 import it.unibs.ingsoft.domain.shared.error.DomainException;
 
 /**
@@ -29,11 +28,11 @@ public final class Campo {
                  @JsonProperty("tipoDato") TipoDato tipoDato,
                  @JsonProperty("obbligatorio") boolean obbligatorio) {
         if (nome == null || nome.isBlank())
-            throw new DomainException(DomainErrorCode.CAMPO_NOME_NON_VALIDO);
+            throw new DomainException(new CatalogFailure.FieldNameInvalid());
         if (tipo == null)
-            throw new DomainException(DomainErrorCode.CAMPO_TIPO_NON_VALIDO);
+            throw new DomainException(new CatalogFailure.FieldTypeInvalid());
         if (tipoDato == null)
-            throw new DomainException(DomainErrorCode.CAMPO_TIPO_DATO_NON_VALIDO);
+            throw new DomainException(new CatalogFailure.FieldDataTypeInvalid());
 
         this.nome = nome.trim();
         this.tipo = tipo;

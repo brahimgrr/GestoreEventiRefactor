@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import it.unibs.ingsoft.domain.proposta.Proposta;
 import it.unibs.ingsoft.domain.proposta.PropostaIdentityPolicy;
-import it.unibs.ingsoft.domain.shared.error.DomainErrorCode;
+import it.unibs.ingsoft.domain.proposta.ProposalFailure;
 import it.unibs.ingsoft.domain.shared.error.DomainException;
 
 import java.util.ArrayList;
@@ -65,7 +65,7 @@ public final class BachecaDTO {
 
     public Proposta findSameIdentityAs(Proposta proposta) {
         if (proposta == null) {
-            throw new DomainException(DomainErrorCode.PROPOSTA_NON_TROVATA);
+            throw new DomainException(new ProposalFailure.NotFound());
         }
 
         Optional<Proposta> byId = findById(proposta.getId());
@@ -75,7 +75,7 @@ public final class BachecaDTO {
 
         String chiave = duplicatePolicy.chiaveDuplicato(proposta);
         return findByChiaveDuplicato(chiave)
-                .orElseThrow(() -> new DomainException(DomainErrorCode.PROPOSTA_NON_TROVATA, chiave));
+                .orElseThrow(() -> new DomainException(new ProposalFailure.NotFound()));
     }
 
     public void addProposta(Proposta p) {

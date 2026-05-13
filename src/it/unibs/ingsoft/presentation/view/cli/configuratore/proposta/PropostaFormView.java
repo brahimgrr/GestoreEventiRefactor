@@ -5,7 +5,7 @@ import it.unibs.ingsoft.domain.shared.validation.DefaultTypeValidator;
 import it.unibs.ingsoft.domain.proposta.Proposta;
 import it.unibs.ingsoft.domain.shared.validation.TypeValidator;
 import it.unibs.ingsoft.domain.shared.error.ValidationError;
-import it.unibs.ingsoft.presentation.view.cli.configuratore.proposta.ValidationErrorMessageMapper;
+import it.unibs.ingsoft.presentation.view.cli.common.error.FailureMessageRegistry;
 import it.unibs.ingsoft.presentation.view.interfaces.common.IAppView;
 import it.unibs.ingsoft.presentation.view.interfaces.common.OperationCancelledException;
 import it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta.ProposalFieldValidator;
@@ -19,9 +19,15 @@ import java.util.Set;
 
 public final class PropostaFormView {
     private final IAppView ui;
+    private final FailureMessageRegistry messages;
 
     public PropostaFormView(IAppView ui) {
+        this(ui, FailureMessageRegistry.cliDefault());
+    }
+
+    public PropostaFormView(IAppView ui, FailureMessageRegistry messages) {
         this.ui = ui;
+        this.messages = messages;
     }
 
     public Optional<Map<String, String>> acquisisciValoriProposta(
@@ -79,9 +85,9 @@ public final class PropostaFormView {
                 continue;
             }
 
-            ValidationError typeError = typeValidator.validate(raw, campo.getTipoDato());
-            if (typeError != null) {
-                ui.stampaErrore("  " + ValidationErrorMessageMapper.message(typeError));
+            Optional<ValidationError> typeError = typeValidator.validate(raw, campo.getTipoDato());
+            if (typeError.isPresent()) {
+                ui.stampaErrore("  " + messages.message(typeError.get().failure()));
                 continue;
             }
 
@@ -93,7 +99,7 @@ public final class PropostaFormView {
             );
             if (!businessErrors.isEmpty()) {
                 for (ValidationError businessError : businessErrors)
-                    ui.stampaErrore("  " + ValidationErrorMessageMapper.message(businessError));
+                    ui.stampaErrore("  " + messages.message(businessError.failure()));
                 continue;
             }
 
