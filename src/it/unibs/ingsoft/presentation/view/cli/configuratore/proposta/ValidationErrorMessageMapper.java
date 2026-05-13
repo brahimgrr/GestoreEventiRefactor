@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.presentation.view.cli.configuratore.proposta;
 
-import it.unibs.ingsoft.domain.AppConstants;
-import it.unibs.ingsoft.domain.error.ValidationError;
+import it.unibs.ingsoft.domain.shared.AppConstants;
+import it.unibs.ingsoft.domain.shared.error.ValidationError;
 import it.unibs.ingsoft.presentation.view.cli.common.error.DomainErrorMessageMapper;
 
 import java.util.List;

@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.presentation.view.cli.configuratore.categoria;
 
-import it.unibs.ingsoft.domain.Campo;
-import it.unibs.ingsoft.domain.Categoria;
+import it.unibs.ingsoft.domain.catalogo.Campo;
+import it.unibs.ingsoft.domain.catalogo.Categoria;
 import it.unibs.ingsoft.presentation.view.cli.configuratore.campo.CampoRenderer;
 import it.unibs.ingsoft.presentation.view.interfaces.common.IAppView;
 import it.unibs.ingsoft.presentation.view.interfaces.common.OperationCancelledException;

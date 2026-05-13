@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.presentation.view.cli.configuratore.batch;
 
-import it.unibs.ingsoft.domain.error.DomainErrorCode;
-import it.unibs.ingsoft.domain.error.ImportError;
+import it.unibs.ingsoft.domain.shared.error.DomainErrorCode;
+import it.unibs.ingsoft.domain.shared.error.ImportError;
 import it.unibs.ingsoft.presentation.view.cli.common.error.DomainErrorMessageMapper;
 import it.unibs.ingsoft.presentation.view.cli.configuratore.proposta.ValidationErrorMessageMapper;
 

@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.presentation.view.cli.fruitore.proposta;
 
-import it.unibs.ingsoft.domain.Proposta;
+import it.unibs.ingsoft.domain.proposta.Proposta;
 import it.unibs.ingsoft.presentation.view.cli.common.error.DomainErrorMessageMapper;
 import it.unibs.ingsoft.presentation.view.cli.common.proposta.PropostaRenderer;
 import it.unibs.ingsoft.presentation.view.interfaces.common.IAppView;

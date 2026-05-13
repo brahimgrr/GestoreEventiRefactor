@@ -1,9 +1,9 @@
 package it.unibs.ingsoft.presentation.view.cli.common.auth;
 
 import it.unibs.ingsoft.application.authentication.dto.CredenzialiRequest;
-import it.unibs.ingsoft.domain.Configuratore;
-import it.unibs.ingsoft.domain.Fruitore;
-import it.unibs.ingsoft.domain.error.DomainException;
+import it.unibs.ingsoft.domain.utente.Configuratore;
+import it.unibs.ingsoft.domain.utente.Fruitore;
+import it.unibs.ingsoft.domain.shared.error.DomainException;
 import it.unibs.ingsoft.presentation.view.cli.common.error.DomainErrorMessageMapper;
 import it.unibs.ingsoft.presentation.view.interfaces.common.auth.CredentialFieldValidator;
 import it.unibs.ingsoft.presentation.view.interfaces.common.IAppView;

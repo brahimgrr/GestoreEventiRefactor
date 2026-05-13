@@ -1,8 +1,8 @@
 package it.unibs.ingsoft.application.notifica;
 
-import it.unibs.ingsoft.domain.ArchivioNotifiche;
-import it.unibs.ingsoft.domain.Notifica;
-import it.unibs.ingsoft.domain.SpazioPersonale;
+import it.unibs.ingsoft.domain.notifica.ArchivioNotifiche;
+import it.unibs.ingsoft.domain.notifica.Notifica;
+import it.unibs.ingsoft.domain.utente.SpazioPersonale;
 import it.unibs.ingsoft.persistence.interfaces.ISpazioPersonaleRepository;
 import org.junit.jupiter.api.Test;
 

@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.presentation.view.interfaces.fruitore.notifica;
 
-import it.unibs.ingsoft.domain.Fruitore;
-import it.unibs.ingsoft.domain.Notifica;
+import it.unibs.ingsoft.domain.utente.Fruitore;
+import it.unibs.ingsoft.domain.notifica.Notifica;
 
 import java.util.List;
 import java.util.Optional;

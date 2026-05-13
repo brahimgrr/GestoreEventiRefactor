@@ -2,8 +2,8 @@ package it.unibs.ingsoft.presentation.view.interfaces.configuratore.catalogo;
 
 import it.unibs.ingsoft.application.catalogo.dto.CampoBaseExtraRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CatalogoOperationResult;
-import it.unibs.ingsoft.domain.Campo;
-import it.unibs.ingsoft.domain.Categoria;
+import it.unibs.ingsoft.domain.catalogo.Campo;
+import it.unibs.ingsoft.domain.catalogo.Categoria;
 
 import java.util.List;
 import java.util.Optional;
