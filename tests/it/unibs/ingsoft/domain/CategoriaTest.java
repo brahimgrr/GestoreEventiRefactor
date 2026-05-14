@@ -1,5 +1,6 @@
 package it.unibs.ingsoft.domain;
 
+import it.unibs.ingsoft.domain.shared.error.DomainException;
 import it.unibs.ingsoft.domain.catalogo.Campo;
 import it.unibs.ingsoft.domain.catalogo.Categoria;
 import it.unibs.ingsoft.domain.catalogo.TipoCampo;
@@ -20,12 +21,12 @@ class CategoriaTest {
 
     @Test
     void costruttore_conNomeNull_lanciaIllegalStateException() {
-        assertThrows(IllegalStateException.class, () -> new Categoria((String) null));
+        assertThrows(DomainException.class, () -> new Categoria((String) null));
     }
 
     @Test
     void costruttore_conNomeBlank_lanciaIllegalStateException() {
-        assertThrows(IllegalStateException.class, () -> new Categoria("   "));
+        assertThrows(DomainException.class, () -> new Categoria("   "));
     }
 
     @Test
@@ -44,7 +45,7 @@ class CategoriaTest {
         Categoria categoria = new Categoria("Sport");
         Campo comune = new Campo("Eta", TipoCampo.COMUNE, TipoDato.INTERO, false);
 
-        assertThrows(IllegalStateException.class, () -> categoria.addCampoSpecifico(comune));
+        assertThrows(DomainException.class, () -> categoria.addCampoSpecifico(comune));
     }
 
     @Test
@@ -52,7 +53,7 @@ class CategoriaTest {
         Categoria categoria = new Categoria("Sport");
         categoria.addCampoSpecifico(campoSpecifico("Arbitro"));
 
-        assertThrows(IllegalStateException.class, () -> categoria.addCampoSpecifico(campoSpecifico("arbitro")));
+        assertThrows(DomainException.class, () -> categoria.addCampoSpecifico(campoSpecifico("arbitro")));
     }
 
     @Test

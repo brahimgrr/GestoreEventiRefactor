@@ -1,5 +1,6 @@
 package it.unibs.ingsoft.domain;
 
+import it.unibs.ingsoft.domain.shared.error.DomainException;
 import it.unibs.ingsoft.domain.catalogo.*;
 import it.unibs.ingsoft.persistence.dto.CatalogoDTO;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,7 @@ class CatalogoTest {
     void fissareCampiBase_conDuplicatoCaseInsensitive_lanciaIllegalStateException() {
         CatalogoDTO catalogo = new CatalogoDTO();
 
-        assertThrows(IllegalStateException.class,
+        assertThrows(DomainException.class,
                 () -> catalogo.fissareCampiBase(List.of(
                         campo("Titolo", TipoCampo.BASE, TipoDato.STRINGA, true),
                         campo("titolo", TipoCampo.BASE, TipoDato.STRINGA, true)
@@ -38,7 +39,7 @@ class CatalogoTest {
         CatalogoDTO catalogo = new CatalogoDTO();
         catalogo.fissareCampiBase(List.of(campo("Titolo", TipoCampo.BASE, TipoDato.STRINGA, true)), null);
 
-        assertThrows(IllegalStateException.class,
+        assertThrows(DomainException.class,
                 () -> catalogo.fissareCampiBase(List.of(campo("Data", TipoCampo.BASE, TipoDato.DATA, true)), null));
     }
 
@@ -57,7 +58,7 @@ class CatalogoTest {
         CatalogoDTO catalogo = new CatalogoDTO();
         catalogo.fissareCampiBase(List.of(campo("Titolo", TipoCampo.BASE, TipoDato.STRINGA, true)), null);
 
-        assertThrows(IllegalStateException.class,
+        assertThrows(DomainException.class,
                 () -> catalogo.addCampoComune(campo("titolo", TipoCampo.COMUNE, TipoDato.STRINGA, false)));
     }
 
@@ -111,14 +112,14 @@ class CatalogoTest {
         CatalogoDTO catalogo = new CatalogoDTO();
         catalogo.addCategoria("Sport");
 
-        assertThrows(IllegalStateException.class, () -> catalogo.addCategoria("sport"));
+        assertThrows(DomainException.class, () -> catalogo.addCategoria("sport"));
     }
 
     @Test
     void getCategoriaOrThrow_conCategoriaAssente_lanciaIllegalStateException() {
         CatalogoDTO catalogo = new CatalogoDTO();
 
-        assertThrows(IllegalStateException.class, () -> catalogo.getCategoriaOrThrow("Sport"));
+        assertThrows(DomainException.class, () -> catalogo.getCategoriaOrThrow("Sport"));
     }
 
     @Test
@@ -138,7 +139,7 @@ class CatalogoTest {
         catalogo.addCategoria("Sport");
         catalogo.addCampoComune(campo("Eta", TipoCampo.COMUNE, TipoDato.INTERO, false));
 
-        assertThrows(IllegalStateException.class,
+        assertThrows(DomainException.class,
                 () -> catalogo.addCampoSpecifico("Sport", campo("eta", TipoCampo.SPECIFICO, TipoDato.INTERO, false)));
     }
 
@@ -146,7 +147,7 @@ class CatalogoTest {
     void removeCampoSpecifico_conCategoriaAssente_lanciaIllegalStateException() {
         CatalogoDTO catalogo = new CatalogoDTO();
 
-        assertThrows(IllegalStateException.class, () -> catalogo.removeCampoSpecifico("Sport", "Eta"));
+        assertThrows(DomainException.class, () -> catalogo.removeCampoSpecifico("Sport", "Eta"));
     }
 
     private Campo campo(String nome, TipoCampo tipo, TipoDato tipoDato, boolean obbligatorio) {

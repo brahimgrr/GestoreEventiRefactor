@@ -1,7 +1,9 @@
 package it.unibs.ingsoft.domain.factory;
 
+import it.unibs.ingsoft.domain.shared.error.DomainException;
 import it.unibs.ingsoft.domain.catalogo.Categoria;
 import it.unibs.ingsoft.domain.proposta.Proposta;
+import it.unibs.ingsoft.domain.proposta.PropostaFactory;
 import it.unibs.ingsoft.domain.proposta.StatoProposta;
 import org.junit.jupiter.api.Test;
 
@@ -24,7 +26,7 @@ class PropostaFactoryTest {
 
     @Test
     void creaProposta_conCategoriaNull_lanciaIllegalStateException() {
-        assertThrows(IllegalStateException.class,
+        assertThrows(DomainException.class,
                 () -> PropostaFactory.getInstance().creaProposta(null, List.of(), List.of()));
     }
 }

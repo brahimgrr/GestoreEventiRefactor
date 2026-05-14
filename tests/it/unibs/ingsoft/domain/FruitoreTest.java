@@ -1,5 +1,6 @@
 package it.unibs.ingsoft.domain;
 
+import it.unibs.ingsoft.domain.shared.error.DomainException;
 import it.unibs.ingsoft.domain.utente.Fruitore;
 import org.junit.jupiter.api.Test;
 
@@ -15,12 +16,12 @@ class FruitoreTest {
 
     @Test
     void costruttore_conUsernameNull_lanciaIllegalStateException() {
-        assertThrows(IllegalStateException.class, () -> new Fruitore(null));
+        assertThrows(DomainException.class, () -> new Fruitore(null));
     }
 
     @Test
     void costruttore_conUsernameBlank_lanciaIllegalStateException() {
-        assertThrows(IllegalStateException.class, () -> new Fruitore("   "));
+        assertThrows(DomainException.class, () -> new Fruitore("   "));
     }
 
     @Test

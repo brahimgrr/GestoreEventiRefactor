@@ -1,5 +1,6 @@
 package it.unibs.ingsoft.domain.factory;
 
+import it.unibs.ingsoft.domain.shared.error.DomainException;
 import it.unibs.ingsoft.domain.utente.Configuratore;
 import it.unibs.ingsoft.domain.utente.Fruitore;
 import it.unibs.ingsoft.domain.utente.UtenteFactory;
@@ -22,12 +23,12 @@ class UtenteFactoryTest {
 
     @Test
     void creaConfiguratore_conUsernameBlank_lanciaIllegalStateException() {
-        assertThrows(IllegalStateException.class, () -> UtenteFactory.getInstance().creaConfiguratore("   "));
+        assertThrows(DomainException.class, () -> UtenteFactory.getInstance().creaConfiguratore("   "));
     }
 
     @Test
     void creaConfiguratore_conUsernameNull_lanciaIllegalStateException() {
-        assertThrows(IllegalStateException.class, () -> UtenteFactory.getInstance().creaConfiguratore(null));
+        assertThrows(DomainException.class, () -> UtenteFactory.getInstance().creaConfiguratore(null));
     }
 
     @Test
@@ -39,11 +40,11 @@ class UtenteFactoryTest {
 
     @Test
     void creaFruitore_conUsernameBlank_lanciaIllegalStateException() {
-        assertThrows(IllegalStateException.class, () -> UtenteFactory.getInstance().creaFruitore("   "));
+        assertThrows(DomainException.class, () -> UtenteFactory.getInstance().creaFruitore("   "));
     }
 
     @Test
     void creaFruitore_conUsernameNull_lanciaIllegalStateException() {
-        assertThrows(IllegalStateException.class, () -> UtenteFactory.getInstance().creaFruitore(null));
+        assertThrows(DomainException.class, () -> UtenteFactory.getInstance().creaFruitore(null));
     }
 }

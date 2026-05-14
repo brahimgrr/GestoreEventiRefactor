@@ -1,5 +1,6 @@
 package it.unibs.ingsoft.domain;
 
+import it.unibs.ingsoft.domain.shared.error.DomainException;
 import it.unibs.ingsoft.domain.catalogo.Campo;
 import it.unibs.ingsoft.domain.catalogo.TipoCampo;
 import it.unibs.ingsoft.domain.catalogo.TipoDato;
@@ -17,25 +18,25 @@ class Campo_Test {
 
     @Test
     void costruttore_conNomeNull_lanciaIllegalStateException() {
-        assertThrows(IllegalStateException.class,
+        assertThrows(DomainException.class,
                 () -> new Campo(null, TipoCampo.COMUNE, TipoDato.STRINGA, true));
     }
 
     @Test
     void costruttore_conNomeBlank_lanciaIllegalStateException() {
-        assertThrows(IllegalStateException.class,
+        assertThrows(DomainException.class,
                 () -> new Campo("   ", TipoCampo.COMUNE, TipoDato.STRINGA, true));
     }
 
     @Test
     void costruttore_conTipoNull_lanciaIllegalStateException() {
-        assertThrows(IllegalStateException.class,
+        assertThrows(DomainException.class,
                 () -> new Campo("Nome", null, TipoDato.STRINGA, true));
     }
 
     @Test
     void costruttore_conTipoDatoNull_lanciaIllegalStateException() {
-        assertThrows(IllegalStateException.class,
+        assertThrows(DomainException.class,
                 () -> new Campo("Nome", TipoCampo.COMUNE, null, true));
     }
 
