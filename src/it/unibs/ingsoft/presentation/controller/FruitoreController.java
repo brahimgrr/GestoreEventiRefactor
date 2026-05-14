@@ -3,37 +3,25 @@ package it.unibs.ingsoft.presentation.controller;
 import it.unibs.ingsoft.application.FruitoreService;
 import it.unibs.ingsoft.domain.utente.Fruitore;
 import it.unibs.ingsoft.domain.shared.error.FailureException;
-import it.unibs.ingsoft.presentation.view.interfaces.fruitore.bacheca.IBachecaView;
-import it.unibs.ingsoft.presentation.view.interfaces.fruitore.menu.IFruitoreView;
-import it.unibs.ingsoft.presentation.view.interfaces.fruitore.proposta.IIscrizioneView;
-import it.unibs.ingsoft.presentation.view.interfaces.fruitore.notifica.ISpazioPersonaleView;
+import it.unibs.ingsoft.presentation.view.interfaces.fruitore.IFruitoreViewFacade;
 
 import java.util.Objects;
 
 public final class FruitoreController {
-    private final IFruitoreView mainView;
-    private final IBachecaView bachecaView;
-    private final IIscrizioneView iscrizioneView;
-    private final ISpazioPersonaleView spazioPersonaleView;
+    private final IFruitoreViewFacade view;
     private final FruitoreService fruitoreService;
 
     public FruitoreController(
-            IFruitoreView mainView,
-            IBachecaView bachecaView,
-            IIscrizioneView iscrizioneView,
-            ISpazioPersonaleView spazioPersonaleView,
+            IFruitoreViewFacade view,
             FruitoreService fruitoreService) {
-        this.mainView = Objects.requireNonNull(mainView);
-        this.bachecaView = Objects.requireNonNull(bachecaView);
-        this.iscrizioneView = Objects.requireNonNull(iscrizioneView);
-        this.spazioPersonaleView = Objects.requireNonNull(spazioPersonaleView);
+        this.view = Objects.requireNonNull(view);
         this.fruitoreService = Objects.requireNonNull(fruitoreService);
     }
 
     public void run(Fruitore fruitore) {
         Objects.requireNonNull(fruitore);
         while (true) {
-            switch (mainView.scegliAzionePrincipale(fruitore)) {
+            switch (view.scegliAzionePrincipale(fruitore)) {
                 case BACHECA -> iscrizioneDaBacheca(fruitore);
                 case DISDICI_ISCRIZIONE -> disdiciIscrizione(fruitore);
                 case SPAZIO_PERSONALE -> gestisciSpazioPersonale(fruitore);
@@ -45,34 +33,34 @@ public final class FruitoreController {
     }
 
     private void iscrizioneDaBacheca(Fruitore fruitore) {
-        bachecaView.selezionaPropostaDaBacheca(fruitoreService.getBachecaPerCategoria())
-                .filter(iscrizioneView::confermaIscrizione)
+        view.selezionaPropostaDaBacheca(fruitoreService.getBachecaPerCategoria())
+                .filter(view::confermaIscrizione)
                 .ifPresent(proposta -> esegui(
                         () -> fruitoreService.iscrivi(proposta, fruitore),
-                        () -> iscrizioneView.mostraIscrizioneEffettuata(proposta)));
+                        () -> view.mostraIscrizioneEffettuata(proposta)));
     }
 
     private void disdiciIscrizione(Fruitore fruitore) {
-        iscrizioneView.selezionaPropostaDaDisdire(fruitoreService.getProposteAperteIscritteDa(fruitore))
-                .filter(iscrizioneView::confermaDisiscrizione)
+        view.selezionaPropostaDaDisdire(fruitoreService.getProposteAperteIscritteDa(fruitore))
+                .filter(view::confermaDisiscrizione)
                 .ifPresent(proposta -> esegui(
                         () -> fruitoreService.disiscrivi(proposta, fruitore),
-                        () -> iscrizioneView.mostraDisiscrizioneEffettuata(proposta)));
+                        () -> view.mostraDisiscrizioneEffettuata(proposta)));
     }
 
     private void gestisciSpazioPersonale(Fruitore fruitore) {
         while (true) {
-            var scelta = spazioPersonaleView.selezionaNotificaDaEliminare(
+            var scelta = view.selezionaNotificaDaEliminare(
                     fruitore,
                     fruitoreService.getNotifiche(fruitore));
             if (scelta.isEmpty()) {
                 return;
             }
 
-            scelta.filter(spazioPersonaleView::confermaEliminazioneNotifica)
+            scelta.filter(view::confermaEliminazioneNotifica)
                     .ifPresent(notifica -> {
                         fruitoreService.cancellaNotifica(fruitore, notifica);
-                        spazioPersonaleView.mostraNotificaEliminata(notifica);
+                        view.mostraNotificaEliminata(notifica);
                     });
         }
     }
@@ -82,7 +70,7 @@ public final class FruitoreController {
             action.run();
             onSuccess.run();
         } catch (FailureException e) {
-            iscrizioneView.mostraErrore(e.failure());
+            view.mostraErrore(e.failure());
         }
     }
 }

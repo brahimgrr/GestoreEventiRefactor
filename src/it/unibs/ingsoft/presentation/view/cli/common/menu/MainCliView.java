@@ -1,4 +1,4 @@
-package it.unibs.ingsoft.presentation.view.cli.common.auth;
+package it.unibs.ingsoft.presentation.view.cli.common.menu;
 
 import it.unibs.ingsoft.application.authentication.dto.CredenzialiRequest;
 import it.unibs.ingsoft.domain.shared.error.Failure;

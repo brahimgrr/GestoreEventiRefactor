@@ -27,6 +27,7 @@ import it.unibs.ingsoft.persistence.file.FileRepositoryFactory;
 import it.unibs.ingsoft.presentation.controller.ConfiguratoreController;
 import it.unibs.ingsoft.presentation.controller.FruitoreController;
 import it.unibs.ingsoft.presentation.controller.MainController;
+import it.unibs.ingsoft.presentation.view.cli.configuratore.ConfiguratoreViewFacade;
 import it.unibs.ingsoft.presentation.view.cli.fruitore.bacheca.BachecaView;
 import it.unibs.ingsoft.presentation.view.cli.configuratore.batch.BatchImportView;
 import it.unibs.ingsoft.presentation.view.cli.configuratore.campo.CampoConfigView;
@@ -38,8 +39,9 @@ import it.unibs.ingsoft.presentation.view.cli.configuratore.error.ConfiguratoreF
 import it.unibs.ingsoft.presentation.view.cli.configuratore.menu.ConfiguratoreCliView;
 import it.unibs.ingsoft.presentation.view.cli.common.ConsoleUI;
 import it.unibs.ingsoft.presentation.view.cli.fruitore.menu.FruitoreCliView;
+import it.unibs.ingsoft.presentation.view.cli.fruitore.FruitoreViewFacade;
 import it.unibs.ingsoft.presentation.view.cli.fruitore.proposta.IscrizioneView;
-import it.unibs.ingsoft.presentation.view.cli.common.auth.MainCliView;
+import it.unibs.ingsoft.presentation.view.cli.common.menu.MainCliView;
 import it.unibs.ingsoft.presentation.view.cli.configuratore.proposta.PropostaBrowsingView;
 import it.unibs.ingsoft.presentation.view.cli.configuratore.proposta.PropostaCreationView;
 import it.unibs.ingsoft.presentation.view.cli.configuratore.proposta.PropostaFormView;
@@ -53,11 +55,13 @@ import it.unibs.ingsoft.presentation.view.interfaces.configuratore.campo.ICampoC
 import it.unibs.ingsoft.presentation.view.interfaces.configuratore.catalogo.ICatalogoConfigView;
 import it.unibs.ingsoft.presentation.view.interfaces.configuratore.categoria.ICategoriaConfigView;
 import it.unibs.ingsoft.presentation.view.interfaces.common.IAppView;
+import it.unibs.ingsoft.presentation.view.interfaces.common.auth.IMainView;
+import it.unibs.ingsoft.presentation.view.interfaces.configuratore.IConfiguratoreViewFacade;
 import it.unibs.ingsoft.presentation.view.interfaces.configuratore.error.IConfiguratoreFeedbackView;
 import it.unibs.ingsoft.presentation.view.interfaces.configuratore.menu.IConfiguratoreView;
+import it.unibs.ingsoft.presentation.view.interfaces.fruitore.IFruitoreViewFacade;
 import it.unibs.ingsoft.presentation.view.interfaces.fruitore.menu.IFruitoreView;
 import it.unibs.ingsoft.presentation.view.interfaces.fruitore.proposta.IIscrizioneView;
-import it.unibs.ingsoft.presentation.view.interfaces.common.auth.IMainView;
 import it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta.IPropostaBrowsingView;
 import it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta.IPropostaCreationView;
 import it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta.IPropostaLifecycleView;
@@ -144,7 +148,7 @@ public final class Application {
         IIscrizioneView iscrizioneView = new IscrizioneView(ui, propostaRenderer);
         ISpazioPersonaleView spazioPersonaleView = new SpazioPersonaleView(ui);
 
-        ConfiguratoreController configuratoreController = new ConfiguratoreController(
+        IConfiguratoreViewFacade configuratoreViewFacade = new ConfiguratoreViewFacade(
                 configuratoreView,
                 catalogoConfigView,
                 categoriaConfigView,
@@ -154,14 +158,19 @@ public final class Application {
                 propostaLifecycleView,
                 propostaBrowsingView,
                 batchImportView,
-                configuratoreFeedbackView,
-                configuratoreService);
-
-        FruitoreController fruitoreController = new FruitoreController(
+                configuratoreFeedbackView);
+        IFruitoreViewFacade fruitoreViewFacade = new FruitoreViewFacade(
                 fruitoreView,
                 bachecaView,
                 iscrizioneView,
-                spazioPersonaleView,
+                spazioPersonaleView);
+
+        ConfiguratoreController configuratoreController = new ConfiguratoreController(
+                configuratoreViewFacade,
+                configuratoreService);
+
+        FruitoreController fruitoreController = new FruitoreController(
+                fruitoreViewFacade,
                 fruitoreService);
 
         MainController mainController = new MainController(
