@@ -1,0 +1,74 @@
+package it.unibs.ingsoft.domain.error;
+
+import it.unibs.ingsoft.domain.StatoProposta;
+import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class DomainExceptionTest {
+    @Test
+    void costruttore_conCodiceSenzaDettagli_impostaMessaggioCodiceEListaVuota() {
+        DomainException exception = new DomainException(DomainErrorCode.PROPOSTA_NOT_SALVABILE);
+
+        assertAll(
+                () -> assertEquals(DomainErrorCode.PROPOSTA_NOT_SALVABILE, exception.code()),
+                () -> assertEquals("PROPOSTA_NOT_SALVABILE", exception.getMessage()),
+                () -> assertTrue(exception.details().isEmpty()),
+                () -> assertNull(exception.detail(0)),
+                () -> assertEquals("default", exception.detail(0, "default"))
+        );
+    }
+
+    @Test
+    void costruttore_conDettagli_converteDettagliInStringhe() {
+        DomainException exception = new DomainException(DomainErrorCode.CATALOGO_CAMPO_DUPLICATO, "Titolo", 7);
+
+        assertAll(
+                () -> assertEquals("Titolo", exception.detail(0)),
+                () -> assertEquals("Titolo", exception.detail(0, "default")),
+                () -> assertEquals("7", exception.detail(1)),
+                () -> assertNull(exception.detail(-1)),
+                () -> assertThrows(UnsupportedOperationException.class, () -> exception.details().add("x"))
+        );
+    }
+
+    @Test
+    void invalidStateTransition_creaEccezioneConStatiNeiDettagli() {
+        DomainException exception = DomainException.invalidStateTransition(StatoProposta.BOZZA, StatoProposta.APERTA);
+
+        assertAll(
+                () -> assertEquals(DomainErrorCode.INVALID_STATE_TRANSITION, exception.code()),
+                () -> assertEquals("BOZZA", exception.detail(0)),
+                () -> assertEquals("APERTA", exception.detail(1))
+        );
+    }
+
+    @Test
+    void factoryTemporali_creanoCodiciEDettagliCorretti() {
+        LocalDate data = LocalDate.of(2026, 5, 13);
+
+        assertAll(
+                () -> assertEquals(DomainErrorCode.PROPOSTA_PUBLICATION_DEADLINE_EXPIRED,
+                        DomainException.publicationDeadlineExpired(data).code()),
+                () -> assertEquals(DomainErrorCode.PROPOSTA_SUBSCRIPTION_DEADLINE_EXPIRED,
+                        DomainException.subscriptionDeadlineExpired(data).code()),
+                () -> assertEquals(DomainErrorCode.PROPOSTA_UNSUBSCRIPTION_DEADLINE_EXPIRED,
+                        DomainException.unsubscriptionDeadlineExpired(data).code()),
+                () -> assertEquals(data.toString(), DomainException.subscriptionDeadlineExpired(data).detail(0))
+        );
+    }
+
+    @Test
+    void fieldsNotModifiableEParticipantsNotInteger_creanoCodiciSpecifici() {
+        assertAll(
+                () -> assertEquals(DomainErrorCode.PROPOSTA_FIELDS_NOT_MODIFIABLE,
+                        DomainException.fieldsNotModifiable(StatoProposta.APERTA).code()),
+                () -> assertEquals("APERTA", DomainException.fieldsNotModifiable(StatoProposta.APERTA).detail(0)),
+                () -> assertEquals(DomainErrorCode.PROPOSTA_PARTICIPANTS_NOT_INTEGER,
+                        DomainException.participantsNotInteger("molti").code()),
+                () -> assertEquals("molti", DomainException.participantsNotInteger("molti").detail(0))
+        );
+    }
+}

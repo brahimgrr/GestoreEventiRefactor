@@ -1,0 +1,40 @@
+package it.unibs.ingsoft.functional;
+
+import it.unibs.ingsoft.application.catalogo.dto.CampoDefinitionRequest;
+import it.unibs.ingsoft.domain.TipoDato;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class UC10_AggiungiCampoSpecifico_Test {
+    @Test
+    void scenarioPrincipale_categoriaEsistente_aggiungeCampoSpecifico() {
+        FunctionalTestSupport.FunctionalGraph graph = FunctionalTestSupport.graph();
+        graph.configuratoreService().createCategoria("Sport");
+
+        graph.configuratoreService().addCampoSpecifico("Sport",
+                new CampoDefinitionRequest("Arbitro", TipoDato.BOOLEANO, false));
+
+        assertEquals("Arbitro", graph.configuratoreService().getCategorie().get(0).getCampiSpecifici().get(0).getNome());
+    }
+
+    @Test
+    void scenarioAlternativo2a_nessunaCategoria_segnalaErrore() {
+        FunctionalTestSupport.FunctionalGraph graph = FunctionalTestSupport.graph();
+
+        assertThrows(IllegalStateException.class,
+                () -> graph.configuratoreService().addCampoSpecifico("Sport",
+                        new CampoDefinitionRequest("Arbitro", TipoDato.BOOLEANO, false)));
+    }
+
+    /*
+    TEST NON SENSATO
+     */
+    @Test
+    void scenarioAlternativo3a_configuratoreAnnulla_nonAggiungeCampiSpecifici() {
+        FunctionalTestSupport.FunctionalGraph graph = FunctionalTestSupport.graph();
+        graph.configuratoreService().createCategoria("Sport");
+
+        assertTrue(graph.configuratoreService().getCategorie().get(0).getCampiSpecifici().isEmpty());
+    }
+}

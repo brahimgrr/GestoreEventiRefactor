@@ -1,0 +1,35 @@
+package it.unibs.ingsoft.application.catalogo.dto;
+
+import it.unibs.ingsoft.domain.TipoDato;
+import it.unibs.ingsoft.domain.error.DomainErrorCode;
+import it.unibs.ingsoft.domain.error.DomainException;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class CampoDefinitionRequestTest {
+    @Test
+    void costruttore_conValoriValidi_normalizzaNome() {
+        CampoDefinitionRequest request = new CampoDefinitionRequest("  Note  ", TipoDato.STRINGA, true);
+
+        assertAll(
+                () -> assertEquals("Note", request.nome()),
+                () -> assertTrue(request.obbligatorio())
+        );
+    }
+
+    @Test
+    void costruttore_conNomeInvalidoOTipoNull_lanciaEccezione() {
+        assertAll(
+                () -> assertEquals(DomainErrorCode.CAMPO_NOME_NON_VALIDO,
+                        assertThrows(DomainException.class,
+                                () -> new CampoDefinitionRequest(null, TipoDato.STRINGA, false)).code()),
+                () -> assertEquals(DomainErrorCode.CAMPO_NOME_NON_VALIDO,
+                        assertThrows(DomainException.class,
+                                () -> new CampoDefinitionRequest("   ", TipoDato.STRINGA, false)).code()),
+                () -> assertEquals(DomainErrorCode.CAMPO_TIPO_DATO_NON_VALIDO,
+                        assertThrows(DomainException.class,
+                                () -> new CampoDefinitionRequest("Note", null, false)).code())
+        );
+    }
+}

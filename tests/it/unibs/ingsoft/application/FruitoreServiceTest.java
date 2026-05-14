@@ -1,0 +1,178 @@
+package it.unibs.ingsoft.application;
+
+import it.unibs.ingsoft.application.catalogo.Catalogo_Service;
+import it.unibs.ingsoft.application.proposta.Proposta_Service;
+import it.unibs.ingsoft.domain.AppConstants;
+import it.unibs.ingsoft.domain.Categoria;
+import it.unibs.ingsoft.domain.Fruitore;
+import it.unibs.ingsoft.domain.Notifica;
+import it.unibs.ingsoft.domain.NotificaType;
+import it.unibs.ingsoft.domain.Proposta;
+import it.unibs.ingsoft.domain.StatoProposta;
+import it.unibs.ingsoft.domain.error.DomainException;
+import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class FruitoreServiceTest {
+    @Test
+    void costruttore_conDipendenzeNull_lanciaNullPointerException() {
+        ApplicationIntegrationSupport.ServiceGraph graph = ApplicationIntegrationSupport.serviceGraph();
+
+        assertAll(
+                () -> assertThrows(NullPointerException.class,
+                        () -> new FruitoreService(null,
+                                new it.unibs.ingsoft.application.bacheca.IscrizioneService(
+                                        graph.bachecaRepository(),
+                                        new it.unibs.ingsoft.application.proposta.PropostaLifecycleService(
+                                                graph.bachecaRepository(),
+                                                new it.unibs.ingsoft.application.bacheca.NotificationService(
+                                                        graph.spazioPersonaleRepository()),
+                                                it.unibs.ingsoft.domain.factory.NotificaFactory.getInstance())),
+                                new it.unibs.ingsoft.application.bacheca.NotificationService(
+                                        graph.spazioPersonaleRepository()))),
+                () -> assertThrows(NullPointerException.class,
+                        () -> new FruitoreService(graph.propostaService(), null,
+                                new it.unibs.ingsoft.application.bacheca.NotificationService(
+                                        graph.spazioPersonaleRepository()))),
+                () -> assertThrows(NullPointerException.class,
+                        () -> new FruitoreService(graph.propostaService(),
+                                new it.unibs.ingsoft.application.bacheca.IscrizioneService(
+                                        graph.bachecaRepository(),
+                                        new it.unibs.ingsoft.application.proposta.PropostaLifecycleService(
+                                                graph.bachecaRepository(),
+                                                new it.unibs.ingsoft.application.bacheca.NotificationService(
+                                                        graph.spazioPersonaleRepository()),
+                                                it.unibs.ingsoft.domain.factory.NotificaFactory.getInstance())),
+                                null))
+        );
+    }
+
+    @Test
+    void getBachecaPerCategoria_delegaAlServizioProposte() {
+        ApplicationIntegrationSupport.ServiceGraph graph = ApplicationIntegrationSupport.serviceGraph();
+        FruitoreService fruitoreService = graph.fruitoreService();
+        Proposta proposta = propostaPubblicata(graph, "Corso in bacheca", "2");
+
+        assertEquals(List.of(proposta), fruitoreService.getBachecaPerCategoria().get("Sport"));
+    }
+
+    @Test
+    void iscriviEDisiscrivi_conPropostaAperta_aggiornaProposteAperteIscritte() {
+        ApplicationIntegrationSupport.ServiceGraph graph = ApplicationIntegrationSupport.serviceGraph();
+        FruitoreService fruitoreService = graph.fruitoreService();
+        Fruitore mario = new Fruitore("mario");
+        Proposta proposta = propostaPubblicata(graph, "Corso aperto", "2");
+
+        fruitoreService.iscrivi(proposta, mario);
+
+        assertEquals(List.of(proposta), fruitoreService.getProposteAperteIscritteDa(mario));
+
+        fruitoreService.disiscrivi(proposta, mario);
+
+        assertTrue(fruitoreService.getProposteAperteIscritteDa(mario).isEmpty());
+    }
+
+    @Test
+    void iscrivi_conUltimoPostoDisponibile_confermaPropostaEInviaNotifica() {
+        ApplicationIntegrationSupport.ServiceGraph graph = ApplicationIntegrationSupport.serviceGraph();
+        FruitoreService fruitoreService = graph.fruitoreService();
+        Fruitore mario = new Fruitore("mario");
+        Proposta proposta = propostaPubblicata(graph, "Corso a posto unico", "1");
+
+        fruitoreService.iscrivi(proposta, mario);
+
+        assertAll(
+                () -> assertEquals(StatoProposta.CONFERMATA, proposta.getStato()),
+                () -> assertEquals(1, fruitoreService.getNotifiche(mario).size()),
+                () -> assertEquals(NotificaType.PROPOSTA_CONFERMATA,
+                        fruitoreService.getNotifiche(mario).get(0).type()),
+                () -> assertEquals(1, graph.spazioPersonaleRepository().saveCount())
+        );
+    }
+
+    @Test
+    void iscrivi_conNessunPostoDisponibile_confermaPropostaEInviaNotifica() {
+        ApplicationIntegrationSupport.ServiceGraph graph = ApplicationIntegrationSupport.serviceGraph();
+        FruitoreService fruitoreService = graph.fruitoreService();
+
+        Fruitore mario = new Fruitore("mario");
+        Proposta proposta = propostaPubblicata(graph, "Corso a posto unico", "1");
+        fruitoreService.iscrivi(proposta, mario);
+
+        Fruitore luigi = new Fruitore("luigi");
+
+        assertThrows(DomainException.class, () ->fruitoreService.iscrivi(proposta, luigi));
+    }
+
+    @Test
+    void notifiche_possonoEssereLettereECancellateDalFruitore() {
+        ApplicationIntegrationSupport.ServiceGraph graph = ApplicationIntegrationSupport.serviceGraph();
+        FruitoreService fruitoreService = graph.fruitoreService();
+        Fruitore mario = new Fruitore("mario");
+        Proposta proposta = propostaPubblicata(graph, "Corso con notifica", "1");
+
+        assertTrue(fruitoreService.getNotifiche(mario).isEmpty());
+        fruitoreService.iscrivi(proposta, mario);
+        Notifica notifica = fruitoreService.getNotifiche(mario).get(0);
+        fruitoreService.cancellaNotifica(mario, notifica);
+
+        assertTrue(fruitoreService.getNotifiche(mario).isEmpty());
+    }
+
+    @Test
+    void metodiConFruitoreNull_lancianoNullPointerExceptionPrimaDellaDelega() {
+        ApplicationIntegrationSupport.ServiceGraph graph = ApplicationIntegrationSupport.serviceGraph();
+        FruitoreService fruitoreService = graph.fruitoreService();
+        Proposta proposta = propostaPubblicata(graph, "Corso null fruitore", "2");
+        Notifica notifica = new Notifica("Promemoria");
+
+        assertAll(
+                () -> assertThrows(NullPointerException.class,
+                        () -> fruitoreService.getProposteAperteIscritteDa(null)),
+                () -> assertThrows(NullPointerException.class,
+                        () -> fruitoreService.iscrivi(proposta, null)),
+                () -> assertThrows(NullPointerException.class,
+                        () -> fruitoreService.disiscrivi(proposta, null)),
+                () -> assertThrows(NullPointerException.class,
+                        () -> fruitoreService.getNotifiche(null)),
+                () -> assertThrows(NullPointerException.class,
+                        () -> fruitoreService.cancellaNotifica(null, notifica))
+        );
+    }
+
+    private Proposta propostaPubblicata(ApplicationIntegrationSupport.ServiceGraph graph,
+                                        String titolo,
+                                        String numeroPartecipanti) {
+        Catalogo_Service catalogoService = graph.catalogoService();
+        Proposta_Service propostaService = graph.propostaService();
+        catalogoService.configuraCampiBase(List.of());
+        Categoria categoria = catalogoService.createCategoria("Sport");
+        Proposta proposta = propostaService.creaProposta(
+                categoria,
+                catalogoService.getCampiBase(),
+                catalogoService.getCampiComuni());
+        propostaService.applicaValoriEValida(proposta, valoriProposta(titolo, numeroPartecipanti));
+        propostaService.salvaProposta(proposta);
+        propostaService.pubblicaProposta(proposta);
+        return proposta;
+    }
+
+    private Map<String, String> valoriProposta(String titolo, String numeroPartecipanti) {
+        LocalDate oggi = LocalDate.now(AppConstants.clock);
+        return Map.of(
+                AppConstants.CAMPO_TITOLO, titolo,
+                AppConstants.CAMPO_NUM_PARTECIPANTI, numeroPartecipanti,
+                AppConstants.CAMPO_TERMINE_ISCRIZIONE, oggi.plusDays(1).format(AppConstants.DATE_FMT),
+                AppConstants.CAMPO_LUOGO, "Brescia",
+                AppConstants.CAMPO_DATA, oggi.plusDays(4).format(AppConstants.DATE_FMT),
+                AppConstants.CAMPO_ORA, "16:30",
+                AppConstants.CAMPO_QUOTA, "10.50",
+                AppConstants.CAMPO_DATA_CONCLUSIVA, oggi.plusDays(5).format(AppConstants.DATE_FMT)
+        );
+    }
+}
