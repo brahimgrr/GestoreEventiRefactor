@@ -1,0 +1,32 @@
+package it.unibs.ingsoft.application.catalogo.dto;
+
+import it.unibs.ingsoft.domain.TipoDato;
+import it.unibs.ingsoft.domain.error.DomainErrorCode;
+import it.unibs.ingsoft.domain.error.DomainException;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class CampoObbligatorietaRequestTest {
+    @Test
+    void costruttore_conValoriValidi_normalizzaNome() {
+        CampoObbligatorietaRequest request = new CampoObbligatorietaRequest("  Note  ", true);
+
+        assertAll(
+                () -> assertEquals("Note", request.nomeCampo()),
+                () -> assertTrue(request.obbligatorio())
+        );
+    }
+
+    @Test
+    void costruttore_conNomeInvalido_lanciaEccezione() {
+        assertAll(
+                () -> assertEquals(DomainErrorCode.CAMPO_NOME_NON_VALIDO,
+                        assertThrows(DomainException.class,
+                                () -> new CampoObbligatorietaRequest(" ", false)).code()),
+                () -> assertEquals(DomainErrorCode.CAMPO_NOME_NON_VALIDO,
+                        assertThrows(DomainException.class,
+                                () -> new CampoObbligatorietaRequest(null, false)).code())
+        );
+    }
+}

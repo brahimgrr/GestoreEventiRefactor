@@ -40,6 +40,12 @@ class CampoFactoryTest {
     }
 
     @Test
+    void creaCampiBaseExtra_conTipiDatoNull_lanciaIllegalStateException() {
+        assertThrows(IllegalStateException.class,
+                () -> CampoFactory.getInstance().creaCampiBaseExtra(List.of("Nota"), null));
+    }
+
+    @Test
     void creaCampiBaseExtra_conListeDiDimensioneDiversa_lanciaIllegalStateException() {
         assertThrows(DomainException.class,
                 () -> CampoFactory.getInstance().creaCampiBaseExtra(List.of("Uno"), List.of()));

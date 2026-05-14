@@ -67,6 +67,15 @@ class SpazioPersonaleTest {
         assertTrue(spazio.getNotifiche().isEmpty());
     }
 
+    @Test
+    void fromJson_conListaNotifiche_copiaLeNotifiche() {
+        Notifica notifica = notifica("id-1");
+
+        SpazioPersonale spazio = SpazioPersonale.fromJson(List.of(notifica));
+
+        assertEquals(List.of(notifica), spazio.getNotifiche());
+    }
+
     private Notifica notifica(String id) {
         return new Notifica(id, NotificaType.LEGACY_MESSAGGIO, Map.of(), "messaggio", LocalDateTime.now());
     }

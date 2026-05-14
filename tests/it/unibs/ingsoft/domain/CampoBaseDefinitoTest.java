@@ -37,6 +37,11 @@ class CampoBaseDefinitoTest {
     }
 
     @Test
+    void isNomeFisso_conNomeNull_restituisceFalse() {
+        assertFalse(CampoBaseDefinito.isNomeFisso(null));
+    }
+
+    @Test
     void toCampo_conDefinizioneTitolo_creaCampoBaseObbligatorioConTipoDatoDellaDefinizione() {
         Campo campo = CampoBaseDefinito.TITOLO.toCampo();
 
@@ -46,5 +51,18 @@ class CampoBaseDefinitoTest {
                 () -> assertEquals(TipoDato.STRINGA, campo.getTipoDato()),
                 () -> assertTrue(campo.isObbligatorio())
         );
+    }
+
+    @Test
+    void toCampo_perOgniDefinizione_mantieneNomeETipoDato() {
+        for (CampoBaseDefinito definizione : CampoBaseDefinito.values()) {
+            Campo campo = definizione.toCampo();
+
+            assertAll(
+                    () -> assertEquals(definizione.getNomeCampo(), campo.getNome()),
+                    () -> assertEquals(definizione.getTipoDato(), campo.getTipoDato()),
+                    () -> assertEquals(TipoCampo.BASE, campo.getTipo())
+            );
+        }
     }
 }

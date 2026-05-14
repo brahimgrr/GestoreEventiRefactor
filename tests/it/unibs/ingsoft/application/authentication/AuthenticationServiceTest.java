@@ -1,0 +1,288 @@
+package it.unibs.ingsoft.application.authentication;
+
+import it.unibs.ingsoft.application.ApplicationIntegrationSupport;
+import it.unibs.ingsoft.domain.Configuratore;
+import it.unibs.ingsoft.domain.Credenziali;
+import it.unibs.ingsoft.domain.Fruitore;
+import it.unibs.ingsoft.domain.error.DomainErrorCode;
+import it.unibs.ingsoft.domain.error.DomainException;
+import it.unibs.ingsoft.domain.factory.UtenteFactory;
+import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class AuthenticationServiceTest {
+    @Test
+    void registraNuovoConfiguratore_eLoginConfiguratore_conRepositoryCondiviso() {
+        ApplicationIntegrationSupport.InMemoryCredenzialiRepository repository =
+                new ApplicationIntegrationSupport.InMemoryCredenzialiRepository();
+
+        AuthenticationService service = new AuthenticationService(repository);
+
+        Configuratore registrato = service.registraNuovoConfiguratore("AdminUno", "pass1234");
+        Optional<Configuratore> login = service.login("adminuno", "pass1234");
+
+        assertAll(
+                () -> assertEquals("AdminUno", registrato.getUsername()),
+                () -> assertTrue(login.isPresent()),
+                () -> assertEquals("adminuno", login.get().getUsername().toLowerCase()),
+                () -> assertEquals(1, repository.saveCount())
+        );
+    }
+
+    @Test
+    void registraNuovoFruitore_eLoginFruitore_conRepositoryCondiviso() {
+        ApplicationIntegrationSupport.InMemoryCredenzialiRepository repository =
+                new ApplicationIntegrationSupport.InMemoryCredenzialiRepository();
+        AuthenticationService service = new AuthenticationService(repository);
+
+        Fruitore registrato = service.registraNuovoFruitore("Mario", "pass1234");
+        Optional<Fruitore> login = service.loginFruitore("mario", "pass1234");
+
+        assertAll(
+                () -> assertEquals("Mario", registrato.getUsername()),
+                () -> assertTrue(login.isPresent()),
+                () -> assertEquals("mario", login.get().getUsername().toLowerCase()),
+                () -> assertTrue(service.esisteUsername("MARIO"))
+        );
+    }
+
+    @Test
+    void registraNuovoFruitore_conUsernameGiaUsatoDaConfiguratore_lanciaIllegalStateException() {
+        ApplicationIntegrationSupport.InMemoryCredenzialiRepository repository =
+                new ApplicationIntegrationSupport.InMemoryCredenzialiRepository();
+        AuthenticationService service = new AuthenticationService(repository);
+        service.registraNuovoConfiguratore("UtenteComune", "pass1234");
+
+        assertThrows(IllegalStateException.class,
+                () -> service.registraNuovoFruitore("utentecomune", "pass5678"));
+    }
+
+    @Test
+    void costruttore_conRepositoryNull_lanciaNullPointerException() {
+        assertThrows(NullPointerException.class, () -> new AuthenticationService(null));
+    }
+
+    @Test
+    void costruttore_conFactoryNull_lanciaNullPointerException() {
+        ApplicationIntegrationSupport.InMemoryCredenzialiRepository repository =
+                new ApplicationIntegrationSupport.InMemoryCredenzialiRepository();
+
+        assertThrows(NullPointerException.class, () -> new AuthenticationService(repository, null));
+    }
+
+    @Test
+    void login_conCredenzialiPredefinite_restituisceConfiguratorePredefinito() {
+        AuthenticationService service = serviceVuoto();
+
+        Optional<Configuratore> login = service.login(
+                AuthenticationService.USERNAME_PREDEFINITO,
+                AuthenticationService.PASSWORD_PREDEFINITA);
+
+        assertAll(
+                () -> assertTrue(login.isPresent()),
+                () -> assertEquals(AuthenticationService.USERNAME_PREDEFINITO, login.get().getUsername()),
+                () -> assertTrue(service.isConfiguratorePredefinito(login.get()))
+        );
+    }
+
+    @Test
+    void login_conUsernamePredefinitoMaPasswordDiversa_restituisceEmpty() {
+        AuthenticationService service = serviceVuoto();
+
+        Optional<Configuratore> login = service.login(
+                AuthenticationService.USERNAME_PREDEFINITO,
+                "password-diversa");
+
+        assertTrue(login.isEmpty());
+    }
+
+    @Test
+    void isConfiguratorePredefinito_conNullOUsernameDiverso_restituisceFalse() {
+        AuthenticationService service = serviceVuoto();
+
+        assertAll(
+                () -> assertFalse(service.isConfiguratorePredefinito(null)),
+                () -> assertFalse(service.isConfiguratorePredefinito(UtenteFactory.getInstance().creaConfiguratore("admin")))
+        );
+    }
+
+    @Test
+    void login_conUsernameOPasswordNull_restituisceEmpty() {
+        AuthenticationService service = serviceVuoto();
+
+        assertAll(
+                () -> assertTrue(service.login(null, "pass1234").isEmpty()),
+                () -> assertTrue(service.login("admin", null).isEmpty()),
+                () -> assertTrue(service.loginFruitore(null, "pass1234").isEmpty()),
+                () -> assertTrue(service.loginFruitore("mario", null).isEmpty())
+        );
+    }
+
+    @Test
+    void login_conPasswordErrataOUtenteAssente_restituisceEmpty() {
+        ApplicationIntegrationSupport.InMemoryCredenzialiRepository repository =
+                new ApplicationIntegrationSupport.InMemoryCredenzialiRepository();
+        AuthenticationService service = new AuthenticationService(repository);
+        service.registraNuovoConfiguratore("AdminUno", "pass1234");
+        service.registraNuovoFruitore("Mario", "pass5678");
+
+        assertAll(
+                () -> assertTrue(service.login("AdminUno", "sbagliata").isEmpty()),
+                () -> assertTrue(service.login("NonEsiste", "pass1234").isEmpty()),
+                () -> assertTrue(service.loginFruitore("Mario", "sbagliata").isEmpty()),
+                () -> assertTrue(service.loginFruitore("NonEsiste", "pass5678").isEmpty())
+        );
+    }
+
+    @Test
+    void login_conUsernameConSpazi_usaChiaveNormalizzataMaMantieneUsernameCreato() {
+        ApplicationIntegrationSupport.InMemoryCredenzialiRepository repository =
+                new ApplicationIntegrationSupport.InMemoryCredenzialiRepository();
+        AuthenticationService service = new AuthenticationService(repository);
+        Credenziali credenziali = repository.load();
+        credenziali.addConfiguratore("AdminUno", "pass1234");
+        credenziali.addFruitore("Mario", "pass5678");
+
+        Optional<Configuratore> configuratore = service.login("  ADMINUNO  ", "pass1234");
+        Optional<Fruitore> fruitore = service.loginFruitore("  MARIO  ", "pass5678");
+
+        assertAll(
+                () -> assertTrue(configuratore.isPresent()),
+                () -> assertEquals("ADMINUNO", configuratore.get().getUsername().trim()),
+                () -> assertTrue(fruitore.isPresent()),
+                () -> assertEquals("MARIO", fruitore.get().getUsername().trim())
+        );
+    }
+
+    @Test
+    void registraNuovoConfiguratore_conUsernameNullBlankOTroppoCorto_lanciaEccezioneCorretta() {
+        AuthenticationService service = serviceVuoto();
+
+        assertAll(
+                () -> assertDomainError(DomainErrorCode.AUTH_USERNAME_NON_VALIDO,
+                        () -> service.registraNuovoConfiguratore(null, "pass1234")),
+                () -> assertDomainError(DomainErrorCode.AUTH_USERNAME_NON_VALIDO,
+                        () -> service.registraNuovoConfiguratore("   ", "pass1234")),
+                () -> assertDomainError(DomainErrorCode.AUTH_USERNAME_TROPPO_CORTO,
+                        () -> service.registraNuovoConfiguratore("ab", "pass1234"))
+        );
+    }
+
+    @Test
+    void registraNuovoConfiguratore_conPasswordNullBlankOTroppoCorta_lanciaEccezioneCorretta() {
+        AuthenticationService service = serviceVuoto();
+
+        assertAll(
+                () -> assertDomainError(DomainErrorCode.AUTH_PASSWORD_NON_VALIDA,
+                        () -> service.registraNuovoConfiguratore("AdminUno", null)),
+                () -> assertDomainError(DomainErrorCode.AUTH_PASSWORD_NON_VALIDA,
+                        () -> service.registraNuovoConfiguratore("AdminUno", "   ")),
+                () -> assertDomainError(DomainErrorCode.AUTH_PASSWORD_TROPPO_CORTA,
+                        () -> service.registraNuovoConfiguratore("AdminUno", "abc"))
+        );
+    }
+
+    @Test
+    void registraNuovoAccount_conUsernamePredefinito_lanciaUsernameRiservato() {
+        AuthenticationService service = serviceVuoto();
+
+        assertAll(
+                () -> assertDomainError(DomainErrorCode.AUTH_USERNAME_RISERVATO,
+                        () -> service.registraNuovoConfiguratore("config", "pass1234")),
+                () -> assertDomainError(DomainErrorCode.AUTH_USERNAME_RISERVATO,
+                        () -> service.registraNuovoFruitore("CONFIG", "pass1234"))
+        );
+    }
+
+    @Test
+    void registraNuovoConfiguratore_conUsernameGiaUsatoDaFruitore_lanciaUsernameGiaInUso() {
+        AuthenticationService service = serviceVuoto();
+        service.registraNuovoFruitore("UtenteComune", "pass1234");
+
+        assertDomainError(DomainErrorCode.AUTH_USERNAME_GIA_IN_USO,
+                () -> service.registraNuovoConfiguratore("utentecomune", "pass5678"));
+    }
+
+    @Test
+    void registraNuovoAccount_normalizzaUsernamePrimaDelSalvataggio() {
+        ApplicationIntegrationSupport.InMemoryCredenzialiRepository repository =
+                new ApplicationIntegrationSupport.InMemoryCredenzialiRepository();
+        AuthenticationService service = new AuthenticationService(repository);
+
+        Configuratore configuratore = service.registraNuovoConfiguratore("  AdminUno  ", "pass1234");
+        Fruitore fruitore = service.registraNuovoFruitore("  Mario  ", "pass5678");
+
+        assertAll(
+                () -> assertEquals("AdminUno", configuratore.getUsername()),
+                () -> assertEquals("Mario", fruitore.getUsername()),
+                () -> assertTrue(repository.load().getConfiguratori().containsKey("adminuno")),
+                () -> assertTrue(repository.load().getFruitori().containsKey("mario"))
+        );
+    }
+
+    @Test
+    void validaNuovoUsername_conValoriInvalidi_lanciaEccezioneCorretta() {
+        AuthenticationService service = serviceVuoto();
+
+        assertAll(
+                () -> assertDomainError(DomainErrorCode.AUTH_USERNAME_TROPPO_CORTO,
+                        () -> service.validaNuovoUsername(null)),
+                () -> assertDomainError(DomainErrorCode.AUTH_USERNAME_TROPPO_CORTO,
+                        () -> service.validaNuovoUsername("   ")),
+                () -> assertDomainError(DomainErrorCode.AUTH_USERNAME_TROPPO_CORTO,
+                        () -> service.validaNuovoUsername("ab")),
+                () -> assertDomainError(DomainErrorCode.AUTH_USERNAME_RISERVATO,
+                        () -> service.validaNuovoUsername(" config "))
+        );
+    }
+
+    @Test
+    void validaNuovoUsername_conDuplicatoOValido_siComportaCorrettamente() {
+        AuthenticationService service = serviceVuoto();
+        service.registraNuovoFruitore("Mario", "pass1234");
+
+        assertAll(
+                () -> assertDomainError(DomainErrorCode.AUTH_USERNAME_GIA_IN_USO,
+                        () -> service.validaNuovoUsername("mario")),
+                () -> assertDoesNotThrow(() -> service.validaNuovoUsername("Luigi"))
+        );
+    }
+
+    @Test
+    void validaNuovaPassword_conValoriInvalidiOValidi_siComportaCorrettamente() {
+        AuthenticationService service = serviceVuoto();
+
+        assertAll(
+                () -> assertDomainError(DomainErrorCode.AUTH_PASSWORD_TROPPO_CORTA,
+                        () -> service.validaNuovaPassword(null)),
+                () -> assertDomainError(DomainErrorCode.AUTH_PASSWORD_TROPPO_CORTA,
+                        () -> service.validaNuovaPassword("   ")),
+                () -> assertDomainError(DomainErrorCode.AUTH_PASSWORD_TROPPO_CORTA,
+                        () -> service.validaNuovaPassword("abc")),
+                () -> assertDoesNotThrow(() -> service.validaNuovaPassword("abcd"))
+        );
+    }
+
+    @Test
+    void esisteUsername_conNullOUtenteAssente_restituisceFalse() {
+        AuthenticationService service = serviceVuoto();
+
+        assertAll(
+                () -> assertFalse(service.esisteUsername(null)),
+                () -> assertFalse(service.esisteUsername("assente"))
+        );
+    }
+
+    private AuthenticationService serviceVuoto() {
+        return new AuthenticationService(new ApplicationIntegrationSupport.InMemoryCredenzialiRepository());
+    }
+
+    private void assertDomainError(DomainErrorCode expected, Runnable action) {
+        DomainException exception = assertThrows(DomainException.class, action::run);
+
+        assertEquals(expected, exception.code());
+    }
+}

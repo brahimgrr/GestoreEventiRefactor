@@ -25,6 +25,30 @@ class FruitoreTest {
     }
 
     @Test
+    void equals_conStessaIstanza_restituisceTrue() {
+        Fruitore fruitore = new Fruitore("mario");
+
+        assertEquals(fruitore, fruitore);
+    }
+
+    @Test
+    void equals_conFruitoriConStessoUsername_restituisceTrue() {
+        assertEquals(new Fruitore("mario"), new Fruitore("mario"));
+    }
+
+    @Test
+    void equals_conOggettoNull_restituisceFalse() {
+        Fruitore fruitore = new Fruitore("mario");
+
+        assertNotEquals(null, fruitore);
+    }
+
+    @Test
+    void equals_conConfiguratoreConStessoUsername_restituisceFalse() {
+        assertNotEquals(new Fruitore("mario"), new Configuratore("mario"));
+    }
+
+    @Test
     void hashCode_conFruitoriConStessoUsername_restituisceStessoHashCode() {
         assertEquals(new Fruitore("mario").hashCode(), new Fruitore("mario").hashCode());
     }

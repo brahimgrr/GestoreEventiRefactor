@@ -151,9 +151,11 @@ public final class AuthenticationService {
         return utenteFactory.creaFruitore(normalized);
     }
 
+    /*
     private void validaNuovoAccount(String username, String password) {
         validaNuovoAccount(username, password, repo.load());
     }
+     */
 
     private void validaNuovoAccount(String username, String password, CredenzialiDTO credenziali) {
         validaCredenziali(username, password);
