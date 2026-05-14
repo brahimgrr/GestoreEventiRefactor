@@ -85,10 +85,10 @@ class FileRepositoryFactoryTest {
     void repositoryCreateConDataDirCustom_salvanoNeiFileAttesi() {
         FileRepositoryFactory factory = new FileRepositoryFactory(tempDir);
 
-        factory.createCatalogoRepository().save(new it.unibs.ingsoft.domain.Catalogo());
-        factory.createCredenzialiRepository().save(new it.unibs.ingsoft.domain.Credenziali());
-        factory.createBachecaRepository().save(new it.unibs.ingsoft.domain.Bacheca());
-        factory.createSpazioPersonaleRepository().save(new it.unibs.ingsoft.domain.ArchivioNotifiche());
+        factory.createCatalogoRepository().save(new it.unibs.ingsoft.persistence.dto.CatalogoDTO());
+        factory.createCredenzialiRepository().save(new it.unibs.ingsoft.persistence.dto.CredenzialiDTO());
+        factory.createBachecaRepository().save(new it.unibs.ingsoft.persistence.dto.BachecaDTO());
+        factory.createSpazioPersonaleRepository().save(new it.unibs.ingsoft.persistence.dto.ArchivioNotificheDTO());
 
         assertAll(
                 () -> assertTrue(Files.exists(tempDir.resolve("catalogo.json"))),

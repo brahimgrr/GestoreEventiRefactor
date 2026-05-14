@@ -1,6 +1,7 @@
 package it.unibs.ingsoft.domain;
 
 import it.unibs.ingsoft.domain.catalogo.Categoria;
+import it.unibs.ingsoft.domain.shared.AppConstants;
 import it.unibs.ingsoft.persistence.dto.BachecaDTO;
 import it.unibs.ingsoft.domain.proposta.Proposta;
 import org.junit.jupiter.api.Test;
@@ -46,44 +47,44 @@ class BachecaTest {
     }
 
     @Test
-    void findByChiaveIdentita_conChiaveNull_restituisceOptionalVuoto() {
-        Bacheca bacheca = new Bacheca();
+    void findByChiaveDuplicato_conChiaveNull_restituisceOptionalVuoto() {
+        BachecaDTO bacheca = new BachecaDTO();
 
-        assertTrue(bacheca.findByChiaveIdentita(null).isEmpty());
+        assertTrue(bacheca.findByChiaveDuplicato(null).isEmpty());
     }
 
     @Test
-    void findByChiaveIdentita_conChiavePresente_restituisceProposta() {
-        Bacheca bacheca = new Bacheca();
+    void findByChiaveDuplicato_conChiavePresente_restituisceProposta() {
+        BachecaDTO bacheca = new BachecaDTO();
         Proposta proposta = propostaConChiave("Torneo", "25/12/2026", "16:30", "Brescia");
         bacheca.addProposta(proposta);
 
-        assertSame(proposta, bacheca.findByChiaveIdentita("torneo|25/12/2026|16:30|brescia").orElseThrow());
+        assertSame(proposta, bacheca.findByChiaveDuplicato("torneo|25/12/2026|16:30|brescia").orElseThrow());
     }
 
     @Test
-    void findByChiaveIdentita_conChiaveAssente_restituisceOptionalVuoto() {
-        Bacheca bacheca = new Bacheca();
+    void findByChiaveDuplicato_conChiaveAssente_restituisceOptionalVuoto() {
+        BachecaDTO bacheca = new BachecaDTO();
         bacheca.addProposta(propostaConChiave("Torneo", "25/12/2026", "16:30", "Brescia"));
 
-        assertTrue(bacheca.findByChiaveIdentita("altro|25/12/2026|16:30|brescia").isEmpty());
+        assertTrue(bacheca.findByChiaveDuplicato("altro|25/12/2026|16:30|brescia").isEmpty());
     }
 
     @Test
-    void containsChiaveIdentita_conChiavePresente_restituisceTrue() {
-        Bacheca bacheca = new Bacheca();
+    void containsChiaveDuplicato_conChiavePresente_restituisceTrue() {
+        BachecaDTO bacheca = new BachecaDTO();
         bacheca.addProposta(propostaConChiave("Torneo", "25/12/2026", "16:30", "Brescia"));
 
-        assertTrue(bacheca.containsChiaveIdentita("torneo|25/12/2026|16:30|brescia"));
+        assertTrue(bacheca.containsChiaveDuplicato("torneo|25/12/2026|16:30|brescia"));
     }
 
     @Test
-    void containsChiaveIdentita_conChiaveAssenteONull_restituisceFalse() {
-        Bacheca bacheca = new Bacheca();
+    void containsChiaveDuplicato_conChiaveAssenteONull_restituisceFalse() {
+        BachecaDTO bacheca = new BachecaDTO();
 
         assertAll(
-                () -> assertFalse(bacheca.containsChiaveIdentita("assente")),
-                () -> assertFalse(bacheca.containsChiaveIdentita(null))
+                () -> assertFalse(bacheca.containsChiaveDuplicato("assente")),
+                () -> assertFalse(bacheca.containsChiaveDuplicato(null))
         );
     }
 

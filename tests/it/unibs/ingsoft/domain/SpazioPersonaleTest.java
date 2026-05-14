@@ -71,7 +71,7 @@ class SpazioPersonaleTest {
     void fromJson_conListaNotifiche_copiaLeNotifiche() {
         Notifica notifica = notifica("id-1");
 
-        SpazioPersonale spazio = SpazioPersonale.fromJson(List.of(notifica));
+        SpazioPersonaleDTO spazio = SpazioPersonaleDTO.fromJson(List.of(notifica));
 
         assertEquals(List.of(notifica), spazio.getNotifiche());
     }

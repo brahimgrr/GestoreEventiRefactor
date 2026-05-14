@@ -1,0 +1,230 @@
+package it.unibs.ingsoft.application.bacheca;
+
+import it.unibs.ingsoft.application.ApplicationIntegrationSupport;
+import it.unibs.ingsoft.application.proposta.PropostaLifecycleService;
+import it.unibs.ingsoft.domain.shared.AppConstants;
+import it.unibs.ingsoft.domain.catalogo.Campo;
+import it.unibs.ingsoft.domain.catalogo.Categoria;
+import it.unibs.ingsoft.domain.utente.Fruitore;
+import it.unibs.ingsoft.domain.notifica.NotificaType;
+import it.unibs.ingsoft.domain.proposta.Proposta;
+import it.unibs.ingsoft.domain.proposta.StatoProposta;
+import it.unibs.ingsoft.domain.catalogo.TipoCampo;
+import it.unibs.ingsoft.domain.catalogo.TipoDato;
+import it.unibs.ingsoft.domain.error.DomainErrorCode;
+import it.unibs.ingsoft.domain.shared.error.DomainException;
+import it.unibs.ingsoft.domain.notifica.NotificaFactory;
+import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class IscrizioneServiceTest {
+    @Test
+    void costruttore_conRepositoryNull_lanciaNullPointerException() {
+        TestContext context = context();
+
+        assertThrows(NullPointerException.class,
+                () -> new IscrizioneService(null, context.lifecycleService()));
+    }
+
+    @Test
+    void costruttore_conLifecycleServiceNull_lanciaNullPointerException() {
+        TestContext context = context();
+
+        assertThrows(NullPointerException.class,
+                () -> new IscrizioneService(context.bachecaRepository(), null));
+    }
+
+    @Test
+    void iscrivi_conPropostaPersistitaAperta_aggiungeFruitoreESalvaBacheca() {
+        TestContext context = context();
+        Proposta proposta = propostaAperta("Evento aperto", "2");
+        context.bachecaRepository.load().addProposta(proposta);
+
+        context.iscrizioneService.iscrivi(proposta, new Fruitore("mario"));
+
+        assertAll(
+                () -> assertTrue(proposta.isIscritto("mario")),
+                () -> assertEquals(StatoProposta.APERTA, proposta.getStato()),
+                () -> assertEquals(1, context.bachecaRepository.saveCount())
+        );
+    }
+
+    @Test
+    void iscrivi_conUltimoPostoDisponibile_confermaPropostaEInviaNotifica() {
+        TestContext context = context();
+        Proposta proposta = propostaAperta("Evento a posto unico", "1");
+        context.bachecaRepository.load().addProposta(proposta);
+
+        context.iscrizioneService.iscrivi(proposta, new Fruitore("mario"));
+
+        assertAll(
+                () -> assertEquals(StatoProposta.CONFERMATA, proposta.getStato()),
+                () -> assertEquals(1, context.notificationService.getNotifiche("mario").size()),
+                () -> assertEquals(NotificaType.PROPOSTA_CONFERMATA,
+                        context.notificationService.getNotifiche("mario").get(0).type())
+        );
+    }
+
+    @Test
+    void disiscrivi_conPropostaPersistitaAperta_rimuoveFruitoreESalvaBacheca() {
+        TestContext context = context();
+        Proposta proposta = propostaAperta("Evento con disiscrizione", "2");
+        context.bachecaRepository.load().addProposta(proposta);
+        context.iscrizioneService.iscrivi(proposta, new Fruitore("mario"));
+
+        context.iscrizioneService.disiscrivi(proposta, new Fruitore("mario"));
+
+        assertAll(
+                () -> assertFalse(proposta.isIscritto("mario")),
+                () -> assertEquals(2, context.bachecaRepository.saveCount())
+        );
+    }
+
+    @Test
+    void iscrivi_conPropostaNull_lanciaPropostaNonTrovataENonSalva() {
+        TestContext context = context();
+
+        assertAll(
+                () -> assertDomainError(DomainErrorCode.PROPOSTA_NON_TROVATA,
+                        () -> context.iscrizioneService.iscrivi(null, new Fruitore("mario"))),
+                () -> assertEquals(0, context.bachecaRepository.saveCount())
+        );
+    }
+
+    @Test
+    void iscrivi_conPropostaNonPersistita_lanciaPropostaNonTrovataENonSalva() {
+        TestContext context = context();
+        Proposta proposta = propostaAperta("Evento non persistito", "2");
+
+        assertAll(
+                () -> assertDomainError(DomainErrorCode.PROPOSTA_NON_TROVATA,
+                        () -> context.iscrizioneService.iscrivi(proposta, new Fruitore("mario"))),
+                () -> assertEquals(0, context.bachecaRepository.saveCount())
+        );
+    }
+
+    @Test
+    void iscrivi_conFruitoreNull_lanciaNullPointerExceptionENonSalva() {
+        TestContext context = context();
+        Proposta proposta = propostaAperta("Evento fruitore null", "2");
+        context.bachecaRepository.load().addProposta(proposta);
+
+        assertAll(
+                () -> assertThrows(NullPointerException.class,
+                        () -> context.iscrizioneService.iscrivi(proposta, null)),
+                () -> assertEquals(0, context.bachecaRepository.saveCount())
+        );
+    }
+
+    @Test
+    void disiscrivi_conPropostaNull_lanciaPropostaNonTrovataENonSalva() {
+        TestContext context = context();
+
+        assertAll(
+                () -> assertDomainError(DomainErrorCode.PROPOSTA_NON_TROVATA,
+                        () -> context.iscrizioneService.disiscrivi(null, new Fruitore("mario"))),
+                () -> assertEquals(0, context.bachecaRepository.saveCount())
+        );
+    }
+
+    @Test
+    void disiscrivi_conPropostaNonPersistita_lanciaPropostaNonTrovataENonSalva() {
+        TestContext context = context();
+        Proposta proposta = propostaAperta("Evento assente", "2");
+
+        assertAll(
+                () -> assertDomainError(DomainErrorCode.PROPOSTA_NON_TROVATA,
+                        () -> context.iscrizioneService.disiscrivi(proposta, new Fruitore("mario"))),
+                () -> assertEquals(0, context.bachecaRepository.saveCount())
+        );
+    }
+
+    @Test
+    void disiscrivi_conFruitoreNull_lanciaNullPointerExceptionENonSalva() {
+        TestContext context = context();
+        Proposta proposta = propostaAperta("Evento disiscrizione fruitore null", "2");
+        context.bachecaRepository.load().addProposta(proposta);
+
+        assertAll(
+                () -> assertThrows(NullPointerException.class,
+                        () -> context.iscrizioneService.disiscrivi(proposta, null)),
+                () -> assertEquals(0, context.bachecaRepository.saveCount())
+        );
+    }
+
+    private TestContext context() {
+        ApplicationIntegrationSupport.InMemoryBachecaRepository bachecaRepository =
+                new ApplicationIntegrationSupport.InMemoryBachecaRepository();
+        ApplicationIntegrationSupport.InMemorySpazioPersonaleRepository spazioPersonaleRepository =
+                new ApplicationIntegrationSupport.InMemorySpazioPersonaleRepository();
+        NotificationService notificationService = new NotificationService(spazioPersonaleRepository);
+        PropostaLifecycleService lifecycleService = new PropostaLifecycleService(
+                bachecaRepository,
+                notificationService,
+                NotificaFactory.getInstance());
+        return new TestContext(
+                bachecaRepository,
+                notificationService,
+                lifecycleService,
+                new IscrizioneService(bachecaRepository, lifecycleService));
+    }
+
+    private Proposta propostaAperta(String titolo, String numeroPartecipanti) {
+        Proposta proposta = new Proposta(
+                new Categoria("Sport"),
+                campiBase(),
+                List.of());
+        proposta.aggiornaValoriCampi(valoriProposta(titolo, numeroPartecipanti));
+        proposta.valida();
+        proposta.pubblica(LocalDate.now(AppConstants.clock));
+        return proposta;
+    }
+
+    private List<Campo> campiBase() {
+        return List.of(
+                campo(AppConstants.CAMPO_TITOLO, TipoDato.STRINGA),
+                campo(AppConstants.CAMPO_NUM_PARTECIPANTI, TipoDato.INTERO),
+                campo(AppConstants.CAMPO_TERMINE_ISCRIZIONE, TipoDato.DATA),
+                campo(AppConstants.CAMPO_LUOGO, TipoDato.STRINGA),
+                campo(AppConstants.CAMPO_DATA, TipoDato.DATA),
+                campo(AppConstants.CAMPO_ORA, TipoDato.ORA),
+                campo(AppConstants.CAMPO_QUOTA, TipoDato.DECIMALE),
+                campo(AppConstants.CAMPO_DATA_CONCLUSIVA, TipoDato.DATA));
+    }
+
+    private Campo campo(String nome, TipoDato tipoDato) {
+        return new Campo(nome, TipoCampo.BASE, tipoDato, true);
+    }
+
+    private Map<String, String> valoriProposta(String titolo, String numeroPartecipanti) {
+        LocalDate oggi = LocalDate.now(AppConstants.clock);
+        return Map.of(
+                AppConstants.CAMPO_TITOLO, titolo,
+                AppConstants.CAMPO_NUM_PARTECIPANTI, numeroPartecipanti,
+                AppConstants.CAMPO_TERMINE_ISCRIZIONE, oggi.plusDays(1).format(AppConstants.DATE_FMT),
+                AppConstants.CAMPO_LUOGO, "Brescia",
+                AppConstants.CAMPO_DATA, oggi.plusDays(4).format(AppConstants.DATE_FMT),
+                AppConstants.CAMPO_ORA, "16:30",
+                AppConstants.CAMPO_QUOTA, "10.50",
+                AppConstants.CAMPO_DATA_CONCLUSIVA, oggi.plusDays(5).format(AppConstants.DATE_FMT)
+        );
+    }
+
+    private void assertDomainError(DomainErrorCode expected, Runnable action) {
+        DomainException exception = assertThrows(DomainException.class, action::run);
+
+        assertEquals(expected, exception.code());
+    }
+
+    private record TestContext(
+            ApplicationIntegrationSupport.InMemoryBachecaRepository bachecaRepository,
+            NotificationService notificationService,
+            PropostaLifecycleService lifecycleService,
+            IscrizioneService iscrizioneService) {
+    }
+}

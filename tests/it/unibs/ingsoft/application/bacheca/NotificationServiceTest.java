@@ -1,12 +1,13 @@
 package it.unibs.ingsoft.application.bacheca;
 
 import it.unibs.ingsoft.application.ApplicationIntegrationSupport;
-import it.unibs.ingsoft.domain.Notifica;
+import it.unibs.ingsoft.application.notifica.NotificationService;
+import it.unibs.ingsoft.domain.notifica.Notifica;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class NotificationServiceTest {
+class LegacyNotificationServiceTest {
     @Test
     void costruttore_conRepositoryNull_lanciaNullPointerException() {
         assertThrows(NullPointerException.class, () -> new NotificationService(null));

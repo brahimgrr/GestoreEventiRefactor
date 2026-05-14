@@ -5,10 +5,10 @@ import it.unibs.ingsoft.application.catalogo.dto.CampoBaseExtraRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CampoDefinitionRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CampoObbligatorietaRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CatalogoOperationResult;
-import it.unibs.ingsoft.domain.Categoria;
-import it.unibs.ingsoft.domain.TipoDato;
-import it.unibs.ingsoft.domain.error.DomainException;
-import it.unibs.ingsoft.domain.factory.CampoFactory;
+import it.unibs.ingsoft.domain.catalogo.Categoria;
+import it.unibs.ingsoft.domain.catalogo.TipoDato;
+import it.unibs.ingsoft.domain.shared.error.DomainException;
+import it.unibs.ingsoft.domain.catalogo.CampoFactory;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -20,23 +20,23 @@ class CatalogoServiceTest {
     void costruttori_conDipendenzeNull_lancianoNullPointerException() {
         ApplicationIntegrationSupport.InMemoryCatalogoRepository repo =
                 new ApplicationIntegrationSupport.InMemoryCatalogoRepository();
-        CampoCatalogo_Service campoService = new CampoCatalogo_Service(repo, CampoFactory.getInstance());
+        CampoCatalogoService campoService = new CampoCatalogoService(repo, CampoFactory.getInstance());
         CategoriaCatalogoService categoriaService = new CategoriaCatalogoService(repo);
 
         assertAll(
-                () -> assertThrows(NullPointerException.class, () -> new Catalogo_Service((it.unibs.ingsoft.persistence.interfaces.ICatalogoRepository) null)),
-                () -> assertThrows(NullPointerException.class, () -> new Catalogo_Service(repo, null)),
-                () -> assertThrows(NullPointerException.class, () -> new Catalogo_Service(null, categoriaService)),
-                () -> assertThrows(NullPointerException.class, () -> new Catalogo_Service(campoService, null)),
-                () -> assertThrows(NullPointerException.class, () -> new CampoCatalogo_Service(null, CampoFactory.getInstance())),
-                () -> assertThrows(NullPointerException.class, () -> new CampoCatalogo_Service(repo, null)),
+                () -> assertThrows(NullPointerException.class, () -> new CatalogoService((it.unibs.ingsoft.persistence.interfaces.ICatalogoRepository) null)),
+                () -> assertThrows(NullPointerException.class, () -> new CatalogoService(repo, null)),
+                () -> assertThrows(NullPointerException.class, () -> new CatalogoService(null, categoriaService)),
+                () -> assertThrows(NullPointerException.class, () -> new CatalogoService(campoService, null)),
+                () -> assertThrows(NullPointerException.class, () -> new CampoCatalogoService(null, CampoFactory.getInstance())),
+                () -> assertThrows(NullPointerException.class, () -> new CampoCatalogoService(repo, null)),
                 () -> assertThrows(NullPointerException.class, () -> new CategoriaCatalogoService(null))
         );
     }
 
     @Test
     void configuraCampiBase_conCampoExtra_persisteCampiBaseFissiEdExtra() {
-        Catalogo_Service service = new Catalogo_Service(new ApplicationIntegrationSupport.InMemoryCatalogoRepository());
+        CatalogoService service = new CatalogoService(new ApplicationIntegrationSupport.InMemoryCatalogoRepository());
 
         service.configuraCampiBase(List.of(new CampoBaseExtraRequest("Equipaggiamento", TipoDato.STRINGA)));
 
@@ -50,8 +50,8 @@ class CatalogoServiceTest {
 
     @Test
     void configuraCampiBase_conListaNull_oVuota_inizializzaCampiBasePredefiniti() {
-        Catalogo_Service serviceConNull = new Catalogo_Service(new ApplicationIntegrationSupport.InMemoryCatalogoRepository());
-        Catalogo_Service serviceConVuota = new Catalogo_Service(new ApplicationIntegrationSupport.InMemoryCatalogoRepository());
+        CatalogoService serviceConNull = new CatalogoService(new ApplicationIntegrationSupport.InMemoryCatalogoRepository());
+        CatalogoService serviceConVuota = new CatalogoService(new ApplicationIntegrationSupport.InMemoryCatalogoRepository());
 
         serviceConNull.configuraCampiBase(null);
         serviceConVuota.configuraCampiBase(List.of());
@@ -67,7 +67,7 @@ class CatalogoServiceTest {
     void configuraCampiBase_conExtraInvalido_inizializzaFallbackERilancia() {
         ApplicationIntegrationSupport.InMemoryCatalogoRepository repo =
                 new ApplicationIntegrationSupport.InMemoryCatalogoRepository();
-        Catalogo_Service service = new Catalogo_Service(repo);
+        CatalogoService service = new CatalogoService(repo);
 
         assertAll(
                 () -> assertThrows(DomainException.class,
@@ -78,7 +78,7 @@ class CatalogoServiceTest {
 
     @Test
     void metodiCompatibilita_copronoCampiBasePredefinitiENomeEsistente() {
-        Catalogo_Service service = new Catalogo_Service(new ApplicationIntegrationSupport.InMemoryCatalogoRepository());
+        CatalogoService service = new CatalogoService(new ApplicationIntegrationSupport.InMemoryCatalogoRepository());
 
         service.initiateCampiBase();
 
@@ -91,7 +91,7 @@ class CatalogoServiceTest {
 
     @Test
     void addCampiBaseConExtra_conDatiValidi_aggiungeCampoExtra() {
-        Catalogo_Service service = new Catalogo_Service(new ApplicationIntegrationSupport.InMemoryCatalogoRepository());
+        CatalogoService service = new CatalogoService(new ApplicationIntegrationSupport.InMemoryCatalogoRepository());
 
         service.addCampiBaseConExtra(List.of("Equipaggiamento"), List.of(TipoDato.STRINGA));
 
@@ -101,7 +101,7 @@ class CatalogoServiceTest {
 
     @Test
     void createCategoria_eAddCampoSpecifico_colleganoCampoAllaCategoriaPersistita() {
-        Catalogo_Service service = new Catalogo_Service(new ApplicationIntegrationSupport.InMemoryCatalogoRepository());
+        CatalogoService service = new CatalogoService(new ApplicationIntegrationSupport.InMemoryCatalogoRepository());
         service.configuraCampiBase(List.of());
 
         Categoria categoria = service.createCategoria("Sport");
@@ -116,7 +116,7 @@ class CatalogoServiceTest {
 
     @Test
     void createCategoriaDuplicata_lanciaEccezioneDominio() {
-        Catalogo_Service service = serviceVuoto();
+        CatalogoService service = serviceVuoto();
         service.createCategoria("Sport");
 
         assertThrows(DomainException.class, () -> service.createCategoria("sport"));
@@ -124,7 +124,7 @@ class CatalogoServiceTest {
 
     @Test
     void addCampoComune_eSetObbligatorietaCampoComune_aggiornanoCampoComunePersistito() {
-        Catalogo_Service service = new Catalogo_Service(new ApplicationIntegrationSupport.InMemoryCatalogoRepository());
+        CatalogoService service = new CatalogoService(new ApplicationIntegrationSupport.InMemoryCatalogoRepository());
         service.configuraCampiBase(List.of());
         service.addCampoComune(new CampoDefinitionRequest("Note", TipoDato.STRINGA, false));
 
@@ -139,14 +139,14 @@ class CatalogoServiceTest {
 
     @Test
     void addCampoComune_conRequestNull_lanciaNullPointerException() {
-        Catalogo_Service service = serviceVuoto();
+        CatalogoService service = serviceVuoto();
 
         assertThrows(NullPointerException.class, () -> service.addCampoComune(null));
     }
 
     @Test
     void rimuoviCampoComune_restituisceSuccessoONonTrovato() {
-        Catalogo_Service service = serviceVuoto();
+        CatalogoService service = serviceVuoto();
         service.addCampoComune("Note", TipoDato.STRINGA, false);
 
         assertAll(
@@ -157,7 +157,7 @@ class CatalogoServiceTest {
 
     @Test
     void setObbligatorietaCampoComune_restituisceNessunaModificaONonTrovato() {
-        Catalogo_Service service = serviceVuoto();
+        CatalogoService service = serviceVuoto();
         service.addCampoComune("Note", TipoDato.STRINGA, false);
 
         assertAll(
@@ -172,7 +172,7 @@ class CatalogoServiceTest {
 
     @Test
     void rimuoviCategoria_restituisceSuccessoONonTrovato() {
-        Catalogo_Service service = serviceVuoto();
+        CatalogoService service = serviceVuoto();
         service.createCategoria("Sport");
 
         assertAll(
@@ -183,7 +183,7 @@ class CatalogoServiceTest {
 
     @Test
     void rimuoviCampoSpecifico_restituisceSuccessoONonTrovato() {
-        Catalogo_Service service = serviceVuoto();
+        CatalogoService service = serviceVuoto();
         service.createCategoria("Sport");
         service.addCampoSpecifico("Sport", "Arbitro", TipoDato.BOOLEANO, false);
 
@@ -195,7 +195,7 @@ class CatalogoServiceTest {
 
     @Test
     void addCampoSpecifico_conRequestNull_lanciaNullPointerException() {
-        Catalogo_Service service = serviceVuoto();
+        CatalogoService service = serviceVuoto();
         service.createCategoria("Sport");
 
         assertThrows(NullPointerException.class, () -> service.addCampoSpecifico("Sport", null));
@@ -203,7 +203,7 @@ class CatalogoServiceTest {
 
     @Test
     void setObbligatorietaCampoSpecifico_restituisceTuttiGliEsiti() {
-        Catalogo_Service service = serviceVuoto();
+        CatalogoService service = serviceVuoto();
         service.createCategoria("Sport");
         service.addCampoSpecifico("Sport", "Arbitro", TipoDato.BOOLEANO, false);
 
@@ -219,8 +219,8 @@ class CatalogoServiceTest {
         );
     }
 
-    private Catalogo_Service serviceVuoto() {
-        Catalogo_Service service = new Catalogo_Service(new ApplicationIntegrationSupport.InMemoryCatalogoRepository());
+    private CatalogoService serviceVuoto() {
+        CatalogoService service = new CatalogoService(new ApplicationIntegrationSupport.InMemoryCatalogoRepository());
         service.configuraCampiBase(List.of());
         return service;
     }

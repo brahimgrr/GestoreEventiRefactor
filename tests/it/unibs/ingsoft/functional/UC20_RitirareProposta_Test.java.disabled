@@ -1,0 +1,80 @@
+package it.unibs.ingsoft.functional;
+
+import it.unibs.ingsoft.domain.shared.AppConstants;
+import it.unibs.ingsoft.domain.proposta.Proposta;
+import it.unibs.ingsoft.domain.utente.Fruitore;
+import it.unibs.ingsoft.domain.proposta.StatoProposta;
+import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class UC20_RitirareProposta_Test {
+    @Test
+    void scenarioPrincipale_propostaRitirabile_conAderente_transitaARitirataEInviaNotifica() {
+        FunctionalTestSupport.FunctionalGraph graph = FunctionalTestSupport.graph();
+        Proposta proposta = FunctionalTestSupport.propostaPubblicata(graph, "Da ritirare", "2");
+
+        Fruitore mario = new Fruitore("mario");
+        graph.fruitoreService().iscrivi(proposta, mario);
+
+        graph.configuratoreService().ritiraProposta(proposta);
+
+        assertAll(
+                () -> assertEquals(StatoProposta.RITIRATA, proposta.getStato()),
+                () -> assertEquals(1, graph.fruitoreService().getNotifiche(mario).size())
+        );
+    }
+
+    @Test
+    void scenarioAlternativo2a_nessunaPropostaRitirabile_listaVuota() {
+        FunctionalTestSupport.FunctionalGraph graph = FunctionalTestSupport.graph();
+
+        assertTrue(graph.configuratoreService().getProposteRitirabili().isEmpty());
+    }
+
+    /*
+    TEST INUTILE: annullamento visibile in UI ma qua no
+     */
+    @Test
+    void scenarioAlternativo6a_nonConfermaRitiro_statoRimaneInvariato() {
+        FunctionalTestSupport.FunctionalGraph graph = FunctionalTestSupport.graph();
+        Proposta proposta = FunctionalTestSupport.propostaPubblicata(graph, "Non ritirata", "2");
+
+        assertEquals(StatoProposta.APERTA, proposta.getStato());
+    }
+
+    @Test
+    void scenarioAlternativo7a_termineRitiroScaduto_segnalaErrore() {
+        FunctionalTestSupport.FunctionalGraph graph = FunctionalTestSupport.graph();
+        Proposta proposta = FunctionalTestSupport.propostaPersistita(
+                StatoProposta.APERTA,
+                "Troppo tardi",
+                "2",
+                LocalDate.now(AppConstants.clock).minusDays(2),
+                LocalDate.now(AppConstants.clock),
+                List.of());
+        graph.bachecaRepository().load().addProposta(proposta);
+
+        assertThrows(IllegalStateException.class, () -> graph.configuratoreService().ritiraProposta(proposta));
+    }
+
+    @Test
+    void scenarioAlternativo10a_propostaApertaRitirata_vieneRimossaDallaBachecaVisibileESalvata() {
+        FunctionalTestSupport.FunctionalGraph graph = FunctionalTestSupport.graph();
+        Proposta proposta = FunctionalTestSupport.propostaPubblicata(graph, "Aperta da ritirare", "2");
+        Fruitore mario = new Fruitore("mario");
+        graph.fruitoreService().iscrivi(proposta, mario);
+
+        graph.configuratoreService().ritiraProposta(proposta);
+
+        assertAll(
+                () -> assertEquals(StatoProposta.RITIRATA, proposta.getStato()),
+                () -> assertTrue(graph.configuratoreService().getBachecaPerCategoria().isEmpty()),
+                () -> assertEquals(3, graph.bachecaRepository().saveCount()),
+                () -> assertEquals(1, graph.fruitoreService().getNotifiche(mario).size())
+        );
+    }
+}

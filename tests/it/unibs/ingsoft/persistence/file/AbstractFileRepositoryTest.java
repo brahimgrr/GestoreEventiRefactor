@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.persistence.file;
 
-import it.unibs.ingsoft.domain.Credenziali;
+import it.unibs.ingsoft.persistence.dto.CredenzialiDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,19 +45,19 @@ class AbstractFileRepositoryTest {
     void load_conFileAssente_restituisceValoreDiDefault() {
         TestCredenzialiRepository repository = new TestCredenzialiRepository(tempDir.resolve("missing.json"));
 
-        Credenziali credenziali = repository.loadDirect();
+        CredenzialiDTO credenziali = repository.loadDirect();
 
         assertTrue(credenziali.getConfiguratori().isEmpty());
     }
 
     @Test
-    void load_conJsonMalformed_lanciaUncheckedIOException() throws Exception {
+    void load_conJsonMalformed_lanciaPersistenceException() throws Exception {
         Path path = tempDir.resolve("broken.json");
         Files.writeString(path, "{ json non valido");
 
         TestCredenzialiRepository repository = new TestCredenzialiRepository(path);
 
-        assertThrows(java.io.UncheckedIOException.class, repository::loadDirect);
+        assertThrows(PersistenceException.class, repository::loadDirect);
     }
 
     @Test
@@ -66,7 +66,7 @@ class AbstractFileRepositoryTest {
 
         TestCredenzialiRepository repository = new TestCredenzialiRepository(path);
 
-        Credenziali credenziali = new Credenziali();
+        CredenzialiDTO credenziali = new CredenzialiDTO();
         credenziali.addConfiguratore("Admin", "pwd");
 
         repository.saveDirect(credenziali);
@@ -84,13 +84,13 @@ class AbstractFileRepositoryTest {
     @Test
     void costruttore_conTipoNull_lanciaNullPointerException() {
         assertThrows(NullPointerException.class,
-                () -> new TestNullConstructorRepository(tempDir.resolve("dati.json"), null, Credenziali::new));
+                () -> new TestNullConstructorRepository(tempDir.resolve("dati.json"), null, CredenzialiDTO::new));
     }
 
     @Test
     void costruttore_conDefaultValueNull_lanciaNullPointerException() {
         assertThrows(NullPointerException.class,
-                () -> new TestNullConstructorRepository(tempDir.resolve("dati.json"), Credenziali.class, null));
+                () -> new TestNullConstructorRepository(tempDir.resolve("dati.json"), CredenzialiDTO.class, null));
     }
 
     @Test
@@ -118,7 +118,7 @@ class AbstractFileRepositoryTest {
         TestCredenzialiRepository repository = new TestCredenzialiRepository(path);
 
         try {
-            repository.saveDirect(new Credenziali());
+            repository.saveDirect(new CredenzialiDTO());
 
             assertTrue(Files.exists(path));
         } finally {
@@ -131,7 +131,7 @@ class AbstractFileRepositoryTest {
         Path path = tempDir.resolve("fallback.json");
         FallbackMoveRepository repository = new FallbackMoveRepository(path);
 
-        repository.saveDirect(new Credenziali());
+        repository.saveDirect(new CredenzialiDTO());
 
         assertAll(
                 () -> assertTrue(repository.moveReplacingCalled),
@@ -140,23 +140,23 @@ class AbstractFileRepositoryTest {
     }
 
     @Test
-    void save_quandoMoveReplacingFallisce_lanciaUncheckedIOException() {
+    void save_quandoMoveReplacingFallisce_lanciaPersistenceException() {
         Path path = tempDir.resolve("failing.json");
         FailingFallbackMoveRepository repository = new FailingFallbackMoveRepository(path);
 
-        assertThrows(UncheckedIOException.class, () -> repository.saveDirect(new Credenziali()));
+        assertThrows(PersistenceException.class, () -> repository.saveDirect(new CredenzialiDTO()));
     }
 
-    private static class TestCredenzialiRepository extends AbstractFileRepository<Credenziali> {
+    private static class TestCredenzialiRepository extends AbstractFileRepository<CredenzialiDTO> {
         private TestCredenzialiRepository(Path path) {
-            super(path, Credenziali.class, Credenziali::new);
+            super(path, CredenzialiDTO.class, CredenzialiDTO::new);
         }
 
-        private Credenziali loadDirect() {
+        private CredenzialiDTO loadDirect() {
             return load();
         }
 
-        protected void saveDirect(Credenziali credenziali) {
+        protected void saveDirect(CredenzialiDTO credenziali) {
             save(credenziali);
         }
     }
@@ -218,9 +218,9 @@ class AbstractFileRepositoryTest {
         }
     }
 
-    private static final class TestNullConstructorRepository extends AbstractFileRepository<Credenziali> {
-        private TestNullConstructorRepository(Path path, Class<Credenziali> type,
-                                              java.util.function.Supplier<Credenziali> defaultValue) {
+    private static final class TestNullConstructorRepository extends AbstractFileRepository<CredenzialiDTO> {
+        private TestNullConstructorRepository(Path path, Class<CredenzialiDTO> type,
+                                              java.util.function.Supplier<CredenzialiDTO> defaultValue) {
             super(path, type, defaultValue);
         }
     }

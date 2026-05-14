@@ -1,6 +1,5 @@
-package it.unibs.ingsoft.domain;
+package it.unibs.ingsoft.domain.shared;
 
-import it.unibs.ingsoft.domain.shared.AppConstants;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;

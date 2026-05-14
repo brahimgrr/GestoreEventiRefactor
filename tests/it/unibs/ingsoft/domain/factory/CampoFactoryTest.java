@@ -40,8 +40,8 @@ class CampoFactoryTest {
     }
 
     @Test
-    void creaCampiBaseExtra_conTipiDatoNull_lanciaIllegalStateException() {
-        assertThrows(IllegalStateException.class,
+    void creaCampiBaseExtra_conTipiDatoNull_lanciaDomainException() {
+        assertThrows(DomainException.class,
                 () -> CampoFactory.getInstance().creaCampiBaseExtra(List.of("Nota"), null));
     }
 

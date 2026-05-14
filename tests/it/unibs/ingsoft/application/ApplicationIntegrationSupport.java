@@ -1,19 +1,17 @@
 package it.unibs.ingsoft.application;
 
-import it.unibs.ingsoft.application.bacheca.IscrizioneService;
-import it.unibs.ingsoft.application.bacheca.NotificationService;
-import it.unibs.ingsoft.application.catalogo.Catalogo_Service;
-import it.unibs.ingsoft.application.proposta.PropostaCreationService;
+import it.unibs.ingsoft.application.notifica.NotificationService;
+import it.unibs.ingsoft.application.catalogo.CatalogoService;
 import it.unibs.ingsoft.application.proposta.PropostaLifecycleService;
-import it.unibs.ingsoft.application.proposta.PropostaPublication_Service;
+import it.unibs.ingsoft.application.proposta.PropostaPublicationService;
 import it.unibs.ingsoft.application.proposta.PropostaQueryService;
-import it.unibs.ingsoft.application.proposta.Proposta_Service;
-import it.unibs.ingsoft.domain.ArchivioNotifiche;
-import it.unibs.ingsoft.domain.Bacheca;
-import it.unibs.ingsoft.domain.Catalogo;
-import it.unibs.ingsoft.domain.Credenziali;
-import it.unibs.ingsoft.domain.factory.NotificaFactory;
-import it.unibs.ingsoft.domain.factory.PropostaFactory;
+import it.unibs.ingsoft.application.proposta.PropostaService;
+import it.unibs.ingsoft.application.proposta.PropostaValidationService;
+import it.unibs.ingsoft.persistence.dto.ArchivioNotificheDTO;
+import it.unibs.ingsoft.persistence.dto.BachecaDTO;
+import it.unibs.ingsoft.persistence.dto.CatalogoDTO;
+import it.unibs.ingsoft.persistence.dto.CredenzialiDTO;
+import it.unibs.ingsoft.domain.notifica.NotificaFactory;
 import it.unibs.ingsoft.persistence.interfaces.IBachecaRepository;
 import it.unibs.ingsoft.persistence.interfaces.ICatalogoRepository;
 import it.unibs.ingsoft.persistence.interfaces.ICredenzialiRepository;
@@ -28,47 +26,45 @@ public final class ApplicationIntegrationSupport {
         InMemorySpazioPersonaleRepository spazioPersonaleRepository = new InMemorySpazioPersonaleRepository();
         NotificationService notificationService = new NotificationService(spazioPersonaleRepository);
         PropostaQueryService queryService = new PropostaQueryService(bachecaRepository);
-        PropostaPublication_Service publicationService = new PropostaPublication_Service(bachecaRepository, queryService);
+        PropostaPublicationService publicationService = new PropostaPublicationService(bachecaRepository);
         PropostaLifecycleService lifecycleService = new PropostaLifecycleService(
                 bachecaRepository,
                 notificationService,
                 NotificaFactory.getInstance());
-        Proposta_Service propostaService = new Proposta_Service(
-                new PropostaCreationService(PropostaFactory.getInstance()),
-                new it.unibs.ingsoft.application.proposta.PropostaValidationService(),
+        PropostaService propostaService = new PropostaService(
+                new PropostaValidationService(),
                 publicationService,
                 lifecycleService,
                 queryService);
         return new ServiceGraph(
-                new Catalogo_Service(new InMemoryCatalogoRepository()),
+                new CatalogoService(new InMemoryCatalogoRepository()),
                 propostaService,
                 new FruitoreService(
                         propostaService,
-                        new IscrizioneService(bachecaRepository, lifecycleService),
                         notificationService),
                 bachecaRepository,
                 spazioPersonaleRepository);
     }
 
     public record ServiceGraph(
-            Catalogo_Service catalogoService,
-            Proposta_Service propostaService,
+            CatalogoService catalogoService,
+            PropostaService propostaService,
             FruitoreService fruitoreService,
             InMemoryBachecaRepository bachecaRepository,
             InMemorySpazioPersonaleRepository spazioPersonaleRepository) {
     }
 
     public static final class InMemoryCredenzialiRepository implements ICredenzialiRepository {
-        private Credenziali credenziali = new Credenziali();
+        private CredenzialiDTO credenziali = new CredenzialiDTO();
         private int saveCount;
 
         @Override
-        public Credenziali load() {
+        public CredenzialiDTO load() {
             return credenziali;
         }
 
         @Override
-        public void save(Credenziali credenziali) {
+        public void save(CredenzialiDTO credenziali) {
             this.credenziali = credenziali;
             saveCount++;
         }
@@ -79,30 +75,30 @@ public final class ApplicationIntegrationSupport {
     }
 
     public static final class InMemoryCatalogoRepository implements ICatalogoRepository {
-        private Catalogo catalogo = new Catalogo();
+        private CatalogoDTO catalogo = new CatalogoDTO();
 
         @Override
-        public Catalogo load() {
+        public CatalogoDTO load() {
             return catalogo;
         }
 
         @Override
-        public void save(Catalogo catalogo) {
+        public void save(CatalogoDTO catalogo) {
             this.catalogo = catalogo;
         }
     }
 
     public static final class InMemoryBachecaRepository implements IBachecaRepository {
-        private Bacheca bacheca = new Bacheca();
+        private BachecaDTO bacheca = new BachecaDTO();
         private int saveCount;
 
         @Override
-        public Bacheca load() {
+        public BachecaDTO load() {
             return bacheca;
         }
 
         @Override
-        public void save(Bacheca bacheca) {
+        public void save(BachecaDTO bacheca) {
             this.bacheca = bacheca;
             saveCount++;
         }
@@ -113,16 +109,16 @@ public final class ApplicationIntegrationSupport {
     }
 
     public static final class InMemorySpazioPersonaleRepository implements ISpazioPersonaleRepository {
-        private ArchivioNotifiche archivio = new ArchivioNotifiche();
+        private ArchivioNotificheDTO archivio = new ArchivioNotificheDTO();
         private int saveCount;
 
         @Override
-        public ArchivioNotifiche load() {
+        public ArchivioNotificheDTO load() {
             return archivio;
         }
 
         @Override
-        public void save(ArchivioNotifiche archivio) {
+        public void save(ArchivioNotificheDTO archivio) {
             this.archivio = archivio;
             saveCount++;
         }
