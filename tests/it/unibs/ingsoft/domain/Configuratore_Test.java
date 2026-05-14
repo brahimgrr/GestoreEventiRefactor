@@ -1,5 +1,6 @@
 package it.unibs.ingsoft.domain;
 
+import it.unibs.ingsoft.domain.shared.error.DomainException;
 import it.unibs.ingsoft.domain.utente.Configuratore;
 import it.unibs.ingsoft.domain.utente.Fruitore;
 import org.junit.jupiter.api.Test;
@@ -16,12 +17,12 @@ class Configuratore_Test {
 
     @Test
     void costruttore_conUsernameNull_lanciaIllegalStateException() {
-        assertThrows(IllegalStateException.class, () -> new Configuratore(null));
+        assertThrows(DomainException.class, () -> new Configuratore(null));
     }
 
     @Test
     void costruttore_conUsernameBlank_lanciaIllegalStateException() {
-        assertThrows(IllegalStateException.class, () -> new Configuratore("  "));
+        assertThrows(DomainException.class, () -> new Configuratore("  "));
     }
 
     /*

@@ -35,6 +35,10 @@ public record Notifica(
         this(UUID.randomUUID().toString(), NotificaType.LEGACY_MESSAGGIO, Map.of(), messaggio, LocalDateTime.now());
     }
 
+    public Notifica(String id, String messaggio, LocalDateTime dataCreazione) {
+        this(id, NotificaType.LEGACY_MESSAGGIO, Map.of(), messaggio, dataCreazione);
+    }
+
     public static Notifica notificaStrutturata(NotificaType type, Map<String, String> payload) {
         return new Notifica(UUID.randomUUID().toString(), type, payload, null, LocalDateTime.now());
     }

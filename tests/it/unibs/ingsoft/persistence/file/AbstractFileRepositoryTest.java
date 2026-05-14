@@ -23,13 +23,14 @@ class AbstractFileRepositoryTest {
     }
 
     @Test
-    void load_conJsonMalformed_lanciaUncheckedIOException() throws Exception {
+    void load_conJsonMalformed_lanciaPersistenceException() throws Exception {
         Path path = tempDir.resolve("broken.json");
         Files.writeString(path, "{ json non valido");
 
         TestCredenzialiRepository repository = new TestCredenzialiRepository(path);
 
-        assertThrows(java.io.UncheckedIOException.class, repository::loadDirect);
+        PersistenceException exception = assertThrows(PersistenceException.class, repository::loadDirect);
+        assertEquals(new PersistenceFailure.ReadFailed(path), exception.failure());
     }
 
     @Test

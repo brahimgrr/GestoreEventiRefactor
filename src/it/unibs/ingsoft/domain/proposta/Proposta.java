@@ -174,6 +174,15 @@ public final class Proposta {
         return valoriCampi.getOrDefault(nomeCampo, defaultValue);
     }
 
+    public static String chiaveIdentita(Map<String, String> valori) {
+        return PropostaIdentityPolicy.DEFAULT.chiaveDuplicato(valori);
+    }
+
+    @JsonIgnore
+    public String getChiaveIdentita() {
+        return chiaveIdentita(valoriCampi);
+    }
+
     public void verificaSalvabile() {
         if (!isValida()) {
             throw new DomainException(new ProposalFailure.NotSavable());
@@ -301,9 +310,13 @@ public final class Proposta {
         }
     }
 
+    public void valida() {
+        applicaEsitoValidazione(new PropostaValidator().validaCompleta(this));
+    }
+
     private void riportaInBozzaSeValida() {
         if (this.stato == StatoProposta.VALIDA) {
-            cambiaStato(StatoProposta.BOZZA);
+            this.stato = StatoProposta.BOZZA;
         }
     }
 

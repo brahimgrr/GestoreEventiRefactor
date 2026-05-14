@@ -9,7 +9,6 @@ import java.nio.file.Path;
  * Implementazione JSON su file di {@link ISpazioPersonaleRepository}.
  */
 public final class FileSpazioPersonaleRepository extends AbstractFileRepository<ArchivioNotificheDTO> implements ISpazioPersonaleRepository {
-
     public FileSpazioPersonaleRepository(Path path) {
         super(path, ArchivioNotificheDTO.class, ArchivioNotificheDTO::new);
     }
@@ -18,7 +17,6 @@ public final class FileSpazioPersonaleRepository extends AbstractFileRepository<
     public ArchivioNotificheDTO load() {
         return super.load();
     }
-
 
     @Override
     public void save(ArchivioNotificheDTO archivio) {

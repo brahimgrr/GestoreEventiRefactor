@@ -34,6 +34,11 @@
         <sourceDirectory>src</sourceDirectory>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+            </plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <version>3.5.0</version>
@@ -46,6 +51,7 @@
                         </goals>
                         <configuration>
                             <sources>
+                                <source>tests</source>
                                 <source>unit_tests</source>
                                 <source>integration_tests</source>
                             </sources>

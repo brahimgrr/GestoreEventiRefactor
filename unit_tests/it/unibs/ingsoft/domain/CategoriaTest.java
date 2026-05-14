@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class CategoriaTest {
+class CategoriaCopyTest {
     @Test
     void copiedCategoriaKeepsMutableSpecificFields() {
         Categoria originale = new Categoria("Cinema");

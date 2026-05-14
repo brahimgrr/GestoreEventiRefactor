@@ -1,5 +1,6 @@
 package it.unibs.ingsoft.domain.factory;
 
+import it.unibs.ingsoft.domain.shared.error.DomainException;
 import it.unibs.ingsoft.domain.catalogo.*;
 import org.junit.jupiter.api.Test;
 
@@ -34,13 +35,13 @@ class CampoFactoryTest {
 
     @Test
     void creaCampiBaseExtra_conListaNomiNull_lanciaIllegalStateException() {
-        assertThrows(IllegalStateException.class,
+        assertThrows(DomainException.class,
                 () -> CampoFactory.getInstance().creaCampiBaseExtra(null, List.of(TipoDato.STRINGA)));
     }
 
     @Test
     void creaCampiBaseExtra_conListeDiDimensioneDiversa_lanciaIllegalStateException() {
-        assertThrows(IllegalStateException.class,
+        assertThrows(DomainException.class,
                 () -> CampoFactory.getInstance().creaCampiBaseExtra(List.of("Uno"), List.of()));
     }
 
@@ -57,7 +58,7 @@ class CampoFactoryTest {
 
     @Test
     void creaCampoSpecifico_conNomeNull_lanciaIllegalStateException() {
-        assertThrows(IllegalStateException.class,
+        assertThrows(DomainException.class,
                 () -> CampoFactory.getInstance().creaCampoSpecifico(null, TipoDato.STRINGA, false));
     }
 }

@@ -1,5 +1,6 @@
 package it.unibs.ingsoft.domain;
 
+import it.unibs.ingsoft.domain.shared.error.DomainException;
 import it.unibs.ingsoft.domain.catalogo.Campo;
 import it.unibs.ingsoft.domain.catalogo.Categoria;
 import it.unibs.ingsoft.domain.catalogo.TipoCampo;
@@ -9,6 +10,7 @@ import it.unibs.ingsoft.domain.proposta.StatoProposta;
 import it.unibs.ingsoft.domain.shared.AppConstants;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -36,7 +38,7 @@ class Proposta_Test {
 
     @Test
     void costruttore_conCategoriaNull_lanciaIllegalStateException() {
-        assertThrows(IllegalStateException.class, () -> new Proposta(null, List.of(), List.of()));
+        assertThrows(DomainException.class, () -> new Proposta(null, List.of(), List.of()));
     }
 
     @Test
@@ -85,7 +87,7 @@ class Proposta_Test {
     void pubblica_conPropostaInBozza_lanciaIllegalStateException() {
         Proposta proposta = propostaConCampiBaseMinimi();
 
-        assertThrows(IllegalStateException.class, () -> proposta.pubblica(LocalDate.now(AppConstants.clock)));
+        assertThrows(DomainException.class, () -> proposta.pubblica(LocalDate.now(AppConstants.clock)));
     }
 
     @Test
@@ -127,7 +129,7 @@ class Proposta_Test {
     void putAllValoriCampi_conPropostaAperta_lanciaIllegalStateException() {
         Proposta proposta = propostaApertaConCapienza("2");
 
-        assertThrows(IllegalStateException.class,
+        assertThrows(DomainException.class,
                 () -> proposta.aggiornaValoriCampi(Map.of(AppConstants.CAMPO_TITOLO, "Nuovo titolo")));
     }
 
@@ -152,7 +154,7 @@ class Proposta_Test {
     void addAderente_conPropostaNonAperta_lanciaIllegalStateException() {
         Proposta proposta = propostaConCampiBaseMinimi();
 
-        assertThrows(IllegalStateException.class, () -> proposta.iscrivi("mario", LocalDate.now(AppConstants.clock)));
+        assertThrows(DomainException.class, () -> proposta.iscrivi("mario", LocalDate.now(AppConstants.clock)));
     }
 
     @Test
@@ -160,7 +162,7 @@ class Proposta_Test {
         Proposta proposta = propostaApertaConCapienza("2");
         proposta.iscrivi("mario", LocalDate.now(AppConstants.clock));
 
-        assertThrows(IllegalStateException.class, () -> proposta.iscrivi("mario", LocalDate.now(AppConstants.clock)));
+        assertThrows(DomainException.class, () -> proposta.iscrivi("mario", LocalDate.now(AppConstants.clock)));
     }
 
     @Test
@@ -168,7 +170,7 @@ class Proposta_Test {
         Proposta proposta = propostaApertaConCapienza("1");
         proposta.iscrivi("mario", LocalDate.now(AppConstants.clock));
 
-        assertThrows(IllegalStateException.class, () -> proposta.iscrivi("luigi", LocalDate.now(AppConstants.clock)));
+        assertThrows(DomainException.class, () -> proposta.iscrivi("luigi", LocalDate.now(AppConstants.clock)));
     }
 
     @Test
@@ -185,7 +187,7 @@ class Proposta_Test {
     void removeAderente_conPropostaNonAperta_lanciaIllegalStateException() {
         Proposta proposta = propostaConCampiBaseMinimi();
 
-        assertThrows(IllegalStateException.class,
+        assertThrows(DomainException.class,
                 () -> proposta.disiscrivi("mario", LocalDate.now(AppConstants.clock)));
     }
 
@@ -194,7 +196,7 @@ class Proposta_Test {
         Proposta proposta = propostaApertaConCapienza("2");
         proposta.iscrivi("mario", LocalDate.now(AppConstants.clock));
 
-        assertThrows(IllegalStateException.class,
+        assertThrows(DomainException.class,
                 () -> proposta.disiscrivi("mario", LocalDate.now(AppConstants.clock).plusDays(2)));
     }
 
@@ -210,7 +212,7 @@ class Proposta_Test {
     void getNumeroPartecipanti_conCampoAssente_lanciaIllegalStateException() {
         Proposta proposta = propostaConCampiBaseMinimi();
 
-        assertThrows(IllegalStateException.class, proposta::getNumeroPartecipanti);
+        assertThrows(DomainException.class, proposta::getNumeroPartecipanti);
     }
 
     @Test
@@ -218,7 +220,7 @@ class Proposta_Test {
         Proposta proposta = propostaConCampiBaseMinimi();
         proposta.aggiornaValoriCampi(Map.of(AppConstants.CAMPO_NUM_PARTECIPANTI, "molti"));
 
-        assertThrows(IllegalStateException.class, proposta::getNumeroPartecipanti);
+        assertThrows(DomainException.class, proposta::getNumeroPartecipanti);
     }
 
     @Test
@@ -226,7 +228,7 @@ class Proposta_Test {
         Proposta proposta = propostaConCampiBaseMinimi();
         proposta.aggiornaValoriCampi(Map.of(AppConstants.CAMPO_NUM_PARTECIPANTI, "0"));
 
-        assertThrows(IllegalStateException.class, proposta::getNumeroPartecipanti);
+        assertThrows(DomainException.class, proposta::getNumeroPartecipanti);
     }
 
     /*

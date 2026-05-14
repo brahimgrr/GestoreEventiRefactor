@@ -22,6 +22,10 @@ public final class NotificaFactory {
         return instance;
     }
 
+    public Notifica creaNotifica(String messaggio) {
+        return new Notifica(messaggio);
+    }
+
     public Notifica creaNotificaPropostaConfermata(Proposta proposta) {
         return Notifica.notificaStrutturata(NotificaType.PROPOSTA_CONFERMATA, payloadProposta(proposta));
     }
