@@ -46,4 +46,12 @@ class NotificaFactoryTest {
 
         assertEquals(NotificaType.PROPOSTA_ANNULLATA, notifica.type());
     }
+
+    @Test
+    void creaNotificaPropostaRitirata_conProposta_creaNotificaDiTipoRitirata() {
+        Notifica notifica = NotificaFactory.getInstance()
+                .creaNotificaPropostaRitirata(new Proposta(new Categoria("Sport"), java.util.List.of(), java.util.List.of()));
+
+        assertEquals(NotificaType.PROPOSTA_RITIRATA, notifica.type());
+    }
 }

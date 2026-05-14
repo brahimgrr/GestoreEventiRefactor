@@ -31,6 +31,28 @@ class ArchivioNotificheTest {
     }
 
     @Test
+    void findSpazioDi_conUsernameNull_restituisceOptionalVuoto() {
+        ArchivioNotifiche archivio = new ArchivioNotifiche();
+
+        assertTrue(archivio.findSpazioDi(null).isEmpty());
+    }
+
+    @Test
+    void findSpazioDi_conUsernameAssente_restituisceOptionalVuoto() {
+        ArchivioNotifiche archivio = new ArchivioNotifiche();
+
+        assertTrue(archivio.findSpazioDi("mario").isEmpty());
+    }
+
+    @Test
+    void findSpazioDi_conUsernamePresente_restituisceSpazioPersonale() {
+        ArchivioNotifiche archivio = new ArchivioNotifiche();
+        SpazioPersonale spazio = archivio.getSpazioDi("mario");
+
+        assertSame(spazio, archivio.findSpazioDi("mario").orElseThrow());
+    }
+
+    @Test
     void fromJson_conMappaNull_creaArchivioSenzaUtenti() {
         ArchivioNotifiche archivio = ArchivioNotifiche.fromJson(null);
 

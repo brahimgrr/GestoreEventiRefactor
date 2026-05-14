@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class Campo_Test {
+class CampoTest {
     @Test
     void costruttore_conNomeValidoTrimmato_salvaNomeSenzaSpaziEsterni() {
         Campo campo = new Campo("  Nome  ", TipoCampo.COMUNE, TipoDato.STRINGA, true);
@@ -51,16 +51,41 @@ class Campo_Test {
         );
     }
 
-    /*
-    Ha senso fare questo Test? mostra che equals non fa tutto il lavoro
-    ma che parte del lavoro è delegata ad altre parti del programma
-     */
+    @Test
+    void costruttoreDiCopia_conCampoEsistente_copiaTuttiGliAttributiInNuovaIstanza() {
+        Campo originale = new Campo("Nome", TipoCampo.SPECIFICO, TipoDato.BOOLEANO, true);
+
+        Campo copia = new Campo(originale);
+
+        assertAll(
+                () -> assertNotSame(originale, copia),
+                () -> assertEquals(originale.getNome(), copia.getNome()),
+                () -> assertEquals(originale.getTipo(), copia.getTipo()),
+                () -> assertEquals(originale.getTipoDato(), copia.getTipoDato()),
+                () -> assertEquals(originale.isObbligatorio(), copia.isObbligatorio())
+        );
+    }
+
     @Test
     void equals_conStessoNomeInMaiuscoleDiverse_restituisceTrue() {
         Campo primo = new Campo("Nome", TipoCampo.COMUNE, TipoDato.STRINGA, false);
         Campo secondo = new Campo("nome", TipoCampo.SPECIFICO, TipoDato.INTERO, true);
 
         assertEquals(primo, secondo);
+    }
+
+    @Test
+    void equals_conStessaIstanza_restituisceTrue() {
+        Campo campo = new Campo("Nome", TipoCampo.COMUNE, TipoDato.STRINGA, false);
+
+        assertEquals(campo, campo);
+    }
+
+    @Test
+    void equals_conOggettoDiTipoDiverso_restituisceFalse() {
+        Campo campo = new Campo("Nome", TipoCampo.COMUNE, TipoDato.STRINGA, false);
+
+        assertNotEquals("Nome", campo);
     }
 
     @Test

@@ -35,11 +35,14 @@ public final class CampoFactory {
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
+    //METODO MAI USATO QUINDI COMMENTATO PER PERCENTUALE TEST
+    /*
     public List<Campo> creaCampiBaseConExtra(List<String> nomiExtra, List<TipoDato> tipiExtra) {
         List<Campo> campi = creaCampiBase();
         campi.addAll(creaCampiBaseExtra(nomiExtra, tipiExtra));
         return campi;
     }
+    */
 
     public List<Campo> creaCampiBaseExtra(List<String> nomiExtra, List<TipoDato> tipiExtra) {
         if (nomiExtra == null || tipiExtra == null) {

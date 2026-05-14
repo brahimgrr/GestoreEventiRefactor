@@ -2,11 +2,45 @@ package it.unibs.ingsoft.domain;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class CatalogoTest {
+    @Test
+    void fromJson_conListeValorizzateECampiBaseFissati_popolaCatalogo() {
+        Campo base = campo("Titolo", TipoCampo.BASE, TipoDato.STRINGA, true);
+        Campo comune = campo("Eta", TipoCampo.COMUNE, TipoDato.INTERO, false);
+        Categoria categoria = new Categoria("Sport");
+
+        Catalogo catalogo = Catalogo.fromJson(
+                List.of(base),
+                true,
+                List.of(comune),
+                List.of(categoria)
+        );
+
+        assertAll(
+                () -> assertTrue(catalogo.isCampiBaseFissati()),
+                () -> assertEquals(List.of(base), catalogo.getCampiBase()),
+                () -> assertEquals(List.of(comune), catalogo.getCampiComuni()),
+                () -> assertEquals(List.of(categoria), catalogo.getCategorie())
+        );
+    }
+
+    @Test
+    void fromJson_conListeNullECampiBaseNonFissati_creaCatalogoVuoto() {
+        Catalogo catalogo = Catalogo.fromJson(null, false, null, null);
+
+        assertAll(
+                () -> assertFalse(catalogo.isCampiBaseFissati()),
+                () -> assertTrue(catalogo.getCampiBase().isEmpty()),
+                () -> assertTrue(catalogo.getCampiComuni().isEmpty()),
+                () -> assertTrue(catalogo.getCategorie().isEmpty())
+        );
+    }
+
     @Test
     void fissareCampiBase_conListaValida_salvaCampiEImpostaFlagFissati() {
         Catalogo catalogo = new Catalogo();
@@ -18,6 +52,44 @@ class CatalogoTest {
                 () -> assertTrue(catalogo.isCampiBaseFissati()),
                 () -> assertEquals(List.of(base), catalogo.getCampiBase())
         );
+    }
+
+    @Test
+    void fissareCampiBase_conExtraValido_aggiungeCampiExtra() {
+        Catalogo catalogo = new Catalogo();
+
+        Campo base = campo("Titolo", TipoCampo.BASE, TipoDato.STRINGA, true);
+        Campo extra = campo("Descrizione", TipoCampo.BASE, TipoDato.STRINGA, false);
+        catalogo.fissareCampiBase(List.of(base), List.of(extra));
+
+        assertEquals(List.of(base, extra), catalogo.getCampiBase());
+    }
+
+    @Test
+    void fissareCampiBase_conExtraNullo_ignoraElementoNull() {
+        Catalogo catalogo = new Catalogo();
+
+        Campo base = campo("Titolo", TipoCampo.BASE, TipoDato.STRINGA, true);
+        Campo extra = campo("Descrizione", TipoCampo.BASE, TipoDato.STRINGA, false);
+        List<Campo> extraConNull = new ArrayList<>();
+        extraConNull.add(null);
+        extraConNull.add(extra);
+
+        catalogo.fissareCampiBase(List.of(base), extraConNull);
+
+        assertEquals(List.of(base, extra), catalogo.getCampiBase());
+    }
+
+    @Test
+    void fissareCampiBase_conExtraGiaPresenteNeiCampiComuni_lanciaIllegalStateException() {
+        Catalogo catalogo = new Catalogo();
+        catalogo.addCampoComune(campo("Eta", TipoCampo.COMUNE, TipoDato.INTERO, false));
+
+        assertThrows(IllegalStateException.class,
+                () -> catalogo.fissareCampiBase(
+                        List.of(campo("Titolo", TipoCampo.BASE, TipoDato.STRINGA, true)),
+                        List.of(campo("eta", TipoCampo.BASE, TipoDato.INTERO, false))
+                ));
     }
 
     @Test
@@ -93,6 +165,19 @@ class CatalogoTest {
     }
 
     @Test
+    void updateCampoComune_conListaNonVuotaENomeAssente_restituisceFalseENonModificaCampo() {
+        Catalogo catalogo = new Catalogo();
+        catalogo.addCampoComune(campo("Eta", TipoCampo.COMUNE, TipoDato.INTERO, false));
+
+        boolean aggiornato = catalogo.updateCampoComune("Note", true);
+
+        assertAll(
+                () -> assertFalse(aggiornato),
+                () -> assertFalse(catalogo.getCampiComuni().get(0).isObbligatorio())
+        );
+    }
+
+    @Test
     void addCategoria_conNomeNuovo_aggiungeCategoriaERestituisceIstanzaAggiunta() {
         Catalogo catalogo = new Catalogo();
 
@@ -110,6 +195,32 @@ class CatalogoTest {
         catalogo.addCategoria("Sport");
 
         assertThrows(IllegalStateException.class, () -> catalogo.addCategoria("sport"));
+    }
+
+    @Test
+    void removeCategoria_conNomePresenteRimuoveCategoria_restituisceTrue() {
+        Catalogo catalogo = new Catalogo();
+        catalogo.addCategoria("Sport");
+
+        boolean rimossa = catalogo.removeCategoria("sport");
+
+        assertAll(
+                () -> assertTrue(rimossa),
+                () -> assertTrue(catalogo.getCategorie().isEmpty())
+        );
+    }
+
+    @Test
+    void removeCategoria_conNomeAssente_restituisceFalse() {
+        Catalogo catalogo = new Catalogo();
+        catalogo.addCategoria("Sport");
+
+        boolean rimossa = catalogo.removeCategoria("Teatro");
+
+        assertAll(
+                () -> assertFalse(rimossa),
+                () -> assertEquals(1, catalogo.getCategorie().size())
+        );
     }
 
     @Test
@@ -145,6 +256,34 @@ class CatalogoTest {
         Catalogo catalogo = new Catalogo();
 
         assertThrows(IllegalStateException.class, () -> catalogo.removeCampoSpecifico("Sport", "Eta"));
+    }
+
+    @Test
+    void updateCampoSpecifico_conCampoPresenteAggiornaObbligatorieta_restituisceTrue() {
+        Catalogo catalogo = new Catalogo();
+        catalogo.addCategoria("Sport");
+        catalogo.addCampoSpecifico("Sport", campo("Arbitro", TipoCampo.SPECIFICO, TipoDato.BOOLEANO, false));
+
+        boolean aggiornato = catalogo.updateCampoSpecifico("sport", "arbitro", true);
+
+        assertAll(
+                () -> assertTrue(aggiornato),
+                () -> assertTrue(catalogo.getCategoriaOrThrow("Sport").getCampiSpecifici().get(0).isObbligatorio())
+        );
+    }
+
+    @Test
+    void updateCampoSpecifico_conCampoAssente_restituisceFalseENonModificaCampo() {
+        Catalogo catalogo = new Catalogo();
+        catalogo.addCategoria("Sport");
+        catalogo.addCampoSpecifico("Sport", campo("Arbitro", TipoCampo.SPECIFICO, TipoDato.BOOLEANO, false));
+
+        boolean aggiornato = catalogo.updateCampoSpecifico("Sport", "Allenatore", true);
+
+        assertAll(
+                () -> assertFalse(aggiornato),
+                () -> assertFalse(catalogo.getCategoriaOrThrow("Sport").getCampiSpecifici().get(0).isObbligatorio())
+        );
     }
 
     private Campo campo(String nome, TipoCampo tipo, TipoDato tipoDato, boolean obbligatorio) {
