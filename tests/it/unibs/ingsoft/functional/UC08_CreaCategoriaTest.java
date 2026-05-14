@@ -1,5 +1,7 @@
 package it.unibs.ingsoft.functional;
 
+import it.unibs.ingsoft.domain.catalogo.CatalogFailure;
+import it.unibs.ingsoft.domain.shared.error.DomainException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,6 +34,9 @@ class UC08_CreaCategoriaTest {
         FunctionalTestSupport.FunctionalGraph graph = FunctionalTestSupport.graph();
         graph.configuratoreService().createCategoria("Sport");
 
-        assertThrows(IllegalStateException.class, () -> graph.configuratoreService().createCategoria("sport"));
+        DomainException exception = assertThrows(DomainException.class,
+                () -> graph.configuratoreService().createCategoria("sport"));
+
+        assertInstanceOf(CatalogFailure.CategoryDuplicated.class, exception.failure());
     }
 }

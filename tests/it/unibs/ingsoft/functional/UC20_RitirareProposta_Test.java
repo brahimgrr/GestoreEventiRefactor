@@ -2,8 +2,10 @@ package it.unibs.ingsoft.functional;
 
 import it.unibs.ingsoft.domain.shared.AppConstants;
 import it.unibs.ingsoft.domain.proposta.Proposta;
+import it.unibs.ingsoft.domain.proposta.ProposalFailure;
 import it.unibs.ingsoft.domain.utente.Fruitore;
 import it.unibs.ingsoft.domain.proposta.StatoProposta;
+import it.unibs.ingsoft.domain.shared.error.DomainException;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -58,7 +60,10 @@ class UC20_RitirareProposta_Test {
                 List.of());
         graph.bachecaRepository().load().addProposta(proposta);
 
-        assertThrows(IllegalStateException.class, () -> graph.configuratoreService().ritiraProposta(proposta));
+        DomainException exception = assertThrows(DomainException.class,
+                () -> graph.configuratoreService().ritiraProposta(proposta));
+
+        assertInstanceOf(ProposalFailure.WithdrawalTooLate.class, exception.failure());
     }
 
     @Test

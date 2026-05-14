@@ -2,7 +2,9 @@ package it.unibs.ingsoft.functional;
 
 import it.unibs.ingsoft.domain.shared.AppConstants;
 import it.unibs.ingsoft.domain.proposta.Proposta;
+import it.unibs.ingsoft.domain.proposta.ProposalFailure;
 import it.unibs.ingsoft.domain.proposta.StatoProposta;
+import it.unibs.ingsoft.domain.shared.error.DomainException;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -54,7 +56,10 @@ class UC14_PubblicarePropostaBacheca_Test {
         graph.configuratoreService().salvaProposta(prima);
         graph.configuratoreService().pubblicaProposta(prima);
 
-        assertThrows(IllegalStateException.class, () -> graph.configuratoreService().salvaProposta(seconda));
+        DomainException exception = assertThrows(DomainException.class,
+                () -> graph.configuratoreService().salvaProposta(seconda));
+
+        assertInstanceOf(ProposalFailure.Duplicate.class, exception.failure());
     }
 
     @Test
@@ -68,6 +73,9 @@ class UC14_PubblicarePropostaBacheca_Test {
                 LocalDate.now(AppConstants.clock).plusDays(2),
                 List.of());
 
-        assertThrows(IllegalStateException.class, () -> graph.configuratoreService().pubblicaProposta(proposta));
+        DomainException exception = assertThrows(DomainException.class,
+                () -> graph.configuratoreService().pubblicaProposta(proposta));
+
+        assertInstanceOf(ProposalFailure.PublicationDeadlineExpired.class, exception.failure());
     }
 }

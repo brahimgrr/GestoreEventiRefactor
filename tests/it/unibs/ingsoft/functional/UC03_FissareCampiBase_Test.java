@@ -1,6 +1,8 @@
 package it.unibs.ingsoft.functional;
 
+import it.unibs.ingsoft.domain.catalogo.CatalogFailure;
 import it.unibs.ingsoft.domain.catalogo.TipoDato;
+import it.unibs.ingsoft.domain.shared.error.DomainException;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -34,9 +36,11 @@ class UC03_FissareCampiBase_Test {
     void scenarioAlternativo5b_nomeDuplicato_segnalaErroreEFissaFallbackPredefinito() {
         FunctionalTestSupport.FunctionalGraph graph = FunctionalTestSupport.graph();
 
-        assertThrows(IllegalStateException.class,
+        DomainException exception = assertThrows(DomainException.class,
                 () -> graph.configuratoreService().configuraCampiBase(
                         List.of(FunctionalTestSupport.campoExtra("Titolo", TipoDato.STRINGA))));
+
+        assertInstanceOf(CatalogFailure.NameDuplicated.class, exception.failure());
         assertEquals(8, graph.configuratoreService().getCampiBase().size());
     }
 

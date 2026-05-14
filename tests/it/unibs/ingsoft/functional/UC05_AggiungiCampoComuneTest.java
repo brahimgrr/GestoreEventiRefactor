@@ -1,7 +1,9 @@
 package it.unibs.ingsoft.functional;
 
 import it.unibs.ingsoft.application.catalogo.dto.CampoDefinitionRequest;
+import it.unibs.ingsoft.domain.catalogo.CatalogFailure;
 import it.unibs.ingsoft.domain.catalogo.TipoDato;
+import it.unibs.ingsoft.domain.shared.error.DomainException;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -24,9 +26,11 @@ class UC05_AggiungiCampoComuneTest {
         FunctionalTestSupport.FunctionalGraph graph = FunctionalTestSupport.graph();
         graph.configuratoreService().configuraCampiBase(List.of());
 
-        assertThrows(IllegalStateException.class,
+        DomainException exception = assertThrows(DomainException.class,
                 () -> graph.configuratoreService().addCampoComune(
                         new CampoDefinitionRequest("Titolo", TipoDato.STRINGA, false)));
+
+        assertInstanceOf(CatalogFailure.FieldDuplicated.class, exception.failure());
     }
 
     @Test
@@ -34,8 +38,10 @@ class UC05_AggiungiCampoComuneTest {
         FunctionalTestSupport.FunctionalGraph graph = FunctionalTestSupport.graph();
         graph.configuratoreService().configuraCampiBase(List.of());
 
-        assertThrows(IllegalStateException.class,
+        DomainException exception = assertThrows(DomainException.class,
                 () -> graph.configuratoreService().addCampoComune(
                         new CampoDefinitionRequest("", TipoDato.STRINGA, false)));
+
+        assertInstanceOf(CatalogFailure.FieldNameInvalid.class, exception.failure());
     }
 }

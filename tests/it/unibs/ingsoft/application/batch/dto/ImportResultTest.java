@@ -1,8 +1,9 @@
 package it.unibs.ingsoft.application.batch.dto;
 
-import it.unibs.ingsoft.domain.error.DomainErrorCode;
-import it.unibs.ingsoft.application.batch.dto.ImportError;
+import it.unibs.ingsoft.application.batch.ImportFailure;
 import org.junit.jupiter.api.Test;
+
+import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,7 +15,7 @@ class ImportResultTest {
         result.incrementCampiComuni();
         result.incrementCategorie();
         result.incrementProposte();
-        result.addErrore(ImportError.of(DomainErrorCode.IMPORT_FILE_NON_TROVATO, "file"));
+        result.addErrore(new ImportError(new ImportFailure.FileNotFound(Path.of("file"))));
 
         assertAll(
                 () -> assertEquals(1, result.getCampiComuniImportati()),
@@ -23,7 +24,7 @@ class ImportResultTest {
                 () -> assertEquals(3, result.totaleImportati()),
                 () -> assertTrue(result.hasErrors()),
                 () -> assertThrows(UnsupportedOperationException.class,
-                        () -> result.getErrori().add(ImportError.of(DomainErrorCode.IMPORT_FILE_NON_LEGGIBILE)))
+                        () -> result.getErrori().add(new ImportError(new ImportFailure.FileNotReadable(Path.of("file")))))
         );
     }
 }

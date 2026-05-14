@@ -3,10 +3,9 @@ package it.unibs.ingsoft.application.batch;
 import it.unibs.ingsoft.application.ApplicationIntegrationSupport;
 import it.unibs.ingsoft.application.batch.dto.ImportResult;
 import it.unibs.ingsoft.application.catalogo.CatalogoService;
+import it.unibs.ingsoft.application.error.ApplicationException;
 import it.unibs.ingsoft.application.proposta.PropostaService;
 import it.unibs.ingsoft.domain.shared.AppConstants;
-import it.unibs.ingsoft.domain.error.DomainErrorCode;
-import it.unibs.ingsoft.domain.shared.error.DomainException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -97,18 +96,21 @@ class BatchImportServiceTest {
         assertAll(
                 () -> assertTrue(result.hasErrors()),
                 () -> assertEquals(1, result.getCampiComuniImportati()),
-                () -> assertEquals(DomainErrorCode.IMPORT_CAMPO_COMUNE_DUPLICATO, result.getErrori().get(0).code()),
+                () -> assertInstanceOf(ImportFailure.CommonFieldDuplicated.class, result.getErrori().get(0).failure()),
                 () -> assertEquals(1, catalogoService.getCampiComuni().size())
         );
     }
 
     @Test
-    void importa_conFileAssente_lanciaIllegalStateException() {
+    void importa_conFileAssente_lanciaApplicationException() {
         BatchImportService service = new BatchImportService(
                 ApplicationIntegrationSupport.serviceGraph().catalogoService(),
                 ApplicationIntegrationSupport.serviceGraph().propostaService());
 
-        assertThrows(IllegalStateException.class, () -> service.importa(tempDir.resolve("assente.json")));
+        ApplicationException exception = assertThrows(ApplicationException.class,
+                () -> service.importa(tempDir.resolve("assente.json")));
+
+        assertInstanceOf(ImportFailure.FileNotFound.class, exception.failure());
     }
 
     @Test
@@ -135,9 +137,9 @@ class BatchImportServiceTest {
             }
 
             if (!Files.isReadable(file)) {
-                DomainException exception = assertThrows(DomainException.class, () -> service.importa(file));
+                ApplicationException exception = assertThrows(ApplicationException.class, () -> service.importa(file));
 
-                assertEquals(DomainErrorCode.IMPORT_FILE_NON_LEGGIBILE, exception.code());
+                assertInstanceOf(ImportFailure.FileNotReadable.class, exception.failure());
             }
         } finally {
             if (aclView != null && aclOriginale != null) {
@@ -192,12 +194,12 @@ class BatchImportServiceTest {
         ImportResult result = service.importa(file);
 
         assertEquals(List.of(
-                        DomainErrorCode.IMPORT_CAMPO_COMUNE_NOME_MANCANTE,
-                        DomainErrorCode.IMPORT_CAMPO_COMUNE_NOME_MANCANTE,
-                        DomainErrorCode.IMPORT_CAMPO_COMUNE_TIPO_DATO_INVALIDO,
-                        DomainErrorCode.IMPORT_CAMPO_COMUNE_TIPO_DATO_INVALIDO,
-                        DomainErrorCode.IMPORT_CAMPO_COMUNE_TIPO_DATO_INVALIDO),
-                result.getErrori().stream().map(error -> error.code()).toList());
+                        ImportFailure.CommonFieldNameMissing.class,
+                        ImportFailure.CommonFieldNameMissing.class,
+                        ImportFailure.CommonFieldTypeInvalid.class,
+                        ImportFailure.CommonFieldTypeInvalid.class,
+                        ImportFailure.CommonFieldTypeInvalid.class),
+                failureTypes(result));
     }
 
     @Test
@@ -219,8 +221,8 @@ class BatchImportServiceTest {
         ImportResult result = service.importa(file);
 
         assertAll(
-                () -> assertEquals(DomainErrorCode.IMPORT_CAMPO_COMUNE_ERRORE_DOMINIO, result.getErrori().get(0).code()),
-                () -> assertNotNull(result.getErrori().get(0).domainException())
+                () -> assertInstanceOf(ImportFailure.CommonFieldDomainError.class, result.getErrori().get(0).failure()),
+                () -> assertNotNull(((ImportFailure.CommonFieldDomainError) result.getErrori().get(0).failure()).failure())
         );
     }
 
@@ -250,15 +252,15 @@ class BatchImportServiceTest {
         ImportResult result = service.importa(file);
 
         assertEquals(List.of(
-                        DomainErrorCode.IMPORT_CATEGORIA_NOME_MANCANTE,
-                        DomainErrorCode.IMPORT_CATEGORIA_NOME_MANCANTE,
-                        DomainErrorCode.IMPORT_CAMPO_SPECIFICO_NOME_MANCANTE,
-                        DomainErrorCode.IMPORT_CAMPO_SPECIFICO_NOME_MANCANTE,
-                        DomainErrorCode.IMPORT_CAMPO_SPECIFICO_TIPO_DATO_INVALIDO,
-                        DomainErrorCode.IMPORT_CAMPO_SPECIFICO_TIPO_DATO_INVALIDO,
-                        DomainErrorCode.IMPORT_CAMPO_SPECIFICO_TIPO_DATO_INVALIDO,
-                        DomainErrorCode.IMPORT_CATEGORIA_DUPLICATA),
-                result.getErrori().stream().map(error -> error.code()).toList());
+                        ImportFailure.CategoryNameMissing.class,
+                        ImportFailure.CategoryNameMissing.class,
+                        ImportFailure.SpecificFieldNameMissing.class,
+                        ImportFailure.SpecificFieldNameMissing.class,
+                        ImportFailure.SpecificFieldTypeInvalid.class,
+                        ImportFailure.SpecificFieldTypeInvalid.class,
+                        ImportFailure.SpecificFieldTypeInvalid.class,
+                        ImportFailure.CategoryDuplicated.class),
+                failureTypes(result));
     }
 
     @Test
@@ -279,7 +281,7 @@ class BatchImportServiceTest {
 
         ImportResult result = service.importa(file);
 
-        assertEquals(DomainErrorCode.IMPORT_CATEGORIA_ERRORE_DOMINIO, result.getErrori().get(0).code());
+        assertInstanceOf(ImportFailure.CategoryDomainError.class, result.getErrori().get(0).failure());
     }
 
     @Test
@@ -300,7 +302,7 @@ class BatchImportServiceTest {
 
         ImportResult result = service.importa(file);
 
-        assertEquals(DomainErrorCode.IMPORT_CAMPO_SPECIFICO_ERRORE_DOMINIO, result.getErrori().get(0).code());
+        assertInstanceOf(ImportFailure.SpecificFieldDomainError.class, result.getErrori().get(0).failure());
     }
 
     @Test
@@ -310,14 +312,13 @@ class BatchImportServiceTest {
 
         ImportResult result = service.importa(file);
 
-        List<DomainErrorCode> codici = result.getErrori().stream().map(error -> error.code()).toList();
+        List<Class<?>> failures = failureTypes(result);
 
         assertAll(
-                () -> assertTrue(codici.contains(DomainErrorCode.IMPORT_PROPOSTA_CATEGORIA_MANCANTE)),
-                () -> assertTrue(codici.contains(DomainErrorCode.IMPORT_PROPOSTA_CATEGORIA_NON_TROVATA)),
-                () -> assertTrue(codici.contains(DomainErrorCode.IMPORT_PROPOSTA_CAMPO_TIPO_NON_VALIDO)),
-                () -> assertTrue(codici.contains(DomainErrorCode.IMPORT_PROPOSTA_VALIDAZIONE)),
-                () -> assertTrue(codici.contains(DomainErrorCode.IMPORT_PROPOSTA_DUPLICATA_FILE))
+                () -> assertTrue(failures.contains(ImportFailure.ProposalCategoryMissing.class)),
+                () -> assertTrue(failures.contains(ImportFailure.ProposalCategoryNotFound.class)),
+                () -> assertTrue(failures.contains(ImportFailure.ProposalValidation.class)),
+                () -> assertTrue(failures.contains(ImportFailure.ProposalDuplicatedInFile.class))
         );
     }
 
@@ -377,17 +378,19 @@ class BatchImportServiceTest {
         ImportResult result = service.importa(secondoFile);
 
         assertAll(
-                () -> assertEquals(DomainErrorCode.IMPORT_PROPOSTA_ERRORE_DOMINIO, result.getErrori().get(0).code()),
-                () -> assertNotNull(result.getErrori().get(0).domainException())
+                () -> assertInstanceOf(ImportFailure.ProposalDomainError.class, result.getErrori().get(0).failure()),
+                () -> assertNotNull(((ImportFailure.ProposalDomainError) result.getErrori().get(0).failure()).failure())
         );
     }
 
     @Test
-    void importa_conFileIlleggibileOLetturaJsonFallita_propagaEccezione() throws Exception {
+    void importa_conFileIlleggibileOLetturaJsonFallita_lanciaApplicationException() throws Exception {
         BatchImportService service = serviceConCampiBaseConfigurati();
         Path file = scriviJson("rotto.json", "{ json non valido");
 
-        assertThrows(IOException.class, () -> service.importa(file));
+        ApplicationException exception = assertThrows(ApplicationException.class, () -> service.importa(file));
+
+        assertInstanceOf(ImportFailure.InvalidJson.class, exception.failure());
     }
 
     private String jsonImportValido() {
@@ -439,6 +442,12 @@ class BatchImportServiceTest {
         Path file = tempDir.resolve(nomeFile);
         Files.writeString(file, json);
         return file;
+    }
+
+    private List<Class<?>> failureTypes(ImportResult result) {
+        List<Class<?>> types = new ArrayList<>();
+        result.getErrori().forEach(error -> types.add(error.failure().getClass()));
+        return types;
     }
 
     private String jsonProposteInvalidhe() {

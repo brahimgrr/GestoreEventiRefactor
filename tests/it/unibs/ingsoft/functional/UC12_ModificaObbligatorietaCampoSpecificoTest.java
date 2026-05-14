@@ -3,7 +3,9 @@ package it.unibs.ingsoft.functional;
 import it.unibs.ingsoft.application.catalogo.dto.CampoDefinitionRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CampoObbligatorietaRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CatalogoOperationResult;
+import it.unibs.ingsoft.domain.catalogo.CatalogFailure;
 import it.unibs.ingsoft.domain.catalogo.TipoDato;
+import it.unibs.ingsoft.domain.shared.error.DomainException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,9 +28,11 @@ class UC12_ModificaObbligatorietaCampoSpecificoTest {
     void scenarioAlternativo2a_nessunaCategoria_segnalaErrore() {
         FunctionalTestSupport.FunctionalGraph graph = FunctionalTestSupport.graph();
 
-        assertThrows(IllegalStateException.class,
+        DomainException exception = assertThrows(DomainException.class,
                 () -> graph.configuratoreService().setObbligatorietaCampoSpecifico(
                         "Sport", new CampoObbligatorietaRequest("Arbitro", true)));
+
+        assertInstanceOf(CatalogFailure.CategoryNotFound.class, exception.failure());
     }
 
     @Test

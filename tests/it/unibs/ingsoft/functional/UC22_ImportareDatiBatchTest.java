@@ -1,7 +1,8 @@
 package it.unibs.ingsoft.functional;
 
+import it.unibs.ingsoft.application.batch.ImportFailure;
 import it.unibs.ingsoft.application.batch.dto.ImportResult;
-import it.unibs.ingsoft.domain.error.DomainErrorCode;
+import it.unibs.ingsoft.application.error.ApplicationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -34,8 +35,10 @@ class UC22_ImportareDatiBatchTest {
     void scenarioAlternativo4a_fileAssente_segnalaErroreEAnnullaImportazione() {
         FunctionalTestSupport.FunctionalGraph graph = FunctionalTestSupport.graph();
 
-        assertThrows(IllegalStateException.class,
+        ApplicationException exception = assertThrows(ApplicationException.class,
                 () -> graph.configuratoreService().importa(tempDir.resolve("assente.json")));
+
+        assertInstanceOf(ImportFailure.FileNotFound.class, exception.failure());
     }
 
     @Test
@@ -57,8 +60,8 @@ class UC22_ImportareDatiBatchTest {
 
         assertAll(
                 () -> assertEquals(1, result.getCampiComuniImportati()),
-                () -> assertEquals(DomainErrorCode.IMPORT_CAMPO_COMUNE_TIPO_DATO_INVALIDO,
-                        result.getErrori().get(0).code())
+                () -> assertInstanceOf(ImportFailure.CommonFieldTypeInvalid.class,
+                        result.getErrori().get(0).failure())
         );
     }
 

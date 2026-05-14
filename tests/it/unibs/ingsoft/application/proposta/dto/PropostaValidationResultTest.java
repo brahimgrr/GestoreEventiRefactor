@@ -3,7 +3,7 @@ package it.unibs.ingsoft.application.proposta.dto;
 import it.unibs.ingsoft.domain.catalogo.Campo;
 import it.unibs.ingsoft.domain.catalogo.TipoCampo;
 import it.unibs.ingsoft.domain.catalogo.TipoDato;
-import it.unibs.ingsoft.domain.error.DomainErrorCode;
+import it.unibs.ingsoft.domain.proposta.ProposalValidationFailure;
 import it.unibs.ingsoft.domain.shared.error.ValidationError;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +15,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class PropostaValidationResultTest {
     @Test
     void costruttore_copiaListeERendeImmutabileIlRisultato() {
-        ValidationError error = ValidationError.error("Titolo", DomainErrorCode.CAMPO_OBBLIGATORIO_MANCANTE);
+        ValidationError error = new ValidationError(
+                "Titolo",
+                new ProposalValidationFailure.RequiredFieldMissing("Titolo"));
         Campo campo = new Campo("Titolo", TipoCampo.BASE, TipoDato.STRINGA, true);
         List<ValidationError> errori = new ArrayList<>(List.of(error));
         List<Campo> campi = new ArrayList<>(List.of(campo));
@@ -36,7 +38,9 @@ class PropostaValidationResultTest {
     @Test
     void costruttore_conListeNull_lanciaNullPointerException() {
         Campo campo = new Campo("Titolo", TipoCampo.BASE, TipoDato.STRINGA, true);
-        ValidationError error = ValidationError.error("Titolo", DomainErrorCode.CAMPO_OBBLIGATORIO_MANCANTE);
+        ValidationError error = new ValidationError(
+                "Titolo",
+                new ProposalValidationFailure.RequiredFieldMissing("Titolo"));
 
         assertAll(
                 () -> assertThrows(NullPointerException.class,

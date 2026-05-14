@@ -1,6 +1,8 @@
 package it.unibs.ingsoft.functional;
 
 import it.unibs.ingsoft.application.authentication.AuthenticationService;
+import it.unibs.ingsoft.application.authentication.AuthenticationFailure;
+import it.unibs.ingsoft.application.error.ApplicationException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,22 +38,26 @@ class UC02_Registrazione_Test {
         AuthenticationService service = FunctionalTestSupport.authenticationContext().service();
         service.registraNuovoConfiguratore("utente", "pass1234");
 
-        assertThrows(IllegalStateException.class,
+        ApplicationException exception = assertThrows(ApplicationException.class,
                 () -> service.registraNuovoFruitore("UTENTE", "pass5678"));
+
+        assertInstanceOf(AuthenticationFailure.UsernameAlreadyInUse.class, exception.failure());
     }
 
     @Test
     void scenarioAlternativo4b_usernameNonValido_segnalaErrore() {
         AuthenticationService service = FunctionalTestSupport.authenticationContext().service();
 
-        assertThrows(IllegalStateException.class, () -> service.validaNuovoUsername("ab"));
+        assertInstanceOf(AuthenticationFailure.UsernameTooShort.class,
+                service.validaNuovoUsername("ab").orElseThrow());
     }
 
     @Test
     void scenarioAlternativo7a_passwordNonValida_segnalaErrore() {
         AuthenticationService service = FunctionalTestSupport.authenticationContext().service();
 
-        assertThrows(IllegalStateException.class, () -> service.validaNuovaPassword("abc"));
+        assertInstanceOf(AuthenticationFailure.PasswordTooShort.class,
+                service.validaNuovaPassword("abc").orElseThrow());
     }
 
     /*

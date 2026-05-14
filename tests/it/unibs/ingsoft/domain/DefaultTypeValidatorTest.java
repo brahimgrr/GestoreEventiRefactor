@@ -1,6 +1,7 @@
 package it.unibs.ingsoft.domain;
 
 import it.unibs.ingsoft.domain.catalogo.TipoDato;
+import it.unibs.ingsoft.domain.shared.validation.TypeValidationFailure;
 import it.unibs.ingsoft.domain.shared.validation.DefaultTypeValidator;
 import org.junit.jupiter.api.Test;
 
@@ -75,10 +76,10 @@ class DefaultTypeValidatorTest {
     @Test
     void validate_conBooleaniMaiuscoliEAccento_restituisceNull() {
         assertAll(
-                () -> assertNull(DefaultTypeValidator.INSTANCE.validate(" TRUE ", TipoDato.BOOLEANO)),
-                () -> assertNull(DefaultTypeValidator.INSTANCE.validate("SÌ", TipoDato.BOOLEANO)),
-                () -> assertNull(DefaultTypeValidator.INSTANCE.validate("No", TipoDato.BOOLEANO)),
-                () -> assertNull(DefaultTypeValidator.INSTANCE.validate("FALSE", TipoDato.BOOLEANO))
+                () -> assertTrue(DefaultTypeValidator.INSTANCE.validate(" TRUE ", TipoDato.BOOLEANO).isEmpty()),
+                () -> assertTrue(DefaultTypeValidator.INSTANCE.validate("SÌ", TipoDato.BOOLEANO).isEmpty()),
+                () -> assertTrue(DefaultTypeValidator.INSTANCE.validate("No", TipoDato.BOOLEANO).isEmpty()),
+                () -> assertTrue(DefaultTypeValidator.INSTANCE.validate("FALSE", TipoDato.BOOLEANO).isEmpty())
         );
     }
 
@@ -90,16 +91,16 @@ class DefaultTypeValidatorTest {
     @Test
     void validate_conValoriInvalidi_restituisceCodiceErroreSpecifico() {
         assertAll(
-                () -> assertEquals(it.unibs.ingsoft.domain.error.DomainErrorCode.TIPO_INTERO_NON_VALIDO,
-                        DefaultTypeValidator.INSTANCE.validate("x", TipoDato.INTERO).code()),
-                () -> assertEquals(it.unibs.ingsoft.domain.error.DomainErrorCode.TIPO_DECIMALE_NON_VALIDO,
-                        DefaultTypeValidator.INSTANCE.validate("x", TipoDato.DECIMALE).code()),
-                () -> assertEquals(it.unibs.ingsoft.domain.error.DomainErrorCode.TIPO_DATA_NON_VALIDA,
-                        DefaultTypeValidator.INSTANCE.validate("x", TipoDato.DATA).code()),
-                () -> assertEquals(it.unibs.ingsoft.domain.error.DomainErrorCode.TIPO_ORA_NON_VALIDA,
-                        DefaultTypeValidator.INSTANCE.validate("x", TipoDato.ORA).code()),
-                () -> assertEquals(it.unibs.ingsoft.domain.error.DomainErrorCode.TIPO_BOOLEANO_NON_VALIDO,
-                        DefaultTypeValidator.INSTANCE.validate("x", TipoDato.BOOLEANO).code())
+                () -> assertInstanceOf(TypeValidationFailure.InvalidInteger.class,
+                        DefaultTypeValidator.INSTANCE.validate("x", TipoDato.INTERO).orElseThrow().failure()),
+                () -> assertInstanceOf(TypeValidationFailure.InvalidDecimal.class,
+                        DefaultTypeValidator.INSTANCE.validate("x", TipoDato.DECIMALE).orElseThrow().failure()),
+                () -> assertInstanceOf(TypeValidationFailure.InvalidDate.class,
+                        DefaultTypeValidator.INSTANCE.validate("x", TipoDato.DATA).orElseThrow().failure()),
+                () -> assertInstanceOf(TypeValidationFailure.InvalidTime.class,
+                        DefaultTypeValidator.INSTANCE.validate("x", TipoDato.ORA).orElseThrow().failure()),
+                () -> assertInstanceOf(TypeValidationFailure.InvalidBoolean.class,
+                        DefaultTypeValidator.INSTANCE.validate("x", TipoDato.BOOLEANO).orElseThrow().failure())
         );
     }
 }

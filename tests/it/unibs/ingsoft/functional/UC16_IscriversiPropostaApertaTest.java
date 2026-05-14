@@ -2,7 +2,9 @@ package it.unibs.ingsoft.functional;
 
 import it.unibs.ingsoft.domain.utente.Fruitore;
 import it.unibs.ingsoft.domain.proposta.Proposta;
+import it.unibs.ingsoft.domain.proposta.ProposalFailure;
 import it.unibs.ingsoft.domain.proposta.StatoProposta;
+import it.unibs.ingsoft.domain.shared.error.DomainException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,7 +36,10 @@ class UC16_IscriversiPropostaApertaTest {
         Fruitore mario = new Fruitore("mario");
         graph.fruitoreService().iscrivi(proposta, mario);
 
-        assertThrows(IllegalStateException.class, () -> graph.fruitoreService().iscrivi(proposta, mario));
+        DomainException exception = assertThrows(DomainException.class,
+                () -> graph.fruitoreService().iscrivi(proposta, mario));
+
+        assertInstanceOf(ProposalFailure.AlreadySubscribed.class, exception.failure());
     }
 
     @Test
@@ -49,8 +54,11 @@ class UC16_IscriversiPropostaApertaTest {
 
         assertAll(
                 () -> assertEquals(StatoProposta.CONFERMATA, proposta.getStato()),
-                () -> assertThrows(IllegalStateException.class,
-                        () -> graph.fruitoreService().iscrivi(proposta, luigi))
+                () -> {
+                    DomainException exception = assertThrows(DomainException.class,
+                            () -> graph.fruitoreService().iscrivi(proposta, luigi));
+                    assertInstanceOf(ProposalFailure.NotOpenForSubscription.class, exception.failure());
+                }
         );
     }
 }

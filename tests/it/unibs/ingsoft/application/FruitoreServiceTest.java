@@ -22,33 +22,14 @@ class FruitoreServiceTest {
     @Test
     void costruttore_conDipendenzeNull_lanciaNullPointerException() {
         ApplicationIntegrationSupport.ServiceGraph graph = ApplicationIntegrationSupport.serviceGraph();
+        it.unibs.ingsoft.application.notifica.NotificationService notificationService =
+                new it.unibs.ingsoft.application.notifica.NotificationService(graph.spazioPersonaleRepository());
 
         assertAll(
                 () -> assertThrows(NullPointerException.class,
-                        () -> new FruitoreService(null,
-                                new it.unibs.ingsoft.application.bacheca.IscrizioneService(
-                                        graph.bachecaRepository(),
-                                        new it.unibs.ingsoft.application.proposta.PropostaLifecycleService(
-                                                graph.bachecaRepository(),
-                                                new it.unibs.ingsoft.application.notifica.NotificationService(
-                                                        graph.spazioPersonaleRepository()),
-                                                it.unibs.ingsoft.domain.notifica.NotificaFactory.getInstance())),
-                                new it.unibs.ingsoft.application.notifica.NotificationService(
-                                        graph.spazioPersonaleRepository()))),
+                        () -> new FruitoreService(null, notificationService)),
                 () -> assertThrows(NullPointerException.class,
-                        () -> new FruitoreService(graph.propostaService(), null,
-                                new it.unibs.ingsoft.application.notifica.NotificationService(
-                                        graph.spazioPersonaleRepository()))),
-                () -> assertThrows(NullPointerException.class,
-                        () -> new FruitoreService(graph.propostaService(),
-                                new it.unibs.ingsoft.application.bacheca.IscrizioneService(
-                                        graph.bachecaRepository(),
-                                        new it.unibs.ingsoft.application.proposta.PropostaLifecycleService(
-                                                graph.bachecaRepository(),
-                                                new it.unibs.ingsoft.application.notifica.NotificationService(
-                                                        graph.spazioPersonaleRepository()),
-                                                it.unibs.ingsoft.domain.notifica.NotificaFactory.getInstance())),
-                                null))
+                        () -> new FruitoreService(graph.propostaService(), null))
         );
     }
 

@@ -1,7 +1,6 @@
 package it.unibs.ingsoft.application.catalogo.dto;
 
-import it.unibs.ingsoft.domain.catalogo.TipoDato;
-import it.unibs.ingsoft.domain.error.DomainErrorCode;
+import it.unibs.ingsoft.domain.catalogo.CatalogFailure;
 import it.unibs.ingsoft.domain.shared.error.DomainException;
 import org.junit.jupiter.api.Test;
 
@@ -21,12 +20,12 @@ class CampoObbligatorietaRequestTest {
     @Test
     void costruttore_conNomeInvalido_lanciaEccezione() {
         assertAll(
-                () -> assertEquals(DomainErrorCode.CAMPO_NOME_NON_VALIDO,
+                () -> assertInstanceOf(CatalogFailure.FieldNameInvalid.class,
                         assertThrows(DomainException.class,
-                                () -> new CampoObbligatorietaRequest(" ", false)).code()),
-                () -> assertEquals(DomainErrorCode.CAMPO_NOME_NON_VALIDO,
+                                () -> new CampoObbligatorietaRequest(" ", false)).failure()),
+                () -> assertInstanceOf(CatalogFailure.FieldNameInvalid.class,
                         assertThrows(DomainException.class,
-                                () -> new CampoObbligatorietaRequest(null, false)).code())
+                                () -> new CampoObbligatorietaRequest(null, false)).failure())
         );
     }
 }

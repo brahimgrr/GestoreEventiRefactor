@@ -74,6 +74,7 @@ public final class FunctionalTestSupport {
                                               List<String> aderenti) {
         Categoria categoria = new Categoria("Sport");
         return Proposta.fromJson(
+                null,
                 campiBase(),
                 List.of(),
                 categoria,
