@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import it.unibs.ingsoft.persistence.error.PersistenceException;
+import it.unibs.ingsoft.persistence.error.PersistenceFailure;
 
 import java.io.IOException;
 import java.nio.file.AtomicMoveNotSupportedException;

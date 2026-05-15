@@ -1,11 +1,11 @@
 package it.unibs.ingsoft.application.proposta;
 
 import it.unibs.ingsoft.application.proposta.dto.PropostaValidationResult;
-import it.unibs.ingsoft.domain.catalogo.Campo;
-import it.unibs.ingsoft.domain.proposta.Proposta;
-import it.unibs.ingsoft.domain.proposta.PropostaValidationOutcome;
-import it.unibs.ingsoft.domain.proposta.PropostaValidator;
-import it.unibs.ingsoft.domain.shared.error.ValidationError;
+import it.unibs.ingsoft.domain.model.catalogo.Campo;
+import it.unibs.ingsoft.domain.model.proposta.Proposta;
+import it.unibs.ingsoft.domain.model.proposta.PropostaValidationOutcome;
+import it.unibs.ingsoft.domain.model.proposta.PropostaValidator;
+import it.unibs.ingsoft.domain.error.ValidationError;
 
 import java.util.List;
 import java.util.Map;

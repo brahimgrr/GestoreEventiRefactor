@@ -1,8 +1,8 @@
 package it.unibs.ingsoft.application.catalogo.dto;
 
-import it.unibs.ingsoft.domain.catalogo.CatalogFailure;
-import it.unibs.ingsoft.domain.catalogo.TipoDato;
-import it.unibs.ingsoft.domain.shared.error.DomainException;
+import it.unibs.ingsoft.domain.model.catalogo.CatalogFailure;
+import it.unibs.ingsoft.domain.model.catalogo.TipoDato;
+import it.unibs.ingsoft.domain.error.DomainException;
 
 /**
  * Dati necessari per creare un campo comune o specifico.

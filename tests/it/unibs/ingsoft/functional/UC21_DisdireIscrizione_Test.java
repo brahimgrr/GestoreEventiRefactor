@@ -1,11 +1,11 @@
 package it.unibs.ingsoft.functional;
 
-import it.unibs.ingsoft.domain.shared.AppConstants;
-import it.unibs.ingsoft.domain.utente.Fruitore;
-import it.unibs.ingsoft.domain.proposta.Proposta;
-import it.unibs.ingsoft.domain.proposta.ProposalFailure;
-import it.unibs.ingsoft.domain.proposta.StatoProposta;
-import it.unibs.ingsoft.domain.shared.error.DomainException;
+import it.unibs.ingsoft.domain.AppConstants;
+import it.unibs.ingsoft.domain.model.utente.Fruitore;
+import it.unibs.ingsoft.domain.model.proposta.Proposta;
+import it.unibs.ingsoft.domain.model.proposta.ProposalFailure;
+import it.unibs.ingsoft.domain.model.proposta.StatoProposta;
+import it.unibs.ingsoft.domain.error.DomainException;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -59,7 +59,7 @@ class UC21_DisdireIscrizione_Test {
                 LocalDate.now(AppConstants.clock).minusDays(1),
                 LocalDate.now(AppConstants.clock).plusDays(3),
                 List.of("mario"));
-        graph.bachecaRepository().load().addProposta(proposta);
+        graph.bachecaRepository().save(proposta);
 
         Fruitore mario = new Fruitore("mario");
 

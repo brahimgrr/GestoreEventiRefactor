@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.application.authentication;
 
-import it.unibs.ingsoft.domain.shared.error.ApplicationFailure;
+import it.unibs.ingsoft.application.error.ApplicationFailure;
 
 public sealed interface AuthenticationFailure extends ApplicationFailure
         permits AuthenticationFailure.UsernameInvalid,

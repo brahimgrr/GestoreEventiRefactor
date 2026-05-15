@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.presentation.view.cli.common.error;
 
-import it.unibs.ingsoft.domain.catalogo.CatalogFailure;
+import it.unibs.ingsoft.domain.model.catalogo.CatalogFailure;
 
 public final class CatalogFailureCliMessages {
     private CatalogFailureCliMessages() {

@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.presentation.view.interfaces.fruitore.bacheca;
 
-import it.unibs.ingsoft.domain.proposta.Proposta;
+import it.unibs.ingsoft.domain.model.proposta.Proposta;
 
 import java.util.List;
 import java.util.Map;

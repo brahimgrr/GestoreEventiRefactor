@@ -1,9 +1,9 @@
 package it.unibs.ingsoft.presentation.view.cli.configuratore.proposta;
 
 import it.unibs.ingsoft.application.proposta.dto.PropostaValidationResult;
-import it.unibs.ingsoft.domain.catalogo.Campo;
-import it.unibs.ingsoft.domain.catalogo.Categoria;
-import it.unibs.ingsoft.domain.proposta.Proposta;
+import it.unibs.ingsoft.domain.model.catalogo.Campo;
+import it.unibs.ingsoft.domain.model.catalogo.Categoria;
+import it.unibs.ingsoft.domain.model.proposta.Proposta;
 import it.unibs.ingsoft.presentation.view.cli.common.error.FailureMessageRegistry;
 import it.unibs.ingsoft.presentation.view.cli.common.proposta.PropostaRenderer;
 import it.unibs.ingsoft.presentation.view.cli.configuratore.categoria.CategoriaRenderer;

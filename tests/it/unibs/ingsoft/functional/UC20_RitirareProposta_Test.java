@@ -1,11 +1,11 @@
 package it.unibs.ingsoft.functional;
 
-import it.unibs.ingsoft.domain.shared.AppConstants;
-import it.unibs.ingsoft.domain.proposta.Proposta;
-import it.unibs.ingsoft.domain.proposta.ProposalFailure;
-import it.unibs.ingsoft.domain.utente.Fruitore;
-import it.unibs.ingsoft.domain.proposta.StatoProposta;
-import it.unibs.ingsoft.domain.shared.error.DomainException;
+import it.unibs.ingsoft.domain.AppConstants;
+import it.unibs.ingsoft.domain.model.proposta.Proposta;
+import it.unibs.ingsoft.domain.model.proposta.ProposalFailure;
+import it.unibs.ingsoft.domain.model.utente.Fruitore;
+import it.unibs.ingsoft.domain.model.proposta.StatoProposta;
+import it.unibs.ingsoft.domain.error.DomainException;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -58,7 +58,7 @@ class UC20_RitirareProposta_Test {
                 LocalDate.now(AppConstants.clock).minusDays(2),
                 LocalDate.now(AppConstants.clock),
                 List.of());
-        graph.bachecaRepository().load().addProposta(proposta);
+        graph.bachecaRepository().save(proposta);
 
         DomainException exception = assertThrows(DomainException.class,
                 () -> graph.configuratoreService().ritiraProposta(proposta));

@@ -1,10 +1,10 @@
 package it.unibs.ingsoft.domain.factory;
 
-import it.unibs.ingsoft.domain.catalogo.Categoria;
-import it.unibs.ingsoft.domain.notifica.Notifica;
-import it.unibs.ingsoft.domain.notifica.NotificaFactory;
-import it.unibs.ingsoft.domain.notifica.NotificaType;
-import it.unibs.ingsoft.domain.proposta.Proposta;
+import it.unibs.ingsoft.domain.model.catalogo.Categoria;
+import it.unibs.ingsoft.domain.model.notifica.Notifica;
+import it.unibs.ingsoft.domain.model.notifica.NotificaFactory;
+import it.unibs.ingsoft.domain.model.notifica.NotificaType;
+import it.unibs.ingsoft.domain.model.proposta.Proposta;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

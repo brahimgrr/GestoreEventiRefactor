@@ -2,9 +2,8 @@ package it.unibs.ingsoft.domain.error;
 
 import it.unibs.ingsoft.application.batch.ImportFailure;
 import it.unibs.ingsoft.application.batch.dto.ImportError;
-import it.unibs.ingsoft.domain.catalogo.CatalogFailure;
-import it.unibs.ingsoft.domain.proposta.ProposalValidationFailure;
-import it.unibs.ingsoft.domain.shared.error.ValidationError;
+import it.unibs.ingsoft.domain.model.catalogo.CatalogFailure;
+import it.unibs.ingsoft.domain.model.proposta.ProposalValidationFailure;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

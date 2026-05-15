@@ -2,8 +2,8 @@ package it.unibs.ingsoft.presentation.view.interfaces.configuratore.campo;
 
 import it.unibs.ingsoft.application.catalogo.dto.CampoDefinitionRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CampoObbligatorietaRequest;
-import it.unibs.ingsoft.domain.catalogo.Campo;
-import it.unibs.ingsoft.domain.catalogo.Categoria;
+import it.unibs.ingsoft.domain.model.catalogo.Campo;
+import it.unibs.ingsoft.domain.model.catalogo.Categoria;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.presentation.view.cli.fruitore.menu;
 
-import it.unibs.ingsoft.domain.utente.Fruitore;
+import it.unibs.ingsoft.domain.model.utente.Fruitore;
 import it.unibs.ingsoft.presentation.view.interfaces.common.IAppView;
 import it.unibs.ingsoft.presentation.view.interfaces.fruitore.menu.IFruitoreView;
 

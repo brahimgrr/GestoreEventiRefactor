@@ -1,28 +1,41 @@
 package it.unibs.ingsoft.persistence.file;
 
-import it.unibs.ingsoft.persistence.dto.CatalogoDTO;
-import it.unibs.ingsoft.persistence.interfaces.ICatalogoRepository;
+import it.unibs.ingsoft.domain.repository.CatalogoRepository;
+import it.unibs.ingsoft.domain.model.catalogo.Catalogo;
+import it.unibs.ingsoft.persistence.file.document.CatalogoDocument;
 
 import java.nio.file.Path;
+import java.util.function.Function;
 
-/**
- * Implementazione JSON su file di {@link ICatalogoRepository}.
- */
 public final class FileCatalogoRepository
-        extends AbstractFileRepository<CatalogoDTO>
-        implements ICatalogoRepository {
+        implements CatalogoRepository {
+    private final Store store;
 
     public FileCatalogoRepository(Path path) {
-        super(path, CatalogoDTO.class, CatalogoDTO::new);
+        this.store = new Store(path);
     }
 
     @Override
-    public CatalogoDTO load() {
-        return super.load();
+    public Catalogo load() {
+        return store.load().toDomain();
     }
 
     @Override
-    public void save(CatalogoDTO catalogo) {
-        super.save(catalogo);
+    public void save(Catalogo catalogo) {
+        store.save(CatalogoDocument.fromDomain(catalogo));
+    }
+
+    @Override
+    public <R> R update(Function<Catalogo, R> operation) {
+        Catalogo catalogo = load();
+        R result = operation.apply(catalogo);
+        save(catalogo);
+        return result;
+    }
+
+    private static final class Store extends AbstractFileRepository<CatalogoDocument> {
+        private Store(Path path) {
+            super(path, CatalogoDocument.class, CatalogoDocument::empty);
+        }
     }
 }

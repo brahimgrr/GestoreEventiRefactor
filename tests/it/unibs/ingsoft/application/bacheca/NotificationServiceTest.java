@@ -2,7 +2,7 @@ package it.unibs.ingsoft.application.bacheca;
 
 import it.unibs.ingsoft.application.ApplicationIntegrationSupport;
 import it.unibs.ingsoft.application.notifica.NotificationService;
-import it.unibs.ingsoft.domain.notifica.Notifica;
+import it.unibs.ingsoft.domain.model.notifica.Notifica;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

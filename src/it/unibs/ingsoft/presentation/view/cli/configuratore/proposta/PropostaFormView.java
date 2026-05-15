@@ -1,10 +1,10 @@
 package it.unibs.ingsoft.presentation.view.cli.configuratore.proposta;
 
-import it.unibs.ingsoft.domain.catalogo.Campo;
-import it.unibs.ingsoft.domain.shared.validation.DefaultTypeValidator;
-import it.unibs.ingsoft.domain.proposta.Proposta;
-import it.unibs.ingsoft.domain.shared.validation.TypeValidator;
-import it.unibs.ingsoft.domain.shared.error.ValidationError;
+import it.unibs.ingsoft.domain.model.catalogo.Campo;
+import it.unibs.ingsoft.domain.validation.DefaultTypeValidator;
+import it.unibs.ingsoft.domain.model.proposta.Proposta;
+import it.unibs.ingsoft.domain.validation.TypeValidator;
+import it.unibs.ingsoft.domain.error.ValidationError;
 import it.unibs.ingsoft.presentation.view.cli.common.error.FailureMessageRegistry;
 import it.unibs.ingsoft.presentation.view.interfaces.common.IAppView;
 import it.unibs.ingsoft.presentation.view.interfaces.common.OperationCancelledException;

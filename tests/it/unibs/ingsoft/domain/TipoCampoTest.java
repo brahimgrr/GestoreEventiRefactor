@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.domain;
 
-import it.unibs.ingsoft.domain.catalogo.TipoCampo;
+import it.unibs.ingsoft.domain.model.catalogo.TipoCampo;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;

@@ -1,4 +1,4 @@
-package it.unibs.ingsoft.domain.shared;
+package it.unibs.ingsoft.domain;
 
 import org.junit.jupiter.api.Test;
 

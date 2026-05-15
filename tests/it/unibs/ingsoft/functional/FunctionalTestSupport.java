@@ -8,15 +8,16 @@ import it.unibs.ingsoft.application.batch.BatchImportService;
 import it.unibs.ingsoft.application.catalogo.CatalogoService;
 import it.unibs.ingsoft.application.catalogo.dto.CampoBaseExtraRequest;
 import it.unibs.ingsoft.application.proposta.PropostaService;
-import it.unibs.ingsoft.domain.shared.AppConstants;
-import it.unibs.ingsoft.domain.catalogo.Campo;
-import it.unibs.ingsoft.domain.catalogo.Categoria;
-import it.unibs.ingsoft.domain.notifica.Notifica;
-import it.unibs.ingsoft.domain.notifica.NotificaType;
-import it.unibs.ingsoft.domain.proposta.Proposta;
-import it.unibs.ingsoft.domain.proposta.PropostaStateChange;
-import it.unibs.ingsoft.domain.proposta.StatoProposta;
-import it.unibs.ingsoft.domain.catalogo.TipoDato;
+import it.unibs.ingsoft.domain.model.catalogo.CampoFactory;
+import it.unibs.ingsoft.domain.AppConstants;
+import it.unibs.ingsoft.domain.model.catalogo.Campo;
+import it.unibs.ingsoft.domain.model.catalogo.Categoria;
+import it.unibs.ingsoft.domain.model.notifica.Notifica;
+import it.unibs.ingsoft.domain.model.notifica.NotificaType;
+import it.unibs.ingsoft.domain.model.proposta.Proposta;
+import it.unibs.ingsoft.domain.model.proposta.PropostaStateChange;
+import it.unibs.ingsoft.domain.model.proposta.StatoProposta;
+import it.unibs.ingsoft.domain.model.catalogo.TipoDato;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -73,7 +74,7 @@ public final class FunctionalTestSupport {
                                               LocalDate termineIscrizione, LocalDate dataEvento,
                                               List<String> aderenti) {
         Categoria categoria = new Categoria("Sport");
-        return Proposta.fromJson(
+        return Proposta.rehydrate(
                 null,
                 campiBase(),
                 List.of(),
@@ -108,7 +109,7 @@ public final class FunctionalTestSupport {
     }
 
     public static List<Campo> campiBase() {
-        return it.unibs.ingsoft.domain.catalogo.CampoFactory.getInstance().creaCampiBase();
+        return CampoFactory.getInstance().creaCampiBase();
     }
 
     public static Notifica notifica(String id) {

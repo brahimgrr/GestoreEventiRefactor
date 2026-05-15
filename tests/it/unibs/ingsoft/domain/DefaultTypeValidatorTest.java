@@ -1,8 +1,8 @@
 package it.unibs.ingsoft.domain;
 
-import it.unibs.ingsoft.domain.catalogo.TipoDato;
-import it.unibs.ingsoft.domain.shared.validation.TypeValidationFailure;
-import it.unibs.ingsoft.domain.shared.validation.DefaultTypeValidator;
+import it.unibs.ingsoft.domain.model.catalogo.TipoDato;
+import it.unibs.ingsoft.domain.validation.TypeValidationFailure;
+import it.unibs.ingsoft.domain.validation.DefaultTypeValidator;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.presentation.view.cli.fruitore.notifica;
 
-import it.unibs.ingsoft.domain.notifica.Notifica;
+import it.unibs.ingsoft.domain.model.notifica.Notifica;
 
 import java.util.Map;
 

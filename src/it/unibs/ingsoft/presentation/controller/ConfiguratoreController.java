@@ -2,10 +2,10 @@ package it.unibs.ingsoft.presentation.controller;
 
 import it.unibs.ingsoft.application.ConfiguratoreService;
 import it.unibs.ingsoft.application.catalogo.dto.CatalogoOperationResult;
-import it.unibs.ingsoft.domain.catalogo.Campo;
-import it.unibs.ingsoft.domain.catalogo.Categoria;
-import it.unibs.ingsoft.domain.proposta.Proposta;
-import it.unibs.ingsoft.domain.shared.error.FailureException;
+import it.unibs.ingsoft.domain.model.catalogo.Campo;
+import it.unibs.ingsoft.domain.model.catalogo.Categoria;
+import it.unibs.ingsoft.domain.model.proposta.Proposta;
+import it.unibs.ingsoft.shared.error.FailureException;
 import it.unibs.ingsoft.presentation.view.interfaces.configuratore.IConfiguratoreViewFacade;
 
 import java.util.Map;

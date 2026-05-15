@@ -1,9 +1,9 @@
 package it.unibs.ingsoft.application.catalogo;
 
 import it.unibs.ingsoft.application.catalogo.dto.CatalogoOperationResult;
-import it.unibs.ingsoft.persistence.dto.CatalogoDTO;
-import it.unibs.ingsoft.domain.catalogo.Categoria;
-import it.unibs.ingsoft.persistence.interfaces.ICatalogoRepository;
+import it.unibs.ingsoft.domain.repository.CatalogoRepository;
+import it.unibs.ingsoft.domain.model.catalogo.Catalogo;
+import it.unibs.ingsoft.domain.model.catalogo.Categoria;
 
 import java.util.List;
 import java.util.Objects;
@@ -12,25 +12,25 @@ import java.util.Objects;
  * Gestisce le categorie del catalogo.
  */
 public final class CategoriaCatalogoService {
-    private final ICatalogoRepository repo;
+    private final CatalogoRepository repo;
 
-    public CategoriaCatalogoService(ICatalogoRepository repo) {
+    public CategoriaCatalogoService(CatalogoRepository repo) {
         this.repo = Objects.requireNonNull(repo);
     }
 
-    private CatalogoDTO catalogo() {
+    private Catalogo catalogo() {
         return repo.load();
     }
 
     public Categoria createCategoria(String nome) {
-        CatalogoDTO catalogo = repo.load();
+        Catalogo catalogo = repo.load();
         Categoria categoria = catalogo.addCategoria(nome);
         repo.save(catalogo);
         return categoria;
     }
 
     public boolean removeCategoria(String nome) {
-        CatalogoDTO catalogo = repo.load();
+        Catalogo catalogo = repo.load();
         boolean changed = catalogo.removeCategoria(nome);
         if (changed) repo.save(catalogo);
         return changed;

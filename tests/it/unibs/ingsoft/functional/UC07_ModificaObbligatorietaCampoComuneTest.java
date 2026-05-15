@@ -3,7 +3,7 @@ package it.unibs.ingsoft.functional;
 import it.unibs.ingsoft.application.catalogo.dto.CampoDefinitionRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CampoObbligatorietaRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CatalogoOperationResult;
-import it.unibs.ingsoft.domain.catalogo.TipoDato;
+import it.unibs.ingsoft.domain.model.catalogo.TipoDato;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

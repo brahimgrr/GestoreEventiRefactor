@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.domain.factory;
 
-import it.unibs.ingsoft.domain.shared.error.DomainException;
-import it.unibs.ingsoft.domain.catalogo.*;
+import it.unibs.ingsoft.domain.model.catalogo.*;
+import it.unibs.ingsoft.domain.error.DomainException;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

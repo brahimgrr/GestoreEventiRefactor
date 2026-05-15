@@ -1,7 +1,6 @@
 package it.unibs.ingsoft.domain.error;
 
-import it.unibs.ingsoft.domain.proposta.ProposalValidationFailure;
-import it.unibs.ingsoft.domain.shared.error.ValidationError;
+import it.unibs.ingsoft.domain.model.proposta.ProposalValidationFailure;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;

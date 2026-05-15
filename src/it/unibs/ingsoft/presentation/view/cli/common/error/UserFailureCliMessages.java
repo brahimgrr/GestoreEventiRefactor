@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.presentation.view.cli.common.error;
 
-import it.unibs.ingsoft.domain.utente.UserFailure;
+import it.unibs.ingsoft.domain.model.utente.UserFailure;
 
 public final class UserFailureCliMessages {
     private UserFailureCliMessages() {

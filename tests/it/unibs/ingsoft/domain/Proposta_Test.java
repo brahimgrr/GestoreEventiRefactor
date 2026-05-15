@@ -1,18 +1,17 @@
 package it.unibs.ingsoft.domain;
 
-import it.unibs.ingsoft.domain.catalogo.Campo;
-import it.unibs.ingsoft.domain.catalogo.Categoria;
-import it.unibs.ingsoft.domain.catalogo.TipoCampo;
-import it.unibs.ingsoft.domain.catalogo.TipoDato;
-import it.unibs.ingsoft.domain.proposta.ProposalFailure;
-import it.unibs.ingsoft.domain.proposta.ProposalValidationFailure;
-import it.unibs.ingsoft.domain.proposta.Proposta;
-import it.unibs.ingsoft.domain.proposta.PropostaStateChange;
-import it.unibs.ingsoft.domain.proposta.PropostaValidator;
-import it.unibs.ingsoft.domain.proposta.StatoProposta;
-import it.unibs.ingsoft.domain.shared.AppConstants;
-import it.unibs.ingsoft.domain.shared.error.DomainException;
-import it.unibs.ingsoft.domain.shared.error.ValidationError;
+import it.unibs.ingsoft.domain.model.catalogo.Campo;
+import it.unibs.ingsoft.domain.model.catalogo.Categoria;
+import it.unibs.ingsoft.domain.model.catalogo.TipoCampo;
+import it.unibs.ingsoft.domain.model.catalogo.TipoDato;
+import it.unibs.ingsoft.domain.model.proposta.ProposalFailure;
+import it.unibs.ingsoft.domain.model.proposta.ProposalValidationFailure;
+import it.unibs.ingsoft.domain.model.proposta.Proposta;
+import it.unibs.ingsoft.domain.model.proposta.PropostaStateChange;
+import it.unibs.ingsoft.domain.model.proposta.PropostaValidator;
+import it.unibs.ingsoft.domain.model.proposta.StatoProposta;
+import it.unibs.ingsoft.domain.error.DomainException;
+import it.unibs.ingsoft.domain.error.ValidationError;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -35,10 +34,10 @@ class Proposta_Test {
     }
 
     @Test
-    void fromJson_conCampiCompleti_ripristinaStatoEValori() {
+    void rehydrate_conCampiCompleti_ripristinaStatoEValori() {
         LocalDate oggi = LocalDate.now(AppConstants.clock);
 
-        Proposta proposta = Proposta.fromJson(
+        Proposta proposta = Proposta.rehydrate(
                 "id-1",
                 campiBaseMinimiCompleti(),
                 List.of(),

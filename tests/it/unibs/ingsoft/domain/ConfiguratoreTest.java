@@ -1,8 +1,8 @@
 package it.unibs.ingsoft.domain;
 
-import it.unibs.ingsoft.domain.shared.error.DomainException;
-import it.unibs.ingsoft.domain.utente.Configuratore;
-import it.unibs.ingsoft.domain.utente.Fruitore;
+import it.unibs.ingsoft.domain.error.DomainException;
+import it.unibs.ingsoft.domain.model.utente.Configuratore;
+import it.unibs.ingsoft.domain.model.utente.Fruitore;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

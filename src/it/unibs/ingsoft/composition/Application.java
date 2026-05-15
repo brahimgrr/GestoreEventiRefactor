@@ -14,15 +14,15 @@ import it.unibs.ingsoft.application.proposta.PropostaPublicationService;
 import it.unibs.ingsoft.application.proposta.PropostaCommandLock;
 import it.unibs.ingsoft.application.proposta.PropostaQueryService;
 import it.unibs.ingsoft.application.proposta.PropostaValidationService;
-import it.unibs.ingsoft.domain.shared.AppConstants;
-import it.unibs.ingsoft.domain.proposta.PropostaIdentityPolicy;
-import it.unibs.ingsoft.domain.catalogo.CampoFactory;
-import it.unibs.ingsoft.domain.notifica.NotificaFactory;
-import it.unibs.ingsoft.domain.utente.UtenteFactory;
-import it.unibs.ingsoft.persistence.interfaces.IBachecaRepository;
-import it.unibs.ingsoft.persistence.interfaces.ICatalogoRepository;
-import it.unibs.ingsoft.persistence.interfaces.ICredenzialiRepository;
-import it.unibs.ingsoft.persistence.interfaces.ISpazioPersonaleRepository;
+import it.unibs.ingsoft.domain.AppConstants;
+import it.unibs.ingsoft.domain.model.proposta.PropostaIdentityPolicy;
+import it.unibs.ingsoft.domain.model.catalogo.CampoFactory;
+import it.unibs.ingsoft.domain.model.notifica.NotificaFactory;
+import it.unibs.ingsoft.domain.model.utente.UtenteFactory;
+import it.unibs.ingsoft.domain.repository.CatalogoRepository;
+import it.unibs.ingsoft.domain.repository.NotificationRepository;
+import it.unibs.ingsoft.domain.repository.PropostaRepository;
+import it.unibs.ingsoft.domain.repository.UserRepository;
 import it.unibs.ingsoft.persistence.file.FileRepositoryFactory;
 import it.unibs.ingsoft.presentation.controller.ConfiguratoreController;
 import it.unibs.ingsoft.presentation.controller.FruitoreController;
@@ -85,14 +85,14 @@ public final class Application {
         NotificaFactory notificaFactory = NotificaFactory.getInstance();
         UtenteFactory utenteFactory = UtenteFactory.getInstance();
 
-        ICatalogoRepository catalogoRepo = FileRepositoryFactory
+        CatalogoRepository catalogoRepo = FileRepositoryFactory
                 .getInstance().createCatalogoRepository();
-        ICredenzialiRepository credenzialiRepo = FileRepositoryFactory
-                .getInstance().createCredenzialiRepository();
-        IBachecaRepository propostaRepo = FileRepositoryFactory
-                .getInstance().createBachecaRepository();
-        ISpazioPersonaleRepository spazioRepo = FileRepositoryFactory
-                .getInstance().createSpazioPersonaleRepository();
+        UserRepository userRepo = FileRepositoryFactory
+                .getInstance().createUserRepository();
+        PropostaRepository propostaRepo = FileRepositoryFactory
+                .getInstance().createPropostaRepository();
+        NotificationRepository notificationRepo = FileRepositoryFactory
+                .getInstance().createNotificationRepository();
 
         CampoCatalogoService campoCatalogoService = new CampoCatalogoService(catalogoRepo, campoFactory);
         CategoriaCatalogoService categoriaCatalogoService = new CategoriaCatalogoService(catalogoRepo);
@@ -100,7 +100,7 @@ public final class Application {
 
         PropostaValidationService propostaValidationService = new PropostaValidationService();
         PropostaQueryService propostaQueryService = new PropostaQueryService(propostaRepo);
-        NotificationService notifService = new NotificationService(spazioRepo);
+        NotificationService notifService = new NotificationService(notificationRepo);
         PropostaCommandLock propostaCommandLock = new PropostaCommandLock();
         PropostaPublicationService propostaPublicationService =
                 new PropostaPublicationService(
@@ -115,7 +115,7 @@ public final class Application {
                 propostaLifecycleService,
                 propostaQueryService);
 
-        AuthenticationService authService = new AuthenticationService(credenzialiRepo, utenteFactory);
+        AuthenticationService authService = new AuthenticationService(userRepo, utenteFactory);
 
         BatchImportService batchImportService = new BatchImportService(catalogoService, propostaService);
         ConfiguratoreService configuratoreService = new ConfiguratoreService(

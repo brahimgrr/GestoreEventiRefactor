@@ -1,12 +1,13 @@
 package it.unibs.ingsoft.application.authentication;
 
 import it.unibs.ingsoft.application.error.ApplicationException;
-import it.unibs.ingsoft.domain.shared.error.Failure;
-import it.unibs.ingsoft.domain.utente.Configuratore;
-import it.unibs.ingsoft.persistence.dto.CredenzialiDTO;
-import it.unibs.ingsoft.domain.utente.Fruitore;
-import it.unibs.ingsoft.domain.utente.UtenteFactory;
-import it.unibs.ingsoft.persistence.interfaces.ICredenzialiRepository;
+import it.unibs.ingsoft.domain.repository.UserRepository;
+import it.unibs.ingsoft.shared.error.Failure;
+import it.unibs.ingsoft.domain.model.utente.Configuratore;
+import it.unibs.ingsoft.domain.model.utente.Fruitore;
+import it.unibs.ingsoft.domain.model.utente.UserAccount;
+import it.unibs.ingsoft.domain.model.utente.UserRole;
+import it.unibs.ingsoft.domain.model.utente.UtenteFactory;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -25,19 +26,25 @@ public final class AuthenticationService {
     private static final int MIN_USERNAME_LENGTH = 3;
     private static final int MIN_PASSWORD_LENGTH = 4;
 
-    private final ICredenzialiRepository repo;
+    private final UserRepository repo;
     private final UtenteFactory utenteFactory;
+    private final PasswordHasher passwordHasher;
 
     /**
      * @pre repo   != null
      */
-    public AuthenticationService(ICredenzialiRepository repo) {
+    public AuthenticationService(UserRepository repo) {
         this(repo, UtenteFactory.getInstance());
     }
 
-    public AuthenticationService(ICredenzialiRepository repo, UtenteFactory utenteFactory) {
+    public AuthenticationService(UserRepository repo, UtenteFactory utenteFactory) {
+        this(repo, utenteFactory, PasswordHasher.pbkdf2());
+    }
+
+    public AuthenticationService(UserRepository repo, UtenteFactory utenteFactory, PasswordHasher passwordHasher) {
         this.repo = Objects.requireNonNull(repo);
         this.utenteFactory = Objects.requireNonNull(utenteFactory);
+        this.passwordHasher = Objects.requireNonNull(passwordHasher);
     }
 
     private static void validaCredenziali(String username, String password) {
@@ -51,10 +58,6 @@ public final class AuthenticationService {
             throw new ApplicationException(new AuthenticationFailure.UsernameTooShort(MIN_USERNAME_LENGTH));
         if (password.length() < MIN_PASSWORD_LENGTH)
             throw new ApplicationException(new AuthenticationFailure.PasswordTooShort(MIN_PASSWORD_LENGTH));
-    }
-
-    private CredenzialiDTO credenziali() {
-        return repo.load();
     }
 
     public boolean isConfiguratorePredefinito(Configuratore configuratore) {
@@ -92,13 +95,16 @@ public final class AuthenticationService {
 
         // Le credenziali predefinite condivise rimangono disponibili per i flussi di primo accesso.
         if (USERNAME_PREDEFINITO.equals(username) &&
-                PASSWORD_PREDEFINITA.equals(password))
+                PASSWORD_PREDEFINITA.equals(password) &&
+                !repo.existsByUsername(USERNAME_PREDEFINITO))
             return Optional.of(utenteFactory.creaConfiguratore(USERNAME_PREDEFINITO));
 
-        String key = username.trim().toLowerCase();
-        String stored = credenziali().getConfiguratori().get(key);
-        if (stored != null && stored.equals(password))
+        Optional<UserAccount> account = repo.findByUsername(username);
+        if (account.isPresent() &&
+                account.get().role() == UserRole.CONFIGURATORE &&
+                passwordHasher.matches(password, account.get().passwordHash())) {
             return Optional.of(utenteFactory.creaConfiguratore(username));
+        }
 
         return Optional.empty();
     }
@@ -112,10 +118,12 @@ public final class AuthenticationService {
         if (username == null || password == null)
             return Optional.empty();
 
-        String key = username.trim().toLowerCase();
-        String stored = credenziali().getFruitori().get(key);
-        if (stored != null && stored.equals(password))
+        Optional<UserAccount> account = repo.findByUsername(username);
+        if (account.isPresent() &&
+                account.get().role() == UserRole.FRUITORE &&
+                passwordHasher.matches(password, account.get().passwordHash())) {
             return Optional.of(utenteFactory.creaFruitore(username));
+        }
 
         return Optional.empty();
     }
@@ -126,12 +134,10 @@ public final class AuthenticationService {
      * @throws IllegalArgumentException se le credenziali sono riservate, duplicate o troppo corte
      */
     public Configuratore registraNuovoConfiguratore(String username, String password) {
-        CredenzialiDTO credenziali = repo.load();
-        validaNuovoAccount(username, password, credenziali);
+        validaNuovoAccount(username, password);
 
         String normalized = username.trim();
-        credenziali.addConfiguratore(normalized, password);
-        repo.save(credenziali);
+        repo.save(UserAccount.create(normalized, UserRole.CONFIGURATORE, passwordHasher.hash(password)));
         return utenteFactory.creaConfiguratore(normalized);
     }
 
@@ -142,42 +148,27 @@ public final class AuthenticationService {
      * @post esisteUsername(username)
      */
     public Fruitore registraNuovoFruitore(String username, String password) {
-        CredenzialiDTO credenziali = repo.load();
-        validaNuovoAccount(username, password, credenziali);
+        validaNuovoAccount(username, password);
 
         String normalized = username.trim();
-        credenziali.addFruitore(normalized, password);
-        repo.save(credenziali);
+        repo.save(UserAccount.create(normalized, UserRole.FRUITORE, passwordHasher.hash(password)));
         return utenteFactory.creaFruitore(normalized);
     }
 
-    /*
     private void validaNuovoAccount(String username, String password) {
-        validaNuovoAccount(username, password, repo.load());
-    }
-     */
-
-    private void validaNuovoAccount(String username, String password, CredenzialiDTO credenziali) {
         validaCredenziali(username, password);
 
         if (USERNAME_PREDEFINITO.equalsIgnoreCase(username))
             throw new ApplicationException(new AuthenticationFailure.UsernameReserved(username));
 
-        if (esisteUsername(username, credenziali))
+        if (esisteUsername(username))
             throw new ApplicationException(new AuthenticationFailure.UsernameAlreadyInUse(username));
     }
 
     /**
-     * Restituisce true se un account con questo username è già registrato (in qualsiasi ruolo).
+     * Restituisce true se un account con questo username e' gia' registrato (in qualsiasi ruolo).
      */
     public boolean esisteUsername(String username) {
-        return esisteUsername(username, repo.load());
-    }
-
-    private boolean esisteUsername(String username, CredenzialiDTO credenziali) {
-        if (username == null) return false;
-        String u = username.trim().toLowerCase();
-        return credenziali.getConfiguratori().containsKey(u) ||
-                credenziali.getFruitori().containsKey(u);
+        return username != null && repo.existsByUsername(username);
     }
 }

@@ -1,10 +1,10 @@
 package it.unibs.ingsoft.domain;
 
-import it.unibs.ingsoft.domain.shared.error.DomainException;
-import it.unibs.ingsoft.domain.catalogo.Campo;
-import it.unibs.ingsoft.domain.catalogo.Categoria;
-import it.unibs.ingsoft.domain.catalogo.TipoCampo;
-import it.unibs.ingsoft.domain.catalogo.TipoDato;
+import it.unibs.ingsoft.domain.error.DomainException;
+import it.unibs.ingsoft.domain.model.catalogo.Campo;
+import it.unibs.ingsoft.domain.model.catalogo.Categoria;
+import it.unibs.ingsoft.domain.model.catalogo.TipoCampo;
+import it.unibs.ingsoft.domain.model.catalogo.TipoDato;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -44,10 +44,10 @@ class CategoriaTest {
     }
 
     @Test
-    void fromJson_conCampiSpecificiValorizzati_popolaCategoria() {
+    void rehydrate_conCampiSpecificiValorizzati_popolaCategoria() {
         Campo arbitro = campoSpecifico("Arbitro");
 
-        Categoria categoria = Categoria.fromJson("Sport", List.of(arbitro));
+        Categoria categoria = Categoria.rehydrate("Sport", List.of(arbitro));
 
         assertAll(
                 () -> assertEquals("Sport", categoria.getNome()),
@@ -56,8 +56,8 @@ class CategoriaTest {
     }
 
     @Test
-    void fromJson_conCampiSpecificiNull_creaCategoriaSenzaCampi() {
-        Categoria categoria = Categoria.fromJson("Sport", null);
+    void rehydrate_conCampiSpecificiNull_creaCategoriaSenzaCampi() {
+        Categoria categoria = Categoria.rehydrate("Sport", null);
 
         assertAll(
                 () -> assertEquals("Sport", categoria.getNome()),

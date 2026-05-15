@@ -1,15 +1,15 @@
 package it.unibs.ingsoft.persistence.file;
 
-import it.unibs.ingsoft.persistence.interfaces.IBachecaRepository;
-import it.unibs.ingsoft.persistence.interfaces.ICatalogoRepository;
-import it.unibs.ingsoft.persistence.interfaces.ICredenzialiRepository;
-import it.unibs.ingsoft.persistence.interfaces.ISpazioPersonaleRepository;
+import it.unibs.ingsoft.domain.repository.CatalogoRepository;
+import it.unibs.ingsoft.domain.repository.NotificationRepository;
+import it.unibs.ingsoft.domain.repository.PropostaRepository;
+import it.unibs.ingsoft.domain.repository.UserRepository;
 
 import java.nio.file.Path;
 import java.util.Objects;
 
 public final class FileRepositoryFactory {
-    private static final Path DEFAULT_DATA_DIR = Path.of("data/v5");
+    private static final Path DEFAULT_DATA_DIR = Path.of("data/v6");
 
     private static FileRepositoryFactory instance;
     private final Path dataDir;
@@ -29,19 +29,19 @@ public final class FileRepositoryFactory {
         return instance;
     }
 
-    public ICatalogoRepository createCatalogoRepository() {
+    public CatalogoRepository createCatalogoRepository() {
         return new FileCatalogoRepository(dataDir.resolve("catalogo.json"));
     }
 
-    public ICredenzialiRepository createCredenzialiRepository() {
-        return new FileCredenzialiRepository(dataDir.resolve("utenti.json"));
+    public UserRepository createUserRepository() {
+        return new FileUserRepository(dataDir.resolve("users.json"));
     }
 
-    public IBachecaRepository createBachecaRepository() {
-        return new FileBachecaRepository(dataDir.resolve("proposte.json"));
+    public PropostaRepository createPropostaRepository() {
+        return new FilePropostaRepository(dataDir.resolve("proposte.json"));
     }
 
-    public ISpazioPersonaleRepository createSpazioPersonaleRepository() {
-        return new FileSpazioPersonaleRepository(dataDir.resolve("notifiche.json"));
+    public NotificationRepository createNotificationRepository() {
+        return new FileNotificationRepository(dataDir.resolve("notifiche.json"));
     }
 }

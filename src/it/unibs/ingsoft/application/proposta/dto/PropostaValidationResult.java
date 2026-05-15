@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.application.proposta.dto;
 
-import it.unibs.ingsoft.domain.catalogo.Campo;
-import it.unibs.ingsoft.domain.shared.error.ValidationError;
+import it.unibs.ingsoft.domain.model.catalogo.Campo;
+import it.unibs.ingsoft.domain.error.ValidationError;
 
 import java.util.List;
 

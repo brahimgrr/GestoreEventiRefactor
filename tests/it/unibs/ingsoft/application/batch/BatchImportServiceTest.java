@@ -5,7 +5,8 @@ import it.unibs.ingsoft.application.batch.dto.ImportResult;
 import it.unibs.ingsoft.application.catalogo.CatalogoService;
 import it.unibs.ingsoft.application.error.ApplicationException;
 import it.unibs.ingsoft.application.proposta.PropostaService;
-import it.unibs.ingsoft.domain.shared.AppConstants;
+import it.unibs.ingsoft.domain.model.catalogo.TipoDato;
+import it.unibs.ingsoft.domain.AppConstants;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -206,7 +207,7 @@ class BatchImportServiceTest {
     void importa_conCampoComuneGiaPresente_registraErroreDominio() throws Exception {
         ApplicationIntegrationSupport.ServiceGraph graph = ApplicationIntegrationSupport.serviceGraph();
         graph.catalogoService().configuraCampiBase(List.of());
-        graph.catalogoService().addCampoComune("Note", it.unibs.ingsoft.domain.catalogo.TipoDato.STRINGA, false);
+        graph.catalogoService().addCampoComune("Note", TipoDato.STRINGA, false);
         BatchImportService service = new BatchImportService(graph.catalogoService(), graph.propostaService());
         Path file = scriviJson("campo-comune-dominio.json", """
                 {
@@ -327,9 +328,9 @@ class BatchImportServiceTest {
         ApplicationIntegrationSupport.ServiceGraph graph = ApplicationIntegrationSupport.serviceGraph();
         CatalogoService catalogoService = graph.catalogoService();
         catalogoService.configuraCampiBase(List.of());
-        catalogoService.addCampoComune("Note", it.unibs.ingsoft.domain.catalogo.TipoDato.STRINGA, false);
+        catalogoService.addCampoComune("Note", TipoDato.STRINGA, false);
         catalogoService.createCategoria("Sport");
-        catalogoService.addCampoSpecifico("Sport", "Arbitro", it.unibs.ingsoft.domain.catalogo.TipoDato.BOOLEANO, false);
+        catalogoService.addCampoSpecifico("Sport", "Arbitro", TipoDato.BOOLEANO, false);
         BatchImportService service = new BatchImportService(catalogoService, graph.propostaService());
         LocalDate oggi = LocalDate.now(AppConstants.clock);
         Path file = scriviJson("proposta-opzionali.json", """

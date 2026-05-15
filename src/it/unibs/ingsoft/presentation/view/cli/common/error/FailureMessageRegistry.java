@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.presentation.view.cli.common.error;
 
-import it.unibs.ingsoft.domain.shared.error.Failure;
+import it.unibs.ingsoft.shared.error.Failure;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

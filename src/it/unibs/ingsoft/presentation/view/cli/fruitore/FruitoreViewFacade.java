@@ -1,9 +1,9 @@
 package it.unibs.ingsoft.presentation.view.cli.fruitore;
 
-import it.unibs.ingsoft.domain.notifica.Notifica;
-import it.unibs.ingsoft.domain.proposta.Proposta;
-import it.unibs.ingsoft.domain.shared.error.Failure;
-import it.unibs.ingsoft.domain.utente.Fruitore;
+import it.unibs.ingsoft.domain.model.notifica.Notifica;
+import it.unibs.ingsoft.domain.model.proposta.Proposta;
+import it.unibs.ingsoft.shared.error.Failure;
+import it.unibs.ingsoft.domain.model.utente.Fruitore;
 import it.unibs.ingsoft.presentation.view.interfaces.fruitore.IFruitoreViewFacade;
 import it.unibs.ingsoft.presentation.view.interfaces.fruitore.bacheca.IBachecaView;
 import it.unibs.ingsoft.presentation.view.interfaces.fruitore.menu.IFruitoreView;

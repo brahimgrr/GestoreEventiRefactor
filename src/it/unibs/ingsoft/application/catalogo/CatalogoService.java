@@ -4,11 +4,11 @@ import it.unibs.ingsoft.application.catalogo.dto.CampoBaseExtraRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CampoDefinitionRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CampoObbligatorietaRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CatalogoOperationResult;
-import it.unibs.ingsoft.domain.catalogo.Campo;
-import it.unibs.ingsoft.domain.catalogo.Categoria;
-import it.unibs.ingsoft.domain.catalogo.TipoDato;
-import it.unibs.ingsoft.domain.catalogo.CampoFactory;
-import it.unibs.ingsoft.persistence.interfaces.ICatalogoRepository;
+import it.unibs.ingsoft.domain.model.catalogo.Campo;
+import it.unibs.ingsoft.domain.model.catalogo.Categoria;
+import it.unibs.ingsoft.domain.model.catalogo.TipoDato;
+import it.unibs.ingsoft.domain.model.catalogo.CampoFactory;
+import it.unibs.ingsoft.domain.repository.CatalogoRepository;
 
 import java.util.List;
 import java.util.Objects;
@@ -20,11 +20,11 @@ public final class CatalogoService {
     private final CampoCatalogoService campoCatalogoService;
     private final CategoriaCatalogoService categoriaCatalogoService;
 
-    public CatalogoService(ICatalogoRepository repo) {
+    public CatalogoService(CatalogoRepository repo) {
         this(repo, CampoFactory.getInstance());
     }
 
-    public CatalogoService(ICatalogoRepository repo, CampoFactory campoFactory) {
+    public CatalogoService(CatalogoRepository repo, CampoFactory campoFactory) {
         this(
                 new CampoCatalogoService(repo, campoFactory),
                 new CategoriaCatalogoService(repo)

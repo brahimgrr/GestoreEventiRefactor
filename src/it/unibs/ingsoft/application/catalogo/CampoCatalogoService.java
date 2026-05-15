@@ -4,13 +4,13 @@ import it.unibs.ingsoft.application.catalogo.dto.CampoBaseExtraRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CampoDefinitionRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CampoObbligatorietaRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CatalogoOperationResult;
-import it.unibs.ingsoft.domain.catalogo.Campo;
-import it.unibs.ingsoft.persistence.dto.CatalogoDTO;
-import it.unibs.ingsoft.domain.catalogo.Categoria;
-import it.unibs.ingsoft.domain.catalogo.TipoDato;
-import it.unibs.ingsoft.domain.catalogo.CampoFactory;
-import it.unibs.ingsoft.domain.shared.error.FailureException;
-import it.unibs.ingsoft.persistence.interfaces.ICatalogoRepository;
+import it.unibs.ingsoft.domain.repository.CatalogoRepository;
+import it.unibs.ingsoft.domain.model.catalogo.Catalogo;
+import it.unibs.ingsoft.domain.model.catalogo.Campo;
+import it.unibs.ingsoft.domain.model.catalogo.Categoria;
+import it.unibs.ingsoft.domain.model.catalogo.TipoDato;
+import it.unibs.ingsoft.domain.model.catalogo.CampoFactory;
+import it.unibs.ingsoft.shared.error.FailureException;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,15 +21,15 @@ import java.util.stream.Collectors;
  * Gestisce la configurazione dei campi del catalogo.
  */
 public final class CampoCatalogoService {
-    private final ICatalogoRepository repo;
+    private final CatalogoRepository repo;
     private final CampoFactory campoFactory;
 
-    public CampoCatalogoService(ICatalogoRepository repo, CampoFactory campoFactory) {
+    public CampoCatalogoService(CatalogoRepository repo, CampoFactory campoFactory) {
         this.repo = Objects.requireNonNull(repo);
         this.campoFactory = Objects.requireNonNull(campoFactory);
     }
 
-    private CatalogoDTO catalogo() {
+    private Catalogo catalogo() {
         return repo.load();
     }
 
@@ -53,7 +53,7 @@ public final class CampoCatalogoService {
         }
 
         try {
-            CatalogoDTO catalogo = repo.load();
+            Catalogo catalogo = repo.load();
             addCampiBaseConExtra(
                     catalogo,
                     richieste.stream().map(CampoBaseExtraRequest::nome).collect(Collectors.toList()),
@@ -61,7 +61,7 @@ public final class CampoCatalogoService {
             );
             repo.save(catalogo);
         } catch (FailureException e) {
-            CatalogoDTO fallback = repo.load();
+            Catalogo fallback = repo.load();
             if (!fallback.isCampiBaseFissati()) {
                 initiateCampiBase(fallback);
                 repo.save(fallback);
@@ -71,12 +71,12 @@ public final class CampoCatalogoService {
     }
 
     public void initiateCampiBase() {
-        CatalogoDTO catalogo = repo.load();
+        Catalogo catalogo = repo.load();
         initiateCampiBase(catalogo);
         repo.save(catalogo);
     }
 
-    private void initiateCampiBase(CatalogoDTO catalogo) {
+    private void initiateCampiBase(Catalogo catalogo) {
         catalogo.fissareCampiBase(
                 campoFactory.creaCampiBase(),
                 null
@@ -84,12 +84,12 @@ public final class CampoCatalogoService {
     }
 
     public void addCampiBaseConExtra(List<String> nomi, List<TipoDato> tipi) {
-        CatalogoDTO catalogo = repo.load();
+        Catalogo catalogo = repo.load();
         addCampiBaseConExtra(catalogo, nomi, tipi);
         repo.save(catalogo);
     }
 
-    private void addCampiBaseConExtra(CatalogoDTO catalogo, List<String> nomi, List<TipoDato> tipi) {
+    private void addCampiBaseConExtra(Catalogo catalogo, List<String> nomi, List<TipoDato> tipi) {
         List<Campo> extra = campoFactory.creaCampiBaseExtra(nomi, tipi);
 
         catalogo.fissareCampiBase(
@@ -103,7 +103,7 @@ public final class CampoCatalogoService {
     }
 
     public void addCampoComune(String nome, TipoDato tipo, boolean obbligatorio) {
-        CatalogoDTO catalogo = repo.load();
+        Catalogo catalogo = repo.load();
         catalogo.addCampoComune(
                 campoFactory.creaCampoComune(nome, tipo, obbligatorio)
         );
@@ -116,7 +116,7 @@ public final class CampoCatalogoService {
     }
 
     public boolean removeCampoComune(String nome) {
-        CatalogoDTO catalogo = repo.load();
+        Catalogo catalogo = repo.load();
         boolean changed = catalogo.removeCampoComune(nome);
         if (changed) repo.save(catalogo);
         return changed;
@@ -132,7 +132,7 @@ public final class CampoCatalogoService {
     MAI USATO
      */
     public boolean setObbligatorietaCampoComune(String nome, boolean obbligatorio) {
-        CatalogoDTO catalogo = repo.load();
+        Catalogo catalogo = repo.load();
         boolean changed = catalogo.updateCampoComune(nome, obbligatorio);
         if (changed) repo.save(catalogo);
         return changed;
@@ -140,7 +140,7 @@ public final class CampoCatalogoService {
 
     public CatalogoOperationResult setObbligatorietaCampoComune(CampoObbligatorietaRequest request) {
         Objects.requireNonNull(request);
-        CatalogoDTO catalogo = repo.load();
+        Catalogo catalogo = repo.load();
         for (Campo campo : catalogo.getCampiComuni()) {
             if (campo.getNome().equalsIgnoreCase(request.nomeCampo()) &&
                     campo.isObbligatorio() == request.obbligatorio()) {
@@ -161,7 +161,7 @@ public final class CampoCatalogoService {
     }
 
     public void addCampoSpecifico(String categoria, String nome, TipoDato tipo, boolean obbligatorio) {
-        CatalogoDTO catalogo = repo.load();
+        Catalogo catalogo = repo.load();
         catalogo.addCampoSpecifico(
                 categoria,
                 campoFactory.creaCampoSpecifico(nome, tipo, obbligatorio)
@@ -175,7 +175,7 @@ public final class CampoCatalogoService {
     }
 
     public boolean removeCampoSpecifico(String categoria, String nome) {
-        CatalogoDTO catalogo = repo.load();
+        Catalogo catalogo = repo.load();
         boolean changed = catalogo.removeCampoSpecifico(categoria, nome);
         if (changed) repo.save(catalogo);
         return changed;
@@ -191,7 +191,7 @@ public final class CampoCatalogoService {
     MAI USATO
      */
     public boolean setObbligatorietaCampoSpecifico(String categoria, String nome, boolean obbligatorio) {
-        CatalogoDTO catalogo = repo.load();
+        Catalogo catalogo = repo.load();
         boolean changed = catalogo.updateCampoSpecifico(categoria, nome, obbligatorio);
         if (changed) repo.save(catalogo);
         return changed;
@@ -199,7 +199,7 @@ public final class CampoCatalogoService {
 
     public CatalogoOperationResult setObbligatorietaCampoSpecifico(String categoria, CampoObbligatorietaRequest request) {
         Objects.requireNonNull(request);
-        CatalogoDTO catalogo = repo.load();
+        Catalogo catalogo = repo.load();
         Categoria cat = catalogo.getCategoriaOrThrow(categoria);
         for (Campo campo : cat.getCampiSpecifici()) {
             if (campo.getNome().equalsIgnoreCase(request.nomeCampo()) &&

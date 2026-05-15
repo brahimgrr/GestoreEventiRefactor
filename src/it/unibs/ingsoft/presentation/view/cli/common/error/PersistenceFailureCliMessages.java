@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.presentation.view.cli.common.error;
 
-import it.unibs.ingsoft.persistence.file.PersistenceFailure;
+import it.unibs.ingsoft.persistence.error.PersistenceFailure;
 
 public final class PersistenceFailureCliMessages {
     private PersistenceFailureCliMessages() {

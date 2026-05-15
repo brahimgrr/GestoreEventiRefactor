@@ -1,8 +1,8 @@
 package it.unibs.ingsoft.application.batch;
 
-import it.unibs.ingsoft.domain.shared.error.ApplicationFailure;
-import it.unibs.ingsoft.domain.shared.error.DomainFailure;
-import it.unibs.ingsoft.domain.shared.error.ValidationError;
+import it.unibs.ingsoft.application.error.ApplicationFailure;
+import it.unibs.ingsoft.domain.error.DomainFailure;
+import it.unibs.ingsoft.domain.error.ValidationError;
 
 import java.nio.file.Path;
 

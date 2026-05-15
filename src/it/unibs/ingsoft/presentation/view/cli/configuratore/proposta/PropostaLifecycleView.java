@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.presentation.view.cli.configuratore.proposta;
 
-import it.unibs.ingsoft.domain.proposta.Proposta;
+import it.unibs.ingsoft.domain.model.proposta.Proposta;
 import it.unibs.ingsoft.presentation.view.cli.common.proposta.PropostaRenderer;
 import it.unibs.ingsoft.presentation.view.interfaces.common.IAppView;
 import it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta.IPropostaLifecycleView;

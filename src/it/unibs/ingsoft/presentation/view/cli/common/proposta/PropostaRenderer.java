@@ -1,8 +1,8 @@
 package it.unibs.ingsoft.presentation.view.cli.common.proposta;
 
-import it.unibs.ingsoft.domain.shared.AppConstants;
-import it.unibs.ingsoft.domain.proposta.Proposta;
-import it.unibs.ingsoft.domain.proposta.PropostaStateChange;
+import it.unibs.ingsoft.domain.AppConstants;
+import it.unibs.ingsoft.domain.model.proposta.Proposta;
+import it.unibs.ingsoft.domain.model.proposta.PropostaStateChange;
 import it.unibs.ingsoft.presentation.view.interfaces.common.IAppView;
 
 import java.util.List;

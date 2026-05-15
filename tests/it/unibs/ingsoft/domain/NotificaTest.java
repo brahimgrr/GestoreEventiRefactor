@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.domain;
 
-import it.unibs.ingsoft.domain.notifica.Notifica;
-import it.unibs.ingsoft.domain.notifica.NotificaType;
+import it.unibs.ingsoft.domain.model.notifica.Notifica;
+import it.unibs.ingsoft.domain.model.notifica.NotificaType;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;

@@ -1,8 +1,8 @@
 package it.unibs.ingsoft.functional;
 
-import it.unibs.ingsoft.domain.notifica.Notifica;
-import it.unibs.ingsoft.domain.proposta.Proposta;
-import it.unibs.ingsoft.domain.utente.Fruitore;
+import it.unibs.ingsoft.domain.model.notifica.Notifica;
+import it.unibs.ingsoft.domain.model.proposta.Proposta;
+import it.unibs.ingsoft.domain.model.utente.Fruitore;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,7 +28,7 @@ class UC15_VisualizzareBachecaTest {
         FunctionalTestSupport.FunctionalGraph graph = FunctionalTestSupport.graph();
 
         Notifica notifica = new Notifica("messaggio");
-        graph.spazioPersonaleRepository().load().getSpazioDi("mario").addNotifica(notifica);
+        graph.spazioPersonaleRepository().add("mario", notifica);
 
         Fruitore mario = new Fruitore("mario");
 

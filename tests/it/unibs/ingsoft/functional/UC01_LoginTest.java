@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.functional;
 
 import it.unibs.ingsoft.application.authentication.AuthenticationService;
-import it.unibs.ingsoft.domain.utente.Configuratore;
+import it.unibs.ingsoft.domain.model.utente.Configuratore;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

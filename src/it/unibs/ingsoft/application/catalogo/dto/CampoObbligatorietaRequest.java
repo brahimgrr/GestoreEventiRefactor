@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.application.catalogo.dto;
 
-import it.unibs.ingsoft.domain.catalogo.CatalogFailure;
-import it.unibs.ingsoft.domain.shared.error.DomainException;
+import it.unibs.ingsoft.domain.model.catalogo.CatalogFailure;
+import it.unibs.ingsoft.domain.error.DomainException;
 
 /**
  * Dati necessari per cambiare l'obbligatorieta di un campo.

@@ -1,8 +1,7 @@
 package it.unibs.ingsoft.presentation.view.cli.fruitore.notifica;
 
-import it.unibs.ingsoft.domain.utente.Fruitore;
-import it.unibs.ingsoft.domain.notifica.Notifica;
-import it.unibs.ingsoft.presentation.view.cli.fruitore.notifica.NotificaMessageMapper;
+import it.unibs.ingsoft.domain.model.utente.Fruitore;
+import it.unibs.ingsoft.domain.model.notifica.Notifica;
 import it.unibs.ingsoft.presentation.view.interfaces.common.IAppView;
 import it.unibs.ingsoft.presentation.view.interfaces.fruitore.notifica.ISpazioPersonaleView;
 import it.unibs.ingsoft.presentation.view.interfaces.common.OperationCancelledException;

@@ -2,11 +2,10 @@ package it.unibs.ingsoft.application.authentication;
 
 import it.unibs.ingsoft.application.ApplicationIntegrationSupport;
 import it.unibs.ingsoft.application.error.ApplicationException;
-import it.unibs.ingsoft.domain.shared.error.Failure;
-import it.unibs.ingsoft.domain.utente.Configuratore;
-import it.unibs.ingsoft.domain.utente.Fruitore;
-import it.unibs.ingsoft.domain.utente.UtenteFactory;
-import it.unibs.ingsoft.persistence.dto.CredenzialiDTO;
+import it.unibs.ingsoft.shared.error.Failure;
+import it.unibs.ingsoft.domain.model.utente.Configuratore;
+import it.unibs.ingsoft.domain.model.utente.Fruitore;
+import it.unibs.ingsoft.domain.model.utente.UtenteFactory;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -95,9 +94,8 @@ class AuthenticationServiceTest {
         ApplicationIntegrationSupport.InMemoryCredenzialiRepository repository =
                 new ApplicationIntegrationSupport.InMemoryCredenzialiRepository();
         AuthenticationService service = new AuthenticationService(repository);
-        CredenzialiDTO credenziali = repository.load();
-        credenziali.addConfiguratore("AdminUno", "pass1234");
-        credenziali.addFruitore("Mario", "pass5678");
+        service.registraNuovoConfiguratore("AdminUno", "pass1234");
+        service.registraNuovoFruitore("Mario", "pass5678");
 
         Optional<Configuratore> configuratore = service.login("  ADMINUNO  ", "pass1234");
         Optional<Fruitore> fruitore = service.loginFruitore("  MARIO  ", "pass5678");
@@ -178,8 +176,8 @@ class AuthenticationServiceTest {
         assertAll(
                 () -> assertEquals("AdminUno", configuratore.getUsername()),
                 () -> assertEquals("Mario", fruitore.getUsername()),
-                () -> assertTrue(repository.load().getConfiguratori().containsKey("adminuno")),
-                () -> assertTrue(repository.load().getFruitori().containsKey("mario")),
+                () -> assertTrue(repository.existsByUsername("adminuno")),
+                () -> assertTrue(repository.existsByUsername("mario")),
                 () -> assertFalse(service.esisteUsername(null)),
                 () -> assertFalse(service.isConfiguratorePredefinito(null)),
                 () -> assertFalse(service.isConfiguratorePredefinito(UtenteFactory.getInstance().creaConfiguratore("admin")))

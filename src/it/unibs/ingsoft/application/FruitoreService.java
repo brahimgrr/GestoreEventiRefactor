@@ -2,9 +2,9 @@ package it.unibs.ingsoft.application;
 
 import it.unibs.ingsoft.application.notifica.NotificationService;
 import it.unibs.ingsoft.application.proposta.PropostaService;
-import it.unibs.ingsoft.domain.utente.Fruitore;
-import it.unibs.ingsoft.domain.notifica.Notifica;
-import it.unibs.ingsoft.domain.proposta.Proposta;
+import it.unibs.ingsoft.domain.model.utente.Fruitore;
+import it.unibs.ingsoft.domain.model.notifica.Notifica;
+import it.unibs.ingsoft.domain.model.proposta.Proposta;
 
 import java.util.List;
 import java.util.Map;

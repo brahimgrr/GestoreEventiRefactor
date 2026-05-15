@@ -3,12 +3,13 @@ package it.unibs.ingsoft.application.proposta;
 import it.unibs.ingsoft.application.ApplicationIntegrationSupport;
 import it.unibs.ingsoft.application.catalogo.CatalogoService;
 import it.unibs.ingsoft.application.proposta.dto.PropostaValidationResult;
-import it.unibs.ingsoft.domain.catalogo.Categoria;
-import it.unibs.ingsoft.domain.proposta.ProposalFailure;
-import it.unibs.ingsoft.domain.proposta.Proposta;
-import it.unibs.ingsoft.domain.proposta.StatoProposta;
-import it.unibs.ingsoft.domain.shared.AppConstants;
-import it.unibs.ingsoft.domain.shared.error.DomainException;
+import it.unibs.ingsoft.domain.model.catalogo.Categoria;
+import it.unibs.ingsoft.domain.model.notifica.NotificaFactory;
+import it.unibs.ingsoft.domain.model.proposta.ProposalFailure;
+import it.unibs.ingsoft.domain.model.proposta.Proposta;
+import it.unibs.ingsoft.domain.model.proposta.StatoProposta;
+import it.unibs.ingsoft.domain.AppConstants;
+import it.unibs.ingsoft.domain.error.DomainException;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -53,7 +54,7 @@ class PropostaServiceTest {
                 bachecaRepository,
                 new it.unibs.ingsoft.application.notifica.NotificationService(
                         new ApplicationIntegrationSupport.InMemorySpazioPersonaleRepository()),
-                it.unibs.ingsoft.domain.notifica.NotificaFactory.getInstance());
+                NotificaFactory.getInstance());
         PropostaQueryService queryService = new PropostaQueryService(bachecaRepository);
 
         assertAll(
@@ -62,9 +63,9 @@ class PropostaServiceTest {
                 () -> assertThrows(NullPointerException.class, () -> new PropostaLifecycleService(null,
                         new it.unibs.ingsoft.application.notifica.NotificationService(
                                 new ApplicationIntegrationSupport.InMemorySpazioPersonaleRepository()),
-                        it.unibs.ingsoft.domain.notifica.NotificaFactory.getInstance())),
+                        NotificaFactory.getInstance())),
                 () -> assertThrows(NullPointerException.class, () -> new PropostaLifecycleService(bachecaRepository, null,
-                        it.unibs.ingsoft.domain.notifica.NotificaFactory.getInstance())),
+                        NotificaFactory.getInstance())),
                 () -> assertThrows(NullPointerException.class, () -> new PropostaLifecycleService(bachecaRepository,
                         new it.unibs.ingsoft.application.notifica.NotificationService(
                                 new ApplicationIntegrationSupport.InMemorySpazioPersonaleRepository()),

@@ -5,10 +5,11 @@ import it.unibs.ingsoft.application.catalogo.dto.CampoBaseExtraRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CampoDefinitionRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CampoObbligatorietaRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CatalogoOperationResult;
-import it.unibs.ingsoft.domain.catalogo.Categoria;
-import it.unibs.ingsoft.domain.catalogo.TipoDato;
-import it.unibs.ingsoft.domain.shared.error.DomainException;
-import it.unibs.ingsoft.domain.catalogo.CampoFactory;
+import it.unibs.ingsoft.domain.repository.CatalogoRepository;
+import it.unibs.ingsoft.domain.model.catalogo.Categoria;
+import it.unibs.ingsoft.domain.model.catalogo.TipoDato;
+import it.unibs.ingsoft.domain.error.DomainException;
+import it.unibs.ingsoft.domain.model.catalogo.CampoFactory;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -24,7 +25,7 @@ class CatalogoServiceTest {
         CategoriaCatalogoService categoriaService = new CategoriaCatalogoService(repo);
 
         assertAll(
-                () -> assertThrows(NullPointerException.class, () -> new CatalogoService((it.unibs.ingsoft.persistence.interfaces.ICatalogoRepository) null)),
+                () -> assertThrows(NullPointerException.class, () -> new CatalogoService((CatalogoRepository) null)),
                 () -> assertThrows(NullPointerException.class, () -> new CatalogoService(repo, null)),
                 () -> assertThrows(NullPointerException.class, () -> new CatalogoService(null, categoriaService)),
                 () -> assertThrows(NullPointerException.class, () -> new CatalogoService(campoService, null)),

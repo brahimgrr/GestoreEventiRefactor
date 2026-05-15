@@ -1,8 +1,7 @@
 package it.unibs.ingsoft.domain.error;
 
-import it.unibs.ingsoft.domain.proposta.ProposalFailure;
-import it.unibs.ingsoft.domain.proposta.StatoProposta;
-import it.unibs.ingsoft.domain.shared.error.DomainException;
+import it.unibs.ingsoft.domain.model.proposta.ProposalFailure;
+import it.unibs.ingsoft.domain.model.proposta.StatoProposta;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;

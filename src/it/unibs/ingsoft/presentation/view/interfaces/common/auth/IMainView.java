@@ -1,9 +1,9 @@
 package it.unibs.ingsoft.presentation.view.interfaces.common.auth;
 
 import it.unibs.ingsoft.application.authentication.dto.CredenzialiRequest;
-import it.unibs.ingsoft.domain.shared.error.Failure;
-import it.unibs.ingsoft.domain.utente.Configuratore;
-import it.unibs.ingsoft.domain.utente.Fruitore;
+import it.unibs.ingsoft.shared.error.Failure;
+import it.unibs.ingsoft.domain.model.utente.Configuratore;
+import it.unibs.ingsoft.domain.model.utente.Fruitore;
 
 import java.util.Optional;
 

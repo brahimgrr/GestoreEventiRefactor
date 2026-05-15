@@ -12,14 +12,14 @@ import it.unibs.ingsoft.application.batch.dto.PropostaImportDTO;
 import it.unibs.ingsoft.application.catalogo.CatalogoService;
 import it.unibs.ingsoft.application.error.ApplicationException;
 import it.unibs.ingsoft.application.proposta.PropostaService;
-import it.unibs.ingsoft.domain.shared.AppConstants;
-import it.unibs.ingsoft.domain.catalogo.Campo;
-import it.unibs.ingsoft.domain.catalogo.Categoria;
-import it.unibs.ingsoft.domain.proposta.Proposta;
-import it.unibs.ingsoft.domain.proposta.PropostaIdentityPolicy;
-import it.unibs.ingsoft.domain.catalogo.TipoDato;
-import it.unibs.ingsoft.domain.shared.error.DomainException;
-import it.unibs.ingsoft.domain.shared.error.ValidationError;
+import it.unibs.ingsoft.domain.AppConstants;
+import it.unibs.ingsoft.domain.model.catalogo.Campo;
+import it.unibs.ingsoft.domain.model.catalogo.Categoria;
+import it.unibs.ingsoft.domain.model.proposta.Proposta;
+import it.unibs.ingsoft.domain.model.proposta.PropostaIdentityPolicy;
+import it.unibs.ingsoft.domain.model.catalogo.TipoDato;
+import it.unibs.ingsoft.domain.error.DomainException;
+import it.unibs.ingsoft.domain.error.ValidationError;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -64,7 +64,7 @@ public final class BatchImportService {
     }
 
     public ImportResult importa(Path filePath) {
-        if (!Files.exists(filePath))
+        if (Files.notExists(filePath))
             throw new ApplicationException(new ImportFailure.FileNotFound(filePath));
         if (!Files.isReadable(filePath))
             throw new ApplicationException(new ImportFailure.FileNotReadable(filePath));

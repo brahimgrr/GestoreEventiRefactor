@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.presentation.view.interfaces.common.auth;
 
-import it.unibs.ingsoft.domain.shared.error.Failure;
+import it.unibs.ingsoft.shared.error.Failure;
 
 import java.util.Optional;
 

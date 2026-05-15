@@ -1,9 +1,8 @@
 package it.unibs.ingsoft.application.proposta;
 
-import it.unibs.ingsoft.persistence.dto.BachecaDTO;
-import it.unibs.ingsoft.domain.proposta.Proposta;
-import it.unibs.ingsoft.domain.proposta.StatoProposta;
-import it.unibs.ingsoft.persistence.interfaces.IBachecaRepository;
+import it.unibs.ingsoft.domain.repository.PropostaRepository;
+import it.unibs.ingsoft.domain.model.proposta.Proposta;
+import it.unibs.ingsoft.domain.model.proposta.StatoProposta;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,46 +10,38 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * Gestisce le query sulle proposte persistite in bacheca.
  */
 public final class PropostaQueryService {
-    private final IBachecaRepository bachecaRepo;
+    private final PropostaRepository propostaRepo;
 
-    public PropostaQueryService(IBachecaRepository bachecaRepo) {
-        this.bachecaRepo = Objects.requireNonNull(bachecaRepo);
-    }
-
-    private BachecaDTO bacheca() {
-        return bachecaRepo.load();
+    public PropostaQueryService(PropostaRepository propostaRepo) {
+        this.propostaRepo = Objects.requireNonNull(propostaRepo);
     }
 
     public List<Proposta> getTutteLeProposte() {
-        return bacheca().getProposte();
+        return propostaRepo.findAll();
     }
 
     public List<Proposta> getBacheca() {
-        return bacheca().getProposte().stream()
-                .filter(Proposta::isAperta)
-                .collect(Collectors.toList());
+        return propostaRepo.findOpen();
     }
 
     public List<Proposta> getProposteAperteIscritteDa(String username) {
         if (username == null) {
             return List.of();
         }
-        return bacheca().getProposte().stream()
+        return propostaRepo.findOpen().stream()
                 .filter(Proposta::isAperta)
                 .filter(p -> p.isIscritto(username))
                 .toList();
     }
 
     public List<Proposta> getProposteRitirabili() {
-        BachecaDTO bacheca = bacheca();
         List<Proposta> ritirabili = new ArrayList<>();
-        for (Proposta proposta : bacheca.getProposte()) {
+        for (Proposta proposta : propostaRepo.findAll()) {
             if (proposta.isAperta() || proposta.isConfermata()) {
                 ritirabili.add(proposta);
             }
@@ -68,7 +59,7 @@ public final class PropostaQueryService {
 
     public Map<String, List<Proposta>> getBachecaPerCategoria() {
         Map<String, List<Proposta>> mappa = new LinkedHashMap<>();
-        for (Proposta proposta : bacheca().getProposte()) {
+        for (Proposta proposta : propostaRepo.findAll()) {
             if (proposta.isAperta()) {
                 mappa.computeIfAbsent(proposta.getCategoria().getNome(), k -> new ArrayList<>()).add(proposta);
             }

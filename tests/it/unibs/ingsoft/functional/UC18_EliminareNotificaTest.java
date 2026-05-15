@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.functional;
 
-import it.unibs.ingsoft.domain.utente.Fruitore;
-import it.unibs.ingsoft.domain.notifica.Notifica;
+import it.unibs.ingsoft.domain.model.utente.Fruitore;
+import it.unibs.ingsoft.domain.model.notifica.Notifica;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -12,7 +12,7 @@ class UC18_EliminareNotificaTest {
         FunctionalTestSupport.FunctionalGraph graph = FunctionalTestSupport.graph();
         Fruitore mario = new Fruitore("mario");
         Notifica notifica = FunctionalTestSupport.notifica("n-1");
-        graph.spazioPersonaleRepository().load().getSpazioDi("mario").addNotifica(notifica);
+        graph.spazioPersonaleRepository().add("mario", notifica);
 
         graph.fruitoreService().cancellaNotifica(mario, notifica);
 
@@ -36,7 +36,7 @@ class UC18_EliminareNotificaTest {
     void scenarioAlternativo3a_fruitoreAnnulla_notificaRimanePresente() {
         FunctionalTestSupport.FunctionalGraph graph = FunctionalTestSupport.graph();
         Notifica notifica = FunctionalTestSupport.notifica("n-1");
-        graph.spazioPersonaleRepository().load().getSpazioDi("mario").addNotifica(notifica);
+        graph.spazioPersonaleRepository().add("mario", notifica);
 
         assertEquals(1, graph.fruitoreService().getNotifiche(new Fruitore("mario")).size());
     }

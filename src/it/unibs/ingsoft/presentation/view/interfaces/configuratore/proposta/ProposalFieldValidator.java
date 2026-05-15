@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta;
 
-import it.unibs.ingsoft.domain.proposta.Proposta;
-import it.unibs.ingsoft.domain.shared.error.ValidationError;
+import it.unibs.ingsoft.domain.model.proposta.Proposta;
+import it.unibs.ingsoft.domain.error.ValidationError;
 
 import java.util.List;
 import java.util.Map;

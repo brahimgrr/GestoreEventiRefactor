@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.presentation.view.cli.common.error;
 
-import it.unibs.ingsoft.domain.shared.AppConstants;
-import it.unibs.ingsoft.domain.shared.validation.TypeValidationFailure;
+import it.unibs.ingsoft.domain.AppConstants;
+import it.unibs.ingsoft.domain.validation.TypeValidationFailure;
 
 public final class TypeValidationFailureCliMessages {
     private TypeValidationFailureCliMessages() {

@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.presentation.view.cli.common.error;
 
-import it.unibs.ingsoft.domain.proposta.ProposalValidationFailure;
-import it.unibs.ingsoft.domain.shared.AppConstants;
+import it.unibs.ingsoft.domain.model.proposta.ProposalValidationFailure;
+import it.unibs.ingsoft.domain.AppConstants;
 
 public final class ProposalValidationFailureCliMessages {
     private ProposalValidationFailureCliMessages() {

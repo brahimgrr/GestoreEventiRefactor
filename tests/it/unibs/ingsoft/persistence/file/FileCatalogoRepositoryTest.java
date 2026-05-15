@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.persistence.file;
 
-import it.unibs.ingsoft.persistence.dto.CatalogoDTO;
+import it.unibs.ingsoft.domain.model.catalogo.Catalogo;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +41,7 @@ class FileCatalogoRepositoryTest {
     void load_conFileAssente_restituisceCatalogoVuoto() {
         FileCatalogoRepository repository = new FileCatalogoRepository(tempDir.resolve("catalogo.json"));
 
-        CatalogoDTO catalogo = repository.load();
+        Catalogo catalogo = repository.load();
 
         assertTrue(catalogo.getCategorie().isEmpty());
     }
@@ -58,7 +58,7 @@ class FileCatalogoRepositoryTest {
         Path path = tempDir.resolve("catalogo.json");
 
         FileCatalogoRepository repository = new FileCatalogoRepository(path);
-        repository.save(new CatalogoDTO());
+        repository.save(new Catalogo());
 
         assertTrue(Files.exists(path));
     }
@@ -68,13 +68,30 @@ class FileCatalogoRepositoryTest {
         Path path = tempDir.resolve("catalogo.json");
 
         FileCatalogoRepository repository = new FileCatalogoRepository(path);
-        CatalogoDTO catalogo = repository.load();
+        Catalogo catalogo = repository.load();
         catalogo.addCategoria("Sport");
         repository.save(catalogo);
 
-        CatalogoDTO ricaricato = new FileCatalogoRepository(path).load();
+        Catalogo ricaricato = new FileCatalogoRepository(path).load();
 
         assertEquals("Sport", ricaricato.getCategorie().get(0).getNome());
+    }
+
+    @Test
+    void update_applicaOperazioneEPersisteCatalogo() {
+        Path path = tempDir.resolve("catalogo.json");
+        FileCatalogoRepository repository = new FileCatalogoRepository(path);
+
+        String nome = repository.update(catalogo -> {
+            catalogo.addCategoria("Sport");
+            return catalogo.getCategorie().get(0).getNome();
+        });
+
+        Catalogo ricaricato = new FileCatalogoRepository(path).load();
+        assertAll(
+                () -> assertEquals("Sport", nome),
+                () -> assertEquals("Sport", ricaricato.getCategorie().get(0).getNome())
+        );
     }
 
     @Test

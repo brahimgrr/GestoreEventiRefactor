@@ -1,9 +1,16 @@
 package it.unibs.ingsoft.persistence.file;
 
-import it.unibs.ingsoft.persistence.interfaces.IBachecaRepository;
-import it.unibs.ingsoft.persistence.interfaces.ICatalogoRepository;
-import it.unibs.ingsoft.persistence.interfaces.ICredenzialiRepository;
-import it.unibs.ingsoft.persistence.interfaces.ISpazioPersonaleRepository;
+import it.unibs.ingsoft.domain.repository.CatalogoRepository;
+import it.unibs.ingsoft.domain.repository.NotificationRepository;
+import it.unibs.ingsoft.domain.repository.PropostaRepository;
+import it.unibs.ingsoft.domain.repository.UserRepository;
+import it.unibs.ingsoft.domain.model.catalogo.Catalogo;
+import it.unibs.ingsoft.domain.model.catalogo.Categoria;
+import it.unibs.ingsoft.domain.model.notifica.Notifica;
+import it.unibs.ingsoft.domain.model.proposta.Proposta;
+import it.unibs.ingsoft.domain.model.utente.PasswordHash;
+import it.unibs.ingsoft.domain.model.utente.UserAccount;
+import it.unibs.ingsoft.domain.model.utente.UserRole;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +20,7 @@ import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -50,30 +58,30 @@ class FileRepositoryFactoryTest {
 
     @Test
     void createCatalogoRepository_quandoInvocato_restituisceRepositoryCatalogoSuFile() {
-        ICatalogoRepository repository = FileRepositoryFactory.getInstance().createCatalogoRepository();
+        CatalogoRepository repository = FileRepositoryFactory.getInstance().createCatalogoRepository();
 
         assertInstanceOf(FileCatalogoRepository.class, repository);
     }
 
     @Test
-    void createCredenzialiRepository_quandoInvocato_restituisceRepositoryCredenzialiSuFile() {
-        ICredenzialiRepository repository = FileRepositoryFactory.getInstance().createCredenzialiRepository();
+    void createUserRepository_quandoInvocato_restituisceRepositoryUtentiSuFile() {
+        UserRepository repository = FileRepositoryFactory.getInstance().createUserRepository();
 
-        assertInstanceOf(FileCredenzialiRepository.class, repository);
+        assertInstanceOf(FileUserRepository.class, repository);
     }
 
     @Test
-    void createBachecaRepository_quandoInvocato_restituisceRepositoryBachecaSuFile() {
-        IBachecaRepository repository = FileRepositoryFactory.getInstance().createBachecaRepository();
+    void createPropostaRepository_quandoInvocato_restituisceRepositoryProposteSuFile() {
+        PropostaRepository repository = FileRepositoryFactory.getInstance().createPropostaRepository();
 
-        assertInstanceOf(FileBachecaRepository.class, repository);
+        assertInstanceOf(FilePropostaRepository.class, repository);
     }
 
     @Test
-    void createSpazioPersonaleRepository_quandoInvocato_restituisceRepositorySpazioPersonaleSuFile() {
-        ISpazioPersonaleRepository repository = FileRepositoryFactory.getInstance().createSpazioPersonaleRepository();
+    void createNotificationRepository_quandoInvocato_restituisceRepositoryNotificheSuFile() {
+        NotificationRepository repository = FileRepositoryFactory.getInstance().createNotificationRepository();
 
-        assertInstanceOf(FileSpazioPersonaleRepository.class, repository);
+        assertInstanceOf(FileNotificationRepository.class, repository);
     }
 
     @Test
@@ -85,14 +93,17 @@ class FileRepositoryFactoryTest {
     void repositoryCreateConDataDirCustom_salvanoNeiFileAttesi() {
         FileRepositoryFactory factory = new FileRepositoryFactory(tempDir);
 
-        factory.createCatalogoRepository().save(new it.unibs.ingsoft.persistence.dto.CatalogoDTO());
-        factory.createCredenzialiRepository().save(new it.unibs.ingsoft.persistence.dto.CredenzialiDTO());
-        factory.createBachecaRepository().save(new it.unibs.ingsoft.persistence.dto.BachecaDTO());
-        factory.createSpazioPersonaleRepository().save(new it.unibs.ingsoft.persistence.dto.ArchivioNotificheDTO());
+        factory.createCatalogoRepository().save(new Catalogo());
+        factory.createUserRepository().save(UserAccount.create(
+                "mario",
+                UserRole.FRUITORE,
+                new PasswordHash("PBKDF2WithHmacSHA256", 1, "salt", "hash")));
+        factory.createPropostaRepository().save(new Proposta(new Categoria("Sport"), List.of(), List.of()));
+        factory.createNotificationRepository().add("mario", new Notifica("messaggio"));
 
         assertAll(
                 () -> assertTrue(Files.exists(tempDir.resolve("catalogo.json"))),
-                () -> assertTrue(Files.exists(tempDir.resolve("utenti.json"))),
+                () -> assertTrue(Files.exists(tempDir.resolve("users.json"))),
                 () -> assertTrue(Files.exists(tempDir.resolve("proposte.json"))),
                 () -> assertTrue(Files.exists(tempDir.resolve("notifiche.json")))
         );

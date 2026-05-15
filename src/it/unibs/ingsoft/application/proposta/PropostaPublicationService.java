@@ -1,12 +1,11 @@
 package it.unibs.ingsoft.application.proposta;
 
-import it.unibs.ingsoft.persistence.dto.BachecaDTO;
-import it.unibs.ingsoft.domain.proposta.Proposta;
-import it.unibs.ingsoft.domain.proposta.PropostaIdentityPolicy;
-import it.unibs.ingsoft.domain.proposta.ProposalFailure;
-import it.unibs.ingsoft.domain.shared.error.DomainException;
-import it.unibs.ingsoft.domain.shared.AppConstants;
-import it.unibs.ingsoft.persistence.interfaces.IBachecaRepository;
+import it.unibs.ingsoft.domain.repository.PropostaRepository;
+import it.unibs.ingsoft.domain.model.proposta.Proposta;
+import it.unibs.ingsoft.domain.model.proposta.PropostaIdentityPolicy;
+import it.unibs.ingsoft.domain.model.proposta.ProposalFailure;
+import it.unibs.ingsoft.domain.error.DomainException;
+import it.unibs.ingsoft.domain.AppConstants;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -19,24 +18,24 @@ import java.util.Objects;
  * e la pubblicazione duratura in bacheca.
  */
 public final class PropostaPublicationService {
-    private final IBachecaRepository bachecaRepo;
+    private final PropostaRepository propostaRepo;
     private final PropostaIdentityPolicy duplicatePolicy;
     private final PropostaCommandLock commandLock;
     private final List<Proposta> proposteProntePerPubblicazione = new ArrayList<>();
 
-    public PropostaPublicationService(IBachecaRepository bachecaRepo) {
-        this(bachecaRepo, PropostaIdentityPolicy.DEFAULT);
+    public PropostaPublicationService(PropostaRepository propostaRepo) {
+        this(propostaRepo, PropostaIdentityPolicy.DEFAULT);
     }
 
-    public PropostaPublicationService(IBachecaRepository bachecaRepo,
+    public PropostaPublicationService(PropostaRepository propostaRepo,
                                       PropostaIdentityPolicy identityPolicy) {
-        this(bachecaRepo, identityPolicy, new PropostaCommandLock());
+        this(propostaRepo, identityPolicy, new PropostaCommandLock());
     }
 
-    public PropostaPublicationService(IBachecaRepository bachecaRepo,
+    public PropostaPublicationService(PropostaRepository propostaRepo,
                                       PropostaIdentityPolicy duplicatePolicy,
                                       PropostaCommandLock commandLock) {
-        this.bachecaRepo = Objects.requireNonNull(bachecaRepo);
+        this.propostaRepo = Objects.requireNonNull(propostaRepo);
         this.duplicatePolicy = Objects.requireNonNull(duplicatePolicy);
         this.commandLock = Objects.requireNonNull(commandLock);
     }
@@ -62,12 +61,10 @@ public final class PropostaPublicationService {
         commandLock.runLocked(() -> {
             LocalDate oggi = LocalDate.now(AppConstants.clock);
             proposta.verificaPubblicabile(oggi);
-            BachecaDTO bacheca = bachecaRepo.load();
-            rilevaDuplicato(proposta, bacheca);
+            rilevaDuplicato(proposta);
 
             proposta.pubblica(oggi);
-            bacheca.addProposta(proposta);
-            bachecaRepo.save(bacheca);
+            propostaRepo.save(proposta);
             proposteProntePerPubblicazione.remove(proposta);
         });
     }
@@ -75,7 +72,7 @@ public final class PropostaPublicationService {
     private void rilevaDuplicatoAlSalvataggio(Proposta proposta) {
         String chiave = duplicatePolicy.chiaveDuplicato(proposta);
 
-        boolean inBacheca = bachecaRepo.load().getProposte().stream()
+        boolean inBacheca = propostaRepo.findAll().stream()
                 .anyMatch(e -> duplicatePolicy.chiaveDuplicato(e).equals(chiave));
         boolean inValide = proposteProntePerPubblicazione.stream()
                 .anyMatch(e -> duplicatePolicy.chiaveDuplicato(e).equals(chiave));
@@ -85,10 +82,10 @@ public final class PropostaPublicationService {
         }
     }
 
-    private void rilevaDuplicato(Proposta proposta, BachecaDTO bacheca) {
+    private void rilevaDuplicato(Proposta proposta) {
         String chiave = duplicatePolicy.chiaveDuplicato(proposta);
 
-        if (bacheca.containsChiaveDuplicato(chiave)) {
+        if (propostaRepo.findAll().stream().anyMatch(e -> duplicatePolicy.chiaveDuplicato(e).equals(chiave))) {
             throw new DomainException(new ProposalFailure.Duplicate());
         }
     }
