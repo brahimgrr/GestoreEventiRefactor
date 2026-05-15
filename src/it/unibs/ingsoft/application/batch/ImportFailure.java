@@ -62,7 +62,8 @@ public sealed interface ImportFailure extends ApplicationFailure
     record SpecificFieldTypeInvalid(String fieldName, String categoryName, String rawType) implements ImportFailure {
     }
 
-    record SpecificFieldDomainError(String fieldName, String categoryName, DomainFailure failure) implements ImportFailure {
+    record SpecificFieldDomainError(String fieldName, String categoryName,
+                                    DomainFailure failure) implements ImportFailure {
     }
 
     record ProposalCategoryMissing(String title) implements ImportFailure {

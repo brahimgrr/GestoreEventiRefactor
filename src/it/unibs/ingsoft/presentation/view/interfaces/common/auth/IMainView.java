@@ -1,20 +1,13 @@
 package it.unibs.ingsoft.presentation.view.interfaces.common.auth;
 
 import it.unibs.ingsoft.application.authentication.dto.CredenzialiRequest;
-import it.unibs.ingsoft.shared.error.Failure;
 import it.unibs.ingsoft.domain.model.utente.Configuratore;
 import it.unibs.ingsoft.domain.model.utente.Fruitore;
+import it.unibs.ingsoft.shared.error.Failure;
 
 import java.util.Optional;
 
 public interface IMainView {
-    enum AccessAction {
-        LOGIN_CONFIGURATORE,
-        LOGIN_FRUITORE,
-        REGISTRA_FRUITORE,
-        ESCI
-    }
-
     AccessAction scegliAzioneAccesso();
 
     Optional<CredenzialiRequest> acquisisciLoginConfiguratore();
@@ -50,4 +43,11 @@ public interface IMainView {
     void mostraUscita();
 
     void mostraErrore(Failure failure);
+
+    enum AccessAction {
+        LOGIN_CONFIGURATORE,
+        LOGIN_FRUITORE,
+        REGISTRA_FRUITORE,
+        ESCI
+    }
 }

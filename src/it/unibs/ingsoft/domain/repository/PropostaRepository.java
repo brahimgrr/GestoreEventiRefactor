@@ -12,8 +12,6 @@ public interface PropostaRepository {
 
     List<Proposta> findAll();
 
-    List<Proposta> findOpen();
-
     List<Proposta> findByState(StatoProposta stato);
 
     void save(Proposta proposta);

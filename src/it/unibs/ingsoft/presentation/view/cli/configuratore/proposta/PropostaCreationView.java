@@ -8,9 +8,9 @@ import it.unibs.ingsoft.presentation.view.cli.common.error.FailureMessageRegistr
 import it.unibs.ingsoft.presentation.view.cli.common.proposta.PropostaRenderer;
 import it.unibs.ingsoft.presentation.view.cli.configuratore.categoria.CategoriaRenderer;
 import it.unibs.ingsoft.presentation.view.interfaces.common.IAppView;
-import it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta.IPropostaCreationView;
 import it.unibs.ingsoft.presentation.view.interfaces.common.OperationCancelledException;
-import it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta.ProposalFieldValidator;
+import it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta.IPropostaCreationView;
+import it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta.PropostaCampoValidator;
 
 import java.util.List;
 import java.util.Map;
@@ -61,7 +61,7 @@ public final class PropostaCreationView implements IPropostaCreationView {
     }
 
     @Override
-    public Optional<Map<String, String>> acquisisciValoriProposta(Proposta proposta, ProposalFieldValidator validator) {
+    public Optional<Map<String, String>> acquisisciValoriProposta(Proposta proposta, PropostaCampoValidator validator) {
         ui.header("CREA PROPOSTA");
         ui.newLine();
         ui.stampa("Digita 'annulla' per abortire l'operazione.");
@@ -74,7 +74,7 @@ public final class PropostaCreationView implements IPropostaCreationView {
     public Optional<Map<String, String>> correggiValoriProposta(
             Proposta proposta,
             PropostaValidationResult result,
-            ProposalFieldValidator validator) {
+            PropostaCampoValidator validator) {
         ui.newLine();
         ui.stampa("La proposta NON e valida per i seguenti motivi:");
         for (var errore : result.errori()) {

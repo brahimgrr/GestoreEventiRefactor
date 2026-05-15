@@ -11,6 +11,7 @@ class TipoDatoTest {
         assertArrayEquals(new TipoDato[]{
                 TipoDato.STRINGA,
                 TipoDato.INTERO,
+                TipoDato.INTERO_POSITIVO,
                 TipoDato.DECIMALE,
                 TipoDato.DATA,
                 TipoDato.ORA,

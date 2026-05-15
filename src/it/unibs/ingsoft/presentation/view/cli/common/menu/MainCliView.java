@@ -1,14 +1,14 @@
 package it.unibs.ingsoft.presentation.view.cli.common.menu;
 
 import it.unibs.ingsoft.application.authentication.dto.CredenzialiRequest;
-import it.unibs.ingsoft.shared.error.Failure;
 import it.unibs.ingsoft.domain.model.utente.Configuratore;
 import it.unibs.ingsoft.domain.model.utente.Fruitore;
 import it.unibs.ingsoft.presentation.view.cli.common.error.FailureMessageRegistry;
-import it.unibs.ingsoft.presentation.view.interfaces.common.auth.CredentialFieldValidator;
 import it.unibs.ingsoft.presentation.view.interfaces.common.IAppView;
-import it.unibs.ingsoft.presentation.view.interfaces.common.auth.IMainView;
 import it.unibs.ingsoft.presentation.view.interfaces.common.OperationCancelledException;
+import it.unibs.ingsoft.presentation.view.interfaces.common.auth.CredentialFieldValidator;
+import it.unibs.ingsoft.presentation.view.interfaces.common.auth.IMainView;
+import it.unibs.ingsoft.shared.error.Failure;
 
 import java.util.Optional;
 

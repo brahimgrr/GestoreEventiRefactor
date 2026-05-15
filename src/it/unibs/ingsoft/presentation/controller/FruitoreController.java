@@ -2,8 +2,8 @@ package it.unibs.ingsoft.presentation.controller;
 
 import it.unibs.ingsoft.application.FruitoreService;
 import it.unibs.ingsoft.domain.model.utente.Fruitore;
-import it.unibs.ingsoft.shared.error.FailureException;
 import it.unibs.ingsoft.presentation.view.interfaces.fruitore.IFruitoreViewFacade;
+import it.unibs.ingsoft.shared.error.FailureException;
 
 import java.util.Objects;
 

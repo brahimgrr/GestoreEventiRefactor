@@ -9,13 +9,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ICampoConfigView {
-    enum FieldAction {
-        AGGIUNGI,
-        RIMUOVI,
-        CAMBIA_OBBLIGATORIETA,
-        TORNA
-    }
-
     FieldAction scegliAzioneCampiComuni(List<Campo> campi);
 
     FieldAction scegliAzioneCampiSpecifici(Categoria categoria);
@@ -27,4 +20,11 @@ public interface ICampoConfigView {
     boolean confermaRimozioneCampo(Campo campo);
 
     Optional<CampoObbligatorietaRequest> acquisisciObbligatorietaCampo(List<Campo> campi);
+
+    enum FieldAction {
+        AGGIUNGI,
+        RIMUOVI,
+        CAMBIA_OBBLIGATORIETA,
+        TORNA
+    }
 }

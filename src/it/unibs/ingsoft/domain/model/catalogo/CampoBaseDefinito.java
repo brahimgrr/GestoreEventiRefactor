@@ -6,7 +6,7 @@ package it.unibs.ingsoft.domain.model.catalogo;
  */
 public enum CampoBaseDefinito {
     TITOLO("Titolo", TipoDato.STRINGA),
-    NUMERO_PARTECIPANTI("Numero di partecipanti", TipoDato.INTERO),
+    NUMERO_PARTECIPANTI("Numero di partecipanti", TipoDato.INTERO_POSITIVO),
     TERMINE_ISCRIZIONE("Termine ultimo di iscrizione", TipoDato.DATA),
     LUOGO("Luogo", TipoDato.STRINGA),
     DATA("Data", TipoDato.DATA),

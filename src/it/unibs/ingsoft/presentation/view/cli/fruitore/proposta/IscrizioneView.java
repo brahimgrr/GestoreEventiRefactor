@@ -1,12 +1,12 @@
 package it.unibs.ingsoft.presentation.view.cli.fruitore.proposta;
 
 import it.unibs.ingsoft.domain.model.proposta.Proposta;
-import it.unibs.ingsoft.shared.error.Failure;
 import it.unibs.ingsoft.presentation.view.cli.common.error.FailureMessageRegistry;
 import it.unibs.ingsoft.presentation.view.cli.common.proposta.PropostaRenderer;
 import it.unibs.ingsoft.presentation.view.interfaces.common.IAppView;
-import it.unibs.ingsoft.presentation.view.interfaces.fruitore.proposta.IIscrizioneView;
 import it.unibs.ingsoft.presentation.view.interfaces.common.OperationCancelledException;
+import it.unibs.ingsoft.presentation.view.interfaces.fruitore.proposta.IIscrizioneView;
+import it.unibs.ingsoft.shared.error.Failure;
 
 import java.util.List;
 import java.util.Optional;

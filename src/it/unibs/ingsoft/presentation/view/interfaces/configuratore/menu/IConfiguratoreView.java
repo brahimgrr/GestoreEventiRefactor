@@ -1,6 +1,8 @@
 package it.unibs.ingsoft.presentation.view.interfaces.configuratore.menu;
 
 public interface IConfiguratoreView {
+    MainAction scegliAzionePrincipale();
+
     enum MainAction {
         CAMPI_COMUNI,
         CATEGORIE,
@@ -13,6 +15,4 @@ public interface IConfiguratoreView {
         IMPORTA,
         LOGOUT
     }
-
-    MainAction scegliAzionePrincipale();
 }

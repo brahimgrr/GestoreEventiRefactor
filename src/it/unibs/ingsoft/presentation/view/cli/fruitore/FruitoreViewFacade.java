@@ -2,13 +2,13 @@ package it.unibs.ingsoft.presentation.view.cli.fruitore;
 
 import it.unibs.ingsoft.domain.model.notifica.Notifica;
 import it.unibs.ingsoft.domain.model.proposta.Proposta;
-import it.unibs.ingsoft.shared.error.Failure;
 import it.unibs.ingsoft.domain.model.utente.Fruitore;
 import it.unibs.ingsoft.presentation.view.interfaces.fruitore.IFruitoreViewFacade;
 import it.unibs.ingsoft.presentation.view.interfaces.fruitore.bacheca.IBachecaView;
 import it.unibs.ingsoft.presentation.view.interfaces.fruitore.menu.IFruitoreView;
 import it.unibs.ingsoft.presentation.view.interfaces.fruitore.notifica.ISpazioPersonaleView;
 import it.unibs.ingsoft.presentation.view.interfaces.fruitore.proposta.IIscrizioneView;
+import it.unibs.ingsoft.shared.error.Failure;
 
 import java.util.List;
 import java.util.Map;

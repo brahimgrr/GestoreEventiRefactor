@@ -1,15 +1,15 @@
 package it.unibs.ingsoft.application.proposta;
 
 import it.unibs.ingsoft.application.notifica.NotificationService;
-import it.unibs.ingsoft.domain.repository.PropostaRepository;
 import it.unibs.ingsoft.domain.AppConstants;
-import it.unibs.ingsoft.domain.model.proposta.EsitoTransizioneProposta;
+import it.unibs.ingsoft.domain.error.DomainException;
 import it.unibs.ingsoft.domain.model.notifica.Notifica;
+import it.unibs.ingsoft.domain.model.notifica.NotificaFactory;
+import it.unibs.ingsoft.domain.model.proposta.EsitoTransizioneProposta;
+import it.unibs.ingsoft.domain.model.proposta.ProposalFailure;
 import it.unibs.ingsoft.domain.model.proposta.Proposta;
 import it.unibs.ingsoft.domain.model.proposta.PropostaIdentityPolicy;
-import it.unibs.ingsoft.domain.model.proposta.ProposalFailure;
-import it.unibs.ingsoft.domain.model.notifica.NotificaFactory;
-import it.unibs.ingsoft.domain.error.DomainException;
+import it.unibs.ingsoft.domain.repository.PropostaRepository;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -68,7 +68,7 @@ public final class PropostaLifecycleService {
     public void confermaProposta(Proposta p) {
         commandLock.runLocked(() -> {
             String id = findSameIdentityId(p);
-            propostaRepo.updateById(id, propostaPersistita -> confermaPropostaCaricata(propostaPersistita));
+            propostaRepo.updateById(id, this::confermaPropostaCaricata);
         });
     }
 

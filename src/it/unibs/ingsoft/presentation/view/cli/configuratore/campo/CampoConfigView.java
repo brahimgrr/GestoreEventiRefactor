@@ -6,8 +6,8 @@ import it.unibs.ingsoft.domain.model.catalogo.Campo;
 import it.unibs.ingsoft.domain.model.catalogo.Categoria;
 import it.unibs.ingsoft.domain.model.catalogo.TipoDato;
 import it.unibs.ingsoft.presentation.view.interfaces.common.IAppView;
-import it.unibs.ingsoft.presentation.view.interfaces.configuratore.campo.ICampoConfigView;
 import it.unibs.ingsoft.presentation.view.interfaces.common.OperationCancelledException;
+import it.unibs.ingsoft.presentation.view.interfaces.configuratore.campo.ICampoConfigView;
 
 import java.util.List;
 import java.util.Optional;

@@ -120,11 +120,6 @@ public final class ApplicationIntegrationSupport {
         }
 
         @Override
-        public List<Proposta> findOpen() {
-            return proposte.stream().filter(Proposta::isAperta).toList();
-        }
-
-        @Override
         public List<Proposta> findByState(StatoProposta stato) {
             return proposte.stream().filter(proposta -> proposta.getStato() == stato).toList();
         }

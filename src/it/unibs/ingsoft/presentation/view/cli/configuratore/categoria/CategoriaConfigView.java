@@ -2,8 +2,8 @@ package it.unibs.ingsoft.presentation.view.cli.configuratore.categoria;
 
 import it.unibs.ingsoft.domain.model.catalogo.Categoria;
 import it.unibs.ingsoft.presentation.view.interfaces.common.IAppView;
-import it.unibs.ingsoft.presentation.view.interfaces.configuratore.categoria.ICategoriaConfigView;
 import it.unibs.ingsoft.presentation.view.interfaces.common.OperationCancelledException;
+import it.unibs.ingsoft.presentation.view.interfaces.configuratore.categoria.ICategoriaConfigView;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,15 +1,10 @@
 package it.unibs.ingsoft.application.proposta;
 
-import it.unibs.ingsoft.domain.repository.PropostaRepository;
 import it.unibs.ingsoft.domain.model.proposta.Proposta;
 import it.unibs.ingsoft.domain.model.proposta.StatoProposta;
+import it.unibs.ingsoft.domain.repository.PropostaRepository;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Gestisce le query sulle proposte persistite in bacheca.
@@ -26,14 +21,14 @@ public final class PropostaQueryService {
     }
 
     public List<Proposta> getBacheca() {
-        return propostaRepo.findOpen();
+        return propostaRepo.findByState(StatoProposta.APERTA);
     }
 
     public List<Proposta> getProposteAperteIscritteDa(String username) {
         if (username == null) {
             return List.of();
         }
-        return propostaRepo.findOpen().stream()
+        return propostaRepo.findByState(StatoProposta.APERTA).stream()
                 .filter(Proposta::isAperta)
                 .filter(p -> p.isIscritto(username))
                 .toList();

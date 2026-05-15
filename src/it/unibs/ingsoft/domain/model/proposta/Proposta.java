@@ -1,9 +1,10 @@
 package it.unibs.ingsoft.domain.model.proposta;
 
+import it.unibs.ingsoft.domain.AppConstants;
+import it.unibs.ingsoft.domain.error.DomainException;
 import it.unibs.ingsoft.domain.model.catalogo.Campo;
 import it.unibs.ingsoft.domain.model.catalogo.Categoria;
-import it.unibs.ingsoft.domain.error.DomainException;
-import it.unibs.ingsoft.domain.AppConstants;
+import it.unibs.ingsoft.domain.policy.proposta.PropostaValidationOutcome;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -79,6 +80,10 @@ public final class Proposta {
 
     private static String normalizzaId(String id) {
         return (id == null || id.isBlank()) ? UUID.randomUUID().toString() : id.trim();
+    }
+
+    public static String chiaveIdentita(Map<String, String> valori) {
+        return PropostaIdentityPolicy.DEFAULT.chiaveDuplicato(valori);
     }
 
     public String getId() {
@@ -172,14 +177,6 @@ public final class Proposta {
 
     public String valoreCampoOrDefault(String nomeCampo, String defaultValue) {
         return valoriCampi.getOrDefault(nomeCampo, defaultValue);
-    }
-
-    public static String chiaveIdentita(Map<String, String> valori) {
-        return PropostaIdentityPolicy.DEFAULT.chiaveDuplicato(valori);
-    }
-
-    public String getChiaveIdentita() {
-        return chiaveIdentita(valoriCampi);
     }
 
     public void verificaSalvabile() {
@@ -306,10 +303,6 @@ public final class Proposta {
         }
     }
 
-    public void valida() {
-        applicaEsitoValidazione(new PropostaValidator().validaCompleta(this));
-    }
-
     private void riportaInBozzaSeValida() {
         if (this.stato == StatoProposta.VALIDA) {
             this.stato = StatoProposta.BOZZA;
@@ -347,10 +340,6 @@ public final class Proposta {
         valoriCampi.putAll(temp);
     }
 
-    public LocalDate getDataConclusiva() {
-        return getDataConclusivaOrDataEvento();
-    }
-
     private LocalDate getDataConclusivaOrDataEvento() {
         String s = valoriCampi.get(AppConstants.CAMPO_DATA_CONCLUSIVA);
         if (s == null || s.isBlank()) return dataEvento;
@@ -373,10 +362,6 @@ public final class Proposta {
         } catch (NumberFormatException e) {
             throw new DomainException(new ProposalFailure.ParticipantsNotInteger(s));
         }
-    }
-
-    public boolean isCapienzaRaggiunta() {
-        return listaAderenti.size() >= getNumeroPartecipanti();
     }
 
     public boolean isTermineIscrizioneScaduto(LocalDate oggi) {

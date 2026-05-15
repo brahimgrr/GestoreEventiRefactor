@@ -5,10 +5,10 @@ import it.unibs.ingsoft.domain.model.catalogo.Categoria;
 import it.unibs.ingsoft.domain.model.catalogo.TipoCampo;
 import it.unibs.ingsoft.domain.model.catalogo.TipoDato;
 import it.unibs.ingsoft.domain.model.proposta.ProposalFailure;
-import it.unibs.ingsoft.domain.model.proposta.ProposalValidationFailure;
+import it.unibs.ingsoft.domain.policy.proposta.PropostaValidationFailure;
 import it.unibs.ingsoft.domain.model.proposta.Proposta;
 import it.unibs.ingsoft.domain.model.proposta.PropostaStateChange;
-import it.unibs.ingsoft.domain.model.proposta.PropostaValidator;
+import it.unibs.ingsoft.domain.policy.proposta.PropostaValidator;
 import it.unibs.ingsoft.domain.model.proposta.StatoProposta;
 import it.unibs.ingsoft.domain.error.DomainException;
 import it.unibs.ingsoft.domain.error.ValidationError;
@@ -64,12 +64,12 @@ class Proposta_Test {
     void valida_conCampiObbligatoriMancanti_restituisceValidationError() {
         Proposta proposta = propostaBaseCompleta();
 
-        List<ValidationError> errori = new PropostaValidator().valida(proposta);
+        List<ValidationError> errori = PropostaValidator.standard().valida(proposta).errori();
 
         assertAll(
                 () -> assertFalse(errori.isEmpty()),
                 () -> assertTrue(errori.stream()
-                        .anyMatch(e -> e.failure() instanceof ProposalValidationFailure.RequiredFieldMissing))
+                        .anyMatch(e -> e.failure() instanceof PropostaValidationFailure.RequiredFieldMissing))
         );
     }
 
@@ -79,7 +79,7 @@ class Proposta_Test {
 
         assertAll(
                 () -> assertTrue(proposta.isValida()),
-                () -> assertTrue(new PropostaValidator().valida(proposta).isEmpty()),
+                () -> assertTrue(PropostaValidator.standard().valida(proposta).errori().isEmpty()),
                 () -> assertEquals(StatoProposta.VALIDA, proposta.getStato())
         );
     }
@@ -170,13 +170,13 @@ class Proposta_Test {
     private Proposta propostaValidaCompleta(String numeroPartecipanti) {
         Proposta proposta = propostaBaseCompleta();
         proposta.aggiornaValoriCampi(valoriValidiCompleti(numeroPartecipanti));
-        proposta.valida();
+        proposta.applicaEsitoValidazione(PropostaValidator.standard().valida(proposta));
         return proposta;
     }
 
     private Proposta propostaConCampiBaseMinimi() {
         return new Proposta(new Categoria("Sport"),
-                List.of(campo(AppConstants.CAMPO_NUM_PARTECIPANTI, TipoCampo.BASE, TipoDato.INTERO, true)),
+                List.of(campo(AppConstants.CAMPO_NUM_PARTECIPANTI, TipoCampo.BASE, TipoDato.INTERO_POSITIVO, true)),
                 List.of());
     }
 
@@ -187,7 +187,7 @@ class Proposta_Test {
     private List<Campo> campiBaseMinimiCompleti() {
         return List.of(
                 campo(AppConstants.CAMPO_TITOLO, TipoCampo.BASE, TipoDato.STRINGA, true),
-                campo(AppConstants.CAMPO_NUM_PARTECIPANTI, TipoCampo.BASE, TipoDato.INTERO, true),
+                campo(AppConstants.CAMPO_NUM_PARTECIPANTI, TipoCampo.BASE, TipoDato.INTERO_POSITIVO, true),
                 campo(AppConstants.CAMPO_TERMINE_ISCRIZIONE, TipoCampo.BASE, TipoDato.DATA, true),
                 campo(AppConstants.CAMPO_LUOGO, TipoCampo.BASE, TipoDato.STRINGA, true),
                 campo(AppConstants.CAMPO_DATA, TipoCampo.BASE, TipoDato.DATA, true),

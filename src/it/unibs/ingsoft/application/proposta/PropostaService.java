@@ -1,11 +1,11 @@
 package it.unibs.ingsoft.application.proposta;
 
 import it.unibs.ingsoft.application.proposta.dto.PropostaValidationResult;
+import it.unibs.ingsoft.domain.error.ValidationError;
 import it.unibs.ingsoft.domain.model.catalogo.Campo;
 import it.unibs.ingsoft.domain.model.catalogo.Categoria;
 import it.unibs.ingsoft.domain.model.proposta.Proposta;
 import it.unibs.ingsoft.domain.model.proposta.StatoProposta;
-import it.unibs.ingsoft.domain.error.ValidationError;
 
 import java.util.List;
 import java.util.Map;
@@ -44,10 +44,6 @@ public final class PropostaService {
 
     public Proposta creaProposta(Categoria categoria, List<Campo> campiBase, List<Campo> campiComuni) {
         return new Proposta(categoria, campiBase, campiComuni);
-    }
-
-    public List<ValidationError> validaProposta(Proposta proposta) {
-        return validationService.validaProposta(proposta);
     }
 
     public List<ValidationError> validaCampo(Proposta proposta, Map<String, String> valoriCorrenti, String nomeCampo, String valore) {
@@ -102,9 +98,6 @@ public final class PropostaService {
         return queryService.getBachecaPerCategoria();
     }
 
-    public List<Campo> getCampiConErrore(Proposta proposta, List<ValidationError> errori) {
-        return validationService.getCampiConErrore(proposta, errori);
-    }
 
     public PropostaValidationResult applicaValoriEValida(Proposta proposta, Map<String, String> valori) {
         return validationService.applicaValoriEValida(proposta, valori);

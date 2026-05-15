@@ -1,13 +1,9 @@
 package it.unibs.ingsoft.application.authentication;
 
 import it.unibs.ingsoft.application.error.ApplicationException;
+import it.unibs.ingsoft.domain.model.utente.*;
 import it.unibs.ingsoft.domain.repository.UserRepository;
 import it.unibs.ingsoft.shared.error.Failure;
-import it.unibs.ingsoft.domain.model.utente.Configuratore;
-import it.unibs.ingsoft.domain.model.utente.Fruitore;
-import it.unibs.ingsoft.domain.model.utente.UserAccount;
-import it.unibs.ingsoft.domain.model.utente.UserRole;
-import it.unibs.ingsoft.domain.model.utente.UtenteFactory;
 
 import java.util.Objects;
 import java.util.Optional;

@@ -1,9 +1,9 @@
 package it.unibs.ingsoft.application.catalogo;
 
 import it.unibs.ingsoft.application.catalogo.dto.CatalogoOperationResult;
-import it.unibs.ingsoft.domain.repository.CatalogoRepository;
 import it.unibs.ingsoft.domain.model.catalogo.Catalogo;
 import it.unibs.ingsoft.domain.model.catalogo.Categoria;
+import it.unibs.ingsoft.domain.repository.CatalogoRepository;
 
 import java.util.List;
 import java.util.Objects;
