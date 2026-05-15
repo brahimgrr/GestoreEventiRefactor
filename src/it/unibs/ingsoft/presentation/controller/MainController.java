@@ -1,11 +1,11 @@
 package it.unibs.ingsoft.presentation.controller;
 
-import it.unibs.ingsoft.application.authentication.dto.CredenzialiRequest;
 import it.unibs.ingsoft.application.authentication.AuthenticationService;
+import it.unibs.ingsoft.application.authentication.dto.CredenzialiRequest;
 import it.unibs.ingsoft.domain.model.utente.Configuratore;
 import it.unibs.ingsoft.domain.model.utente.Fruitore;
-import it.unibs.ingsoft.shared.error.FailureException;
 import it.unibs.ingsoft.presentation.view.interfaces.common.auth.IMainView;
+import it.unibs.ingsoft.shared.error.FailureException;
 
 import java.util.Objects;
 import java.util.Optional;

@@ -3,8 +3,8 @@ package it.unibs.ingsoft.presentation.view.cli.configuratore.proposta;
 import it.unibs.ingsoft.domain.model.proposta.Proposta;
 import it.unibs.ingsoft.presentation.view.cli.common.proposta.PropostaRenderer;
 import it.unibs.ingsoft.presentation.view.interfaces.common.IAppView;
-import it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta.IPropostaLifecycleView;
 import it.unibs.ingsoft.presentation.view.interfaces.common.OperationCancelledException;
+import it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta.IPropostaLifecycleView;
 
 import java.util.List;
 import java.util.Optional;

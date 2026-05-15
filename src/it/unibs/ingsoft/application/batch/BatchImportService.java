@@ -2,33 +2,23 @@ package it.unibs.ingsoft.application.batch;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.unibs.ingsoft.application.batch.dto.CampoImportDTO;
-import it.unibs.ingsoft.application.batch.dto.CampoSpecificoImportDTO;
-import it.unibs.ingsoft.application.batch.dto.CategoriaImportDTO;
-import it.unibs.ingsoft.application.batch.dto.ImportError;
-import it.unibs.ingsoft.application.batch.dto.ImportData;
-import it.unibs.ingsoft.application.batch.dto.ImportResult;
-import it.unibs.ingsoft.application.batch.dto.PropostaImportDTO;
+import it.unibs.ingsoft.application.batch.dto.*;
 import it.unibs.ingsoft.application.catalogo.CatalogoService;
 import it.unibs.ingsoft.application.error.ApplicationException;
 import it.unibs.ingsoft.application.proposta.PropostaService;
 import it.unibs.ingsoft.domain.AppConstants;
-import it.unibs.ingsoft.domain.model.catalogo.Campo;
-import it.unibs.ingsoft.domain.model.catalogo.Categoria;
-import it.unibs.ingsoft.domain.model.proposta.Proposta;
-import it.unibs.ingsoft.domain.model.proposta.PropostaIdentityPolicy;
-import it.unibs.ingsoft.domain.model.catalogo.TipoDato;
 import it.unibs.ingsoft.domain.error.DomainException;
 import it.unibs.ingsoft.domain.error.ValidationError;
+import it.unibs.ingsoft.domain.model.catalogo.Campo;
+import it.unibs.ingsoft.domain.model.catalogo.Categoria;
+import it.unibs.ingsoft.domain.model.catalogo.TipoDato;
+import it.unibs.ingsoft.domain.model.proposta.Proposta;
+import it.unibs.ingsoft.domain.model.proposta.PropostaIdentityPolicy;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Gestisce l'importazione batch di campi comuni, categorie e proposte da un file JSON.

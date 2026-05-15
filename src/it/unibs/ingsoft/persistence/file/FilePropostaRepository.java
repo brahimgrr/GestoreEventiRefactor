@@ -1,10 +1,10 @@
 package it.unibs.ingsoft.persistence.file;
 
-import it.unibs.ingsoft.domain.repository.PropostaRepository;
-import it.unibs.ingsoft.domain.model.proposta.Proposta;
-import it.unibs.ingsoft.domain.model.proposta.ProposalFailure;
-import it.unibs.ingsoft.domain.model.proposta.StatoProposta;
 import it.unibs.ingsoft.domain.error.DomainException;
+import it.unibs.ingsoft.domain.model.proposta.ProposalFailure;
+import it.unibs.ingsoft.domain.model.proposta.Proposta;
+import it.unibs.ingsoft.domain.model.proposta.StatoProposta;
+import it.unibs.ingsoft.domain.repository.PropostaRepository;
 import it.unibs.ingsoft.persistence.file.document.PropostaStoreDocument;
 
 import java.nio.file.Path;
@@ -28,11 +28,6 @@ public final class FilePropostaRepository
     @Override
     public List<Proposta> findAll() {
         return super.load().findAll();
-    }
-
-    @Override
-    public List<Proposta> findOpen() {
-        return super.load().findOpen();
     }
 
     @Override

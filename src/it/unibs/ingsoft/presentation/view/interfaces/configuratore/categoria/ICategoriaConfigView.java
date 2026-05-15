@@ -6,13 +6,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ICategoriaConfigView {
-    enum CategoryAction {
-        CREA,
-        RIMUOVI,
-        CAMPI_SPECIFICI,
-        TORNA
-    }
-
     CategoryAction scegliAzioneCategorie(List<Categoria> categorie);
 
     Optional<String> acquisisciNomeCategoria();
@@ -22,4 +15,11 @@ public interface ICategoriaConfigView {
     Optional<Categoria> selezionaCategoriaPerCampiSpecifici(List<Categoria> categorie);
 
     boolean confermaRimozioneCategoria(Categoria categoria);
+
+    enum CategoryAction {
+        CREA,
+        RIMUOVI,
+        CAMPI_SPECIFICI,
+        TORNA
+    }
 }

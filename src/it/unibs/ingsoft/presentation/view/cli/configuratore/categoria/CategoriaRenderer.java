@@ -7,7 +7,6 @@ import it.unibs.ingsoft.presentation.view.interfaces.common.IAppView;
 import it.unibs.ingsoft.presentation.view.interfaces.common.OperationCancelledException;
 
 import java.util.List;
-import java.util.Map;
 import java.util.OptionalInt;
 
 public final class CategoriaRenderer {
@@ -28,20 +27,6 @@ public final class CategoriaRenderer {
             ui.stampa("  - " + formatCategoria(cat));
             for (Campo c : cat.getCampiSpecifici())
                 ui.stampa("      - " + campoRenderer.formatCampo(c));
-        }
-    }
-
-    public void stampaCategorieDettaglio(Map<String, List<String>> categorieConCampi) {
-        if (categorieConCampi.isEmpty()) {
-            ui.stampa("    (nessuna categoria)");
-            return;
-        }
-        for (Map.Entry<String, List<String>> entry : categorieConCampi.entrySet()) {
-            ui.stampa("    - " + entry.getKey());
-            if (entry.getValue().isEmpty())
-                ui.stampa("          (nessun campo specifico)");
-            else
-                entry.getValue().forEach(c -> ui.stampa("          - " + c));
         }
     }
 

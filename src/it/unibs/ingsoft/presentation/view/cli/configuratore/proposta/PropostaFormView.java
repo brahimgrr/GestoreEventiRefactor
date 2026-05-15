@@ -1,21 +1,15 @@
 package it.unibs.ingsoft.presentation.view.cli.configuratore.proposta;
 
-import it.unibs.ingsoft.domain.model.catalogo.Campo;
-import it.unibs.ingsoft.domain.validation.DefaultTypeValidator;
-import it.unibs.ingsoft.domain.model.proposta.Proposta;
-import it.unibs.ingsoft.domain.validation.TypeValidator;
 import it.unibs.ingsoft.domain.error.ValidationError;
+import it.unibs.ingsoft.domain.model.catalogo.Campo;
+import it.unibs.ingsoft.domain.model.proposta.Proposta;
+import it.unibs.ingsoft.domain.policy.tipodato.TipoDatoValidator;
 import it.unibs.ingsoft.presentation.view.cli.common.error.FailureMessageRegistry;
 import it.unibs.ingsoft.presentation.view.interfaces.common.IAppView;
 import it.unibs.ingsoft.presentation.view.interfaces.common.OperationCancelledException;
-import it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta.ProposalFieldValidator;
+import it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta.PropostaCampoValidator;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public final class PropostaFormView {
     private final IAppView ui;
@@ -32,14 +26,14 @@ public final class PropostaFormView {
 
     public Optional<Map<String, String>> acquisisciValoriProposta(
             Proposta proposta,
-            ProposalFieldValidator validator) {
+            PropostaCampoValidator validator) {
         return eseguiForm(proposta, proposta.getCampi(), validator);
     }
 
     public Optional<Map<String, String>> correggiCampiProposta(
             Proposta proposta,
             Set<String> nomiCampi,
-            ProposalFieldValidator validator) {
+            PropostaCampoValidator validator) {
         List<Campo> campiDaCorreggere = proposta.getCampi().stream()
                 .filter(c -> nomiCampi.contains(c.getNome()))
                 .toList();
@@ -49,9 +43,9 @@ public final class PropostaFormView {
     private Optional<Map<String, String>> eseguiForm(
             Proposta proposta,
             List<Campo> campi,
-            ProposalFieldValidator validator) {
+            PropostaCampoValidator validator) {
         Map<String, String> ctx = new LinkedHashMap<>(proposta.getValoriCampi());
-        TypeValidator typeValidator = DefaultTypeValidator.INSTANCE;
+        TipoDatoValidator tipoDatoValidator = TipoDatoValidator.INSTANCE;
         int i = 0;
 
         while (i < campi.size()) {
@@ -85,13 +79,13 @@ public final class PropostaFormView {
                 continue;
             }
 
-            Optional<ValidationError> typeError = typeValidator.validate(raw, campo.getTipoDato());
+            Optional<ValidationError> typeError = tipoDatoValidator.validate(raw, campo.getTipoDato());
             if (typeError.isPresent()) {
                 ui.stampaErrore("  " + messages.message(typeError.get().failure()));
                 continue;
             }
 
-            List<ValidationError> businessErrors = validator.validate(
+            List<ValidationError> businessErrors = validator.valida(
                     proposta,
                     Collections.unmodifiableMap(ctx),
                     nome,

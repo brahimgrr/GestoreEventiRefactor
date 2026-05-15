@@ -42,9 +42,7 @@ class FilePropostaRepositoryTest {
                 () -> assertEquals(List.of("p1", "p2", "p3"),
                         reloaded.findAll().stream().map(Proposta::getId).toList()),
                 () -> assertEquals(List.of("p1", "p2"),
-                        reloaded.findByState(StatoProposta.CONFERMATA).stream().map(Proposta::getId).toList()),
-                () -> assertEquals(List.of(),
-                        reloaded.findOpen().stream().map(Proposta::getId).toList())
+                        reloaded.findByState(StatoProposta.CONFERMATA).stream().map(Proposta::getId).toList())
         );
     }
 

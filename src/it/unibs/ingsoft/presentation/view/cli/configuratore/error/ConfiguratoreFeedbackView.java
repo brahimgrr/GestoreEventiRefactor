@@ -1,9 +1,9 @@
 package it.unibs.ingsoft.presentation.view.cli.configuratore.error;
 
-import it.unibs.ingsoft.shared.error.Failure;
 import it.unibs.ingsoft.presentation.view.cli.common.error.FailureMessageRegistry;
 import it.unibs.ingsoft.presentation.view.interfaces.common.IAppView;
 import it.unibs.ingsoft.presentation.view.interfaces.configuratore.error.IConfiguratoreFeedbackView;
+import it.unibs.ingsoft.shared.error.Failure;
 
 public final class ConfiguratoreFeedbackView implements IConfiguratoreFeedbackView {
     private final IAppView ui;

@@ -2,11 +2,7 @@ package it.unibs.ingsoft.domain.model.catalogo;
 
 import it.unibs.ingsoft.domain.error.DomainException;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public final class Catalogo {
     private final List<Campo> campiBase = new ArrayList<>();

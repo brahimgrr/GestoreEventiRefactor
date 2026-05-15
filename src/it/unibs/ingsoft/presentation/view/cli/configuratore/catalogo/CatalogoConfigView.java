@@ -8,8 +8,8 @@ import it.unibs.ingsoft.domain.model.catalogo.TipoDato;
 import it.unibs.ingsoft.presentation.view.cli.configuratore.campo.CampoRenderer;
 import it.unibs.ingsoft.presentation.view.cli.configuratore.categoria.CategoriaRenderer;
 import it.unibs.ingsoft.presentation.view.interfaces.common.IAppView;
-import it.unibs.ingsoft.presentation.view.interfaces.configuratore.catalogo.ICatalogoConfigView;
 import it.unibs.ingsoft.presentation.view.interfaces.common.OperationCancelledException;
+import it.unibs.ingsoft.presentation.view.interfaces.configuratore.catalogo.ICatalogoConfigView;
 
 import java.util.ArrayList;
 import java.util.List;

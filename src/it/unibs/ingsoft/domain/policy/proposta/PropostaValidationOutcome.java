@@ -1,4 +1,4 @@
-package it.unibs.ingsoft.domain.model.proposta;
+package it.unibs.ingsoft.domain.policy.proposta;
 
 import it.unibs.ingsoft.domain.error.ValidationError;
 

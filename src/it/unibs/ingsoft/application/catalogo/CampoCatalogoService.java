@@ -4,12 +4,8 @@ import it.unibs.ingsoft.application.catalogo.dto.CampoBaseExtraRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CampoDefinitionRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CampoObbligatorietaRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CatalogoOperationResult;
+import it.unibs.ingsoft.domain.model.catalogo.*;
 import it.unibs.ingsoft.domain.repository.CatalogoRepository;
-import it.unibs.ingsoft.domain.model.catalogo.Catalogo;
-import it.unibs.ingsoft.domain.model.catalogo.Campo;
-import it.unibs.ingsoft.domain.model.catalogo.Categoria;
-import it.unibs.ingsoft.domain.model.catalogo.TipoDato;
-import it.unibs.ingsoft.domain.model.catalogo.CampoFactory;
 import it.unibs.ingsoft.shared.error.FailureException;
 
 import java.util.Collections;
@@ -128,16 +124,6 @@ public final class CampoCatalogoService {
                 : CatalogoOperationResult.NON_TROVATO;
     }
 
-    /*
-    MAI USATO
-     */
-    public boolean setObbligatorietaCampoComune(String nome, boolean obbligatorio) {
-        Catalogo catalogo = repo.load();
-        boolean changed = catalogo.updateCampoComune(nome, obbligatorio);
-        if (changed) repo.save(catalogo);
-        return changed;
-    }
-
     public CatalogoOperationResult setObbligatorietaCampoComune(CampoObbligatorietaRequest request) {
         Objects.requireNonNull(request);
         Catalogo catalogo = repo.load();
@@ -185,16 +171,6 @@ public final class CampoCatalogoService {
         return removeCampoSpecifico(categoria, nome)
                 ? CatalogoOperationResult.SUCCESSO
                 : CatalogoOperationResult.NON_TROVATO;
-    }
-
-    /*
-    MAI USATO
-     */
-    public boolean setObbligatorietaCampoSpecifico(String categoria, String nome, boolean obbligatorio) {
-        Catalogo catalogo = repo.load();
-        boolean changed = catalogo.updateCampoSpecifico(categoria, nome, obbligatorio);
-        if (changed) repo.save(catalogo);
-        return changed;
     }
 
     public CatalogoOperationResult setObbligatorietaCampoSpecifico(String categoria, CampoObbligatorietaRequest request) {

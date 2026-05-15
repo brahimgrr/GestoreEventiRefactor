@@ -7,6 +7,7 @@ package it.unibs.ingsoft.domain.model.catalogo;
 public enum TipoDato {
     STRINGA,
     INTERO,
+    INTERO_POSITIVO,
     DECIMALE,
     DATA,
     ORA,

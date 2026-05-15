@@ -3,7 +3,7 @@ package it.unibs.ingsoft.application.proposta.dto;
 import it.unibs.ingsoft.domain.model.catalogo.Campo;
 import it.unibs.ingsoft.domain.model.catalogo.TipoCampo;
 import it.unibs.ingsoft.domain.model.catalogo.TipoDato;
-import it.unibs.ingsoft.domain.model.proposta.ProposalValidationFailure;
+import it.unibs.ingsoft.domain.policy.proposta.PropostaValidationFailure;
 import it.unibs.ingsoft.domain.error.ValidationError;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +17,7 @@ class PropostaValidationResultTest {
     void costruttore_copiaListeERendeImmutabileIlRisultato() {
         ValidationError error = new ValidationError(
                 "Titolo",
-                new ProposalValidationFailure.RequiredFieldMissing("Titolo"));
+                new PropostaValidationFailure.RequiredFieldMissing("Titolo"));
         Campo campo = new Campo("Titolo", TipoCampo.BASE, TipoDato.STRINGA, true);
         List<ValidationError> errori = new ArrayList<>(List.of(error));
         List<Campo> campi = new ArrayList<>(List.of(campo));
@@ -40,7 +40,7 @@ class PropostaValidationResultTest {
         Campo campo = new Campo("Titolo", TipoCampo.BASE, TipoDato.STRINGA, true);
         ValidationError error = new ValidationError(
                 "Titolo",
-                new ProposalValidationFailure.RequiredFieldMissing("Titolo"));
+                new PropostaValidationFailure.RequiredFieldMissing("Titolo"));
 
         assertAll(
                 () -> assertThrows(NullPointerException.class,

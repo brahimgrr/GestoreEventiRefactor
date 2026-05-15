@@ -34,21 +34,9 @@ public interface IInputView {
     List<String> acquisisciListaNomi(String titolo);
 
     /**
-     * Mostra una lista numerata e restituisce l'elemento selezionato,
-     * o {@link Optional#empty()} se l'utente sceglie 0 (Annulla).
-     */
-    <T> Optional<T> selezionaElemento(String prompt, List<T> elementi);
-
-    /**
      * Mostra una lista numerata usando il mapper fornito per l'etichetta di ogni elemento.
      */
     <T> Optional<T> selezionaElemento(String prompt, List<T> elementi,
                                       Function<T, String> labelMapper);
 
-    /**
-     * Come {@link #selezionaElemento(String, List)} ma aggiunge informazioni extra
-     * per ogni elemento.
-     */
-    <T> Optional<T> selezionaElementoConInfo(String prompt, List<T> elementi,
-                                             Function<T, String> infoMapper);
 }

@@ -1,6 +1,6 @@
 package it.unibs.ingsoft.domain.error;
 
-import it.unibs.ingsoft.domain.model.proposta.ProposalValidationFailure;
+import it.unibs.ingsoft.domain.policy.proposta.PropostaValidationFailure;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -10,8 +10,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class ValidationErrorTest {
     @Test
     void costruttore_conFailureValido_memorizzaCampoEFailure() {
-        ProposalValidationFailure.RequiredFieldMissing failure =
-                new ProposalValidationFailure.RequiredFieldMissing("Titolo");
+        PropostaValidationFailure.RequiredFieldMissing failure =
+                new PropostaValidationFailure.RequiredFieldMissing("Titolo");
 
         ValidationError error = new ValidationError("Titolo", failure);
 
@@ -31,10 +31,10 @@ class ValidationErrorTest {
         LocalDate oggi = LocalDate.of(2026, 5, 13);
         ValidationError error = new ValidationError(
                 "Termine",
-                new ProposalValidationFailure.SubscriptionDeadlineNotFuture(oggi));
+                new PropostaValidationFailure.SubscriptionDeadlineNotFuture(oggi));
 
-        ProposalValidationFailure.SubscriptionDeadlineNotFuture failure =
-                assertInstanceOf(ProposalValidationFailure.SubscriptionDeadlineNotFuture.class, error.failure());
+        PropostaValidationFailure.SubscriptionDeadlineNotFuture failure =
+                assertInstanceOf(PropostaValidationFailure.SubscriptionDeadlineNotFuture.class, error.failure());
 
         assertEquals(oggi, failure.today());
     }

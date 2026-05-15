@@ -13,11 +13,6 @@ public interface IOutputView {
     void stampaSezione(String titolo);
 
     /**
-     * Mostra un menu numerato; {@code 0} esce/torna con l'etichetta "Esci".
-     */
-    void stampaMenu(String titolo, String[] voci);
-
-    /**
      * Mostra un menu numerato; {@code 0} esce/torna con l'etichetta {@code uscitaLabel}.
      */
     void stampaMenu(String titolo, String[] voci, String uscitaLabel);

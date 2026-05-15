@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.persistence.file.document;
 
-import it.unibs.ingsoft.domain.model.catalogo.Catalogo;
 import it.unibs.ingsoft.domain.model.catalogo.Campo;
+import it.unibs.ingsoft.domain.model.catalogo.Catalogo;
 import it.unibs.ingsoft.domain.model.catalogo.Categoria;
 
 import java.util.List;

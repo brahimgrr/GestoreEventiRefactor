@@ -1,11 +1,11 @@
 package it.unibs.ingsoft.application.proposta;
 
-import it.unibs.ingsoft.domain.repository.PropostaRepository;
+import it.unibs.ingsoft.domain.AppConstants;
+import it.unibs.ingsoft.domain.error.DomainException;
+import it.unibs.ingsoft.domain.model.proposta.ProposalFailure;
 import it.unibs.ingsoft.domain.model.proposta.Proposta;
 import it.unibs.ingsoft.domain.model.proposta.PropostaIdentityPolicy;
-import it.unibs.ingsoft.domain.model.proposta.ProposalFailure;
-import it.unibs.ingsoft.domain.error.DomainException;
-import it.unibs.ingsoft.domain.AppConstants;
+import it.unibs.ingsoft.domain.repository.PropostaRepository;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

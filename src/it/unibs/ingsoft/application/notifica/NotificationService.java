@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.application.notifica;
 
-import it.unibs.ingsoft.domain.repository.NotificationRepository;
 import it.unibs.ingsoft.domain.model.notifica.Notifica;
+import it.unibs.ingsoft.domain.repository.NotificationRepository;
 
 import java.util.List;
 import java.util.Objects;

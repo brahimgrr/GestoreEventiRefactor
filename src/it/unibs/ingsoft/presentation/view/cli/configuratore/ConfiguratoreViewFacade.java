@@ -10,7 +10,6 @@ import it.unibs.ingsoft.domain.model.catalogo.Campo;
 import it.unibs.ingsoft.domain.model.catalogo.Categoria;
 import it.unibs.ingsoft.domain.model.proposta.Proposta;
 import it.unibs.ingsoft.domain.model.proposta.StatoProposta;
-import it.unibs.ingsoft.shared.error.Failure;
 import it.unibs.ingsoft.presentation.view.interfaces.configuratore.IConfiguratoreViewFacade;
 import it.unibs.ingsoft.presentation.view.interfaces.configuratore.batch.IBatchImportView;
 import it.unibs.ingsoft.presentation.view.interfaces.configuratore.campo.ICampoConfigView;
@@ -18,11 +17,8 @@ import it.unibs.ingsoft.presentation.view.interfaces.configuratore.catalogo.ICat
 import it.unibs.ingsoft.presentation.view.interfaces.configuratore.categoria.ICategoriaConfigView;
 import it.unibs.ingsoft.presentation.view.interfaces.configuratore.error.IConfiguratoreFeedbackView;
 import it.unibs.ingsoft.presentation.view.interfaces.configuratore.menu.IConfiguratoreView;
-import it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta.IPropostaBrowsingView;
-import it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta.IPropostaCreationView;
-import it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta.IPropostaLifecycleView;
-import it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta.IPropostaPublicationView;
-import it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta.ProposalFieldValidator;
+import it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta.*;
+import it.unibs.ingsoft.shared.error.Failure;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -153,7 +149,7 @@ public final class ConfiguratoreViewFacade implements IConfiguratoreViewFacade {
     @Override
     public Optional<Map<String, String>> acquisisciValoriProposta(
             Proposta proposta,
-            ProposalFieldValidator validator) {
+            PropostaCampoValidator validator) {
         return propostaCreationView.acquisisciValoriProposta(proposta, validator);
     }
 
@@ -161,7 +157,7 @@ public final class ConfiguratoreViewFacade implements IConfiguratoreViewFacade {
     public Optional<Map<String, String>> correggiValoriProposta(
             Proposta proposta,
             PropostaValidationResult result,
-            ProposalFieldValidator validator) {
+            PropostaCampoValidator validator) {
         return propostaCreationView.correggiValoriProposta(proposta, result, validator);
     }
 

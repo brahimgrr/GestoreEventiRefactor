@@ -100,11 +100,6 @@ public final class ConsoleUI implements IAppView {
     }
 
     @Override
-    public void stampaMenu(String titolo, String[] lista) {
-        stampaMenu(titolo, lista, "Torna");
-    }
-
-    @Override
     public String acquisisciStringa(String prompt) {
         System.out.print(prompt);
         String line = scanner.nextLine();
@@ -219,11 +214,6 @@ public final class ConsoleUI implements IAppView {
     }
 
     @Override
-    public <T> Optional<T> selezionaElemento(String prompt, List<T> elementi) {
-        return selezionaElemento(prompt, elementi, String::valueOf);
-    }
-
-    @Override
     public <T> Optional<T> selezionaElemento(String prompt, List<T> elementi,
                                              Function<T, String> labelMapper) {
         if (elementi.isEmpty()) {
@@ -245,26 +235,4 @@ public final class ConsoleUI implements IAppView {
         }
     }
 
-    @Override
-    public <T> Optional<T> selezionaElementoConInfo(String prompt, List<T> elementi,
-                                                    Function<T, String> infoMapper) {
-        if (elementi.isEmpty()) {
-            stampa("  (nessun elemento disponibile)");
-            return Optional.empty();
-        }
-
-        stampa(prompt);
-        for (int i = 0; i < elementi.size(); i++)
-            stampa("  " + (i + 1) + ") " + elementi.get(i) +
-                    "  [" + infoMapper.apply(elementi.get(i)) + "]");
-        stampa("  0) Annulla");
-        newLine();
-
-        try {
-            int choice = acquisisciIntero("Scelta: ", 0, elementi.size());
-            return choice == 0 ? Optional.empty() : Optional.of(elementi.get(choice - 1));
-        } catch (OperationCancelledException e) {
-            return Optional.empty();
-        }
-    }
 }

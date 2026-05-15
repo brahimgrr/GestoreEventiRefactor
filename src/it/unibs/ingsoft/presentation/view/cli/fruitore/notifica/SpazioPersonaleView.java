@@ -1,10 +1,10 @@
 package it.unibs.ingsoft.presentation.view.cli.fruitore.notifica;
 
-import it.unibs.ingsoft.domain.model.utente.Fruitore;
 import it.unibs.ingsoft.domain.model.notifica.Notifica;
+import it.unibs.ingsoft.domain.model.utente.Fruitore;
 import it.unibs.ingsoft.presentation.view.interfaces.common.IAppView;
-import it.unibs.ingsoft.presentation.view.interfaces.fruitore.notifica.ISpazioPersonaleView;
 import it.unibs.ingsoft.presentation.view.interfaces.common.OperationCancelledException;
+import it.unibs.ingsoft.presentation.view.interfaces.fruitore.notifica.ISpazioPersonaleView;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;

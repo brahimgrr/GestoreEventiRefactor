@@ -5,9 +5,9 @@ import it.unibs.ingsoft.application.catalogo.dto.CampoDefinitionRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CampoObbligatorietaRequest;
 import it.unibs.ingsoft.application.catalogo.dto.CatalogoOperationResult;
 import it.unibs.ingsoft.domain.model.catalogo.Campo;
+import it.unibs.ingsoft.domain.model.catalogo.CampoFactory;
 import it.unibs.ingsoft.domain.model.catalogo.Categoria;
 import it.unibs.ingsoft.domain.model.catalogo.TipoDato;
-import it.unibs.ingsoft.domain.model.catalogo.CampoFactory;
 import it.unibs.ingsoft.domain.repository.CatalogoRepository;
 
 import java.util.List;

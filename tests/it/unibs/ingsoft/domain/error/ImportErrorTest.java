@@ -3,7 +3,7 @@ package it.unibs.ingsoft.domain.error;
 import it.unibs.ingsoft.application.batch.ImportFailure;
 import it.unibs.ingsoft.application.batch.dto.ImportError;
 import it.unibs.ingsoft.domain.model.catalogo.CatalogFailure;
-import it.unibs.ingsoft.domain.model.proposta.ProposalValidationFailure;
+import it.unibs.ingsoft.domain.policy.proposta.PropostaValidationFailure;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -43,7 +43,7 @@ class ImportErrorTest {
     void validationError_conservaErroreValidazioneAnnidato() {
         ValidationError validationError = new ValidationError(
                 "Data",
-                new ProposalValidationFailure.EventDateTooEarly());
+                new PropostaValidationFailure.EventDateTooEarly());
         ImportError error = new ImportError(new ImportFailure.ProposalValidation("Torneo", validationError));
 
         ImportFailure.ProposalValidation failure =

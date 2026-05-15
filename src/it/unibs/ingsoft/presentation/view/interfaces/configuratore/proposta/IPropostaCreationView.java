@@ -11,12 +11,12 @@ import java.util.Optional;
 public interface IPropostaCreationView {
     Optional<Categoria> selezionaCategoriaPerProposta(List<Categoria> categorie);
 
-    Optional<Map<String, String>> acquisisciValoriProposta(Proposta proposta, ProposalFieldValidator validator);
+    Optional<Map<String, String>> acquisisciValoriProposta(Proposta proposta, PropostaCampoValidator validator);
 
     Optional<Map<String, String>> correggiValoriProposta(
             Proposta proposta,
             PropostaValidationResult result,
-            ProposalFieldValidator validator);
+            PropostaCampoValidator validator);
 
     void mostraPropostaSalvata(Proposta proposta);
 }
