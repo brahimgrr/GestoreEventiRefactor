@@ -8,6 +8,7 @@ import it.unibs.ingsoft.presentation.view.interfaces.fruitore.notifica.ISpazioPe
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public final class SpazioPersonaleView implements ISpazioPersonaleView {
@@ -15,9 +16,15 @@ public final class SpazioPersonaleView implements ISpazioPersonaleView {
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
     private final IAppView ui;
+    private final NotificaMessageRegistry messages;
 
     public SpazioPersonaleView(IAppView ui) {
-        this.ui = ui;
+        this(ui, NotificaMessageRegistry.cliDefault());
+    }
+
+    public SpazioPersonaleView(IAppView ui, NotificaMessageRegistry messages) {
+        this.ui = Objects.requireNonNull(ui);
+        this.messages = Objects.requireNonNull(messages);
     }
 
     @Override
@@ -34,7 +41,7 @@ public final class SpazioPersonaleView implements ISpazioPersonaleView {
         for (int i = 0; i < notifiche.size(); i++) {
             Notifica notifica = notifiche.get(i);
             ui.stampa((i + 1) + ". [" + notifica.dataCreazione().format(NOTIFICA_FMT) + "] "
-                    + NotificaMessageMapper.message(notifica));
+                    + messages.message(notifica));
         }
         ui.newLine();
 

@@ -11,17 +11,17 @@ import java.util.List;
 
 public final class TermineIscrizioneFuturoRule implements PropostaValidationRule {
     @Override
-    public void valida(PropostaValidationContext context, List<ValidationError> errors) {
+    public List<ValidationError> valida(PropostaValidationContext context) {
         if (!context.deveValidareRelazioneTraCampi(AppConstants.CAMPO_TERMINE_ISCRIZIONE)) {
-            return;
+            return List.of();
         }
 
-        LocalDate deadline = context.subscriptionDeadline();
+        LocalDate deadline = context.data(AppConstants.CAMPO_TERMINE_ISCRIZIONE);
         if (deadline == null || deadline.isAfter(context.today())) {
-            return;
+            return List.of();
         }
 
-        errors.add(new ValidationError(
+        return List.of(new ValidationError(
                 AppConstants.CAMPO_TERMINE_ISCRIZIONE,
                 new PropostaValidationFailure.SubscriptionDeadlineNotFuture(
                         context.isComplete() ? context.today() : null)));

@@ -96,8 +96,8 @@ public final class ConfiguratoreService {
         return propostaService.creaProposta(categoria, getCampiBase(), getCampiComuni());
     }
 
-    public List<ValidationError> validaCampo(Proposta proposta, Map<String, String> valoriCorrenti, String nomeCampo, String valore) {
-        return propostaService.validaCampo(proposta, valoriCorrenti, nomeCampo, valore);
+    public List<ValidationError> validaCampo(Campo campo, Map<String, String> valori) {
+        return propostaService.validaCampo(campo, valori);
     }
 
     public PropostaValidationResult applicaValoriEValida(Proposta proposta, Map<String, String> valori) {

@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -109,12 +110,17 @@ class ConfiguratoreServiceTest {
         Categoria categoria = service.createCategoria("Sport");
         Proposta proposta = service.creaProposta(categoria);
         Map<String, String> valori = valoriProposta("Torneo da gestire");
-
-        List<ValidationError> erroriCampo = service.validaCampo(
-                proposta,
-                valori,
+        Map<String, String> valoriCandidati = new LinkedHashMap<>(valori);
+        valoriCandidati.put(
                 AppConstants.CAMPO_DATA,
                 LocalDate.now(AppConstants.clock).plusDays(2).format(AppConstants.DATE_FMT));
+
+        List<ValidationError> erroriCampo = service.validaCampo(
+                proposta.getCampi().stream()
+                        .filter(campo -> campo.getNome().equals(AppConstants.CAMPO_DATA))
+                        .findFirst()
+                        .orElseThrow(),
+                valoriCandidati);
         PropostaValidationResult result = service.applicaValoriEValida(proposta, valori);
         service.salvaProposta(proposta);
 

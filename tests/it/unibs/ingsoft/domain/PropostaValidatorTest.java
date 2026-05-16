@@ -21,6 +21,7 @@ import it.unibs.ingsoft.domain.policy.tipodato.TypeValidationFailure;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -108,12 +109,14 @@ class PropostaValidatorTest {
                 oggi.plusDays(3),
                 oggi.plusDays(6),
                 oggi.plusDays(7));
-
-        List<ValidationError> errori = PropostaValidator.standard().validaCampo(
-                proposta,
-                valori,
+        Map<String, String> valoriCandidati = new LinkedHashMap<>(valori);
+        valoriCandidati.put(
                 AppConstants.CAMPO_DATA,
                 oggi.plusDays(4).format(AppConstants.DATE_FMT));
+
+        List<ValidationError> errori = PropostaValidator.standard().validaCampo(
+                campoConNome(proposta, AppConstants.CAMPO_DATA),
+                valoriCandidati);
 
         assertAll(
                 () -> assertTrue(errori.stream()
@@ -125,7 +128,7 @@ class PropostaValidatorTest {
 
     @Test
     void valida_conRegolaCustomPermetteEstensioneSenzaModificareIlValidator() {
-        PropostaValidationRule customRule = (context, errors) -> errors.add(new ValidationError(
+        PropostaValidationRule customRule = context -> List.of(new ValidationError(
                 "Custom",
                 new PropostaValidationFailure.RequiredFieldMissing("Custom")));
         Proposta proposta = propostaBaseCompleta();
@@ -223,5 +226,12 @@ class PropostaValidatorTest {
 
     private Campo campo(String nome, TipoCampo tipo, TipoDato tipoDato, boolean obbligatorio) {
         return new Campo(nome, tipo, tipoDato, obbligatorio);
+    }
+
+    private Campo campoConNome(Proposta proposta, String nome) {
+        return proposta.getCampi().stream()
+                .filter(campo -> campo.getNome().equals(nome))
+                .findFirst()
+                .orElseThrow();
     }
 }

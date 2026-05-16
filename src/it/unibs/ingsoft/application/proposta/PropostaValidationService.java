@@ -2,6 +2,7 @@ package it.unibs.ingsoft.application.proposta;
 
 import it.unibs.ingsoft.application.proposta.dto.PropostaValidationResult;
 import it.unibs.ingsoft.domain.error.ValidationError;
+import it.unibs.ingsoft.domain.model.catalogo.Campo;
 import it.unibs.ingsoft.domain.model.proposta.Proposta;
 import it.unibs.ingsoft.domain.policy.proposta.PropostaValidationOutcome;
 import it.unibs.ingsoft.domain.policy.proposta.PropostaValidator;
@@ -25,8 +26,8 @@ public final class PropostaValidationService {
         this.validator = Objects.requireNonNull(validator);
     }
 
-    public List<ValidationError> validaCampo(Proposta proposta, Map<String, String> valoriCorrenti, String nomeCampo, String valore) {
-        return validator.validaCampo(proposta, valoriCorrenti, nomeCampo, valore);
+    public List<ValidationError> validaCampo(Campo campo, Map<String, String> valori) {
+        return validator.validaCampo(campo, valori);
     }
 
     public PropostaValidationResult applicaValoriEValida(Proposta proposta, Map<String, String> valori) {

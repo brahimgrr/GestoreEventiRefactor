@@ -97,7 +97,7 @@ class FileRepositoryFactoryTest {
         factory.createUserRepository().save(UserAccount.create(
                 "mario",
                 UserRole.FRUITORE,
-                new PasswordHash("PBKDF2WithHmacSHA256", 1, "salt", "hash")));
+                new PasswordHash("hash")));
         factory.createPropostaRepository().save(new Proposta(new Categoria("Sport"), List.of(), List.of()));
         factory.createNotificationRepository().add("mario", new Notifica("messaggio"));
 

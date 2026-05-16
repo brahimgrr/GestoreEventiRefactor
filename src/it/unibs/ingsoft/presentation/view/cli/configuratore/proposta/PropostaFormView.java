@@ -3,7 +3,6 @@ package it.unibs.ingsoft.presentation.view.cli.configuratore.proposta;
 import it.unibs.ingsoft.domain.error.ValidationError;
 import it.unibs.ingsoft.domain.model.catalogo.Campo;
 import it.unibs.ingsoft.domain.model.proposta.Proposta;
-import it.unibs.ingsoft.domain.policy.tipodato.TipoDatoValidator;
 import it.unibs.ingsoft.presentation.view.cli.common.error.FailureMessageRegistry;
 import it.unibs.ingsoft.presentation.view.interfaces.common.IAppView;
 import it.unibs.ingsoft.presentation.view.interfaces.common.OperationCancelledException;
@@ -45,7 +44,6 @@ public final class PropostaFormView {
             List<Campo> campi,
             PropostaCampoValidator validator) {
         Map<String, String> ctx = new LinkedHashMap<>(proposta.getValoriCampi());
-        TipoDatoValidator tipoDatoValidator = TipoDatoValidator.INSTANCE;
         int i = 0;
 
         while (i < campi.size()) {
@@ -79,21 +77,15 @@ public final class PropostaFormView {
                 continue;
             }
 
-            Optional<ValidationError> typeError = tipoDatoValidator.validate(raw, campo.getTipoDato());
-            if (typeError.isPresent()) {
-                ui.stampaErrore("  " + messages.message(typeError.get().failure()));
-                continue;
-            }
-
-            List<ValidationError> businessErrors = validator.valida(
-                    proposta,
-                    Collections.unmodifiableMap(ctx),
-                    nome,
-                    raw
+            Map<String, String> candidateValues = new LinkedHashMap<>(ctx);
+            candidateValues.put(nome, raw);
+            List<ValidationError> validationErrors = validator.valida(
+                    campo,
+                    Collections.unmodifiableMap(candidateValues)
             );
-            if (!businessErrors.isEmpty()) {
-                for (ValidationError businessError : businessErrors)
-                    ui.stampaErrore("  " + messages.message(businessError.failure()));
+            if (!validationErrors.isEmpty()) {
+                for (ValidationError validationError : validationErrors)
+                    ui.stampaErrore("  " + messages.message(validationError.failure()));
                 continue;
             }
 

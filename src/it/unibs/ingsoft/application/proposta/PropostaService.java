@@ -46,8 +46,8 @@ public final class PropostaService {
         return new Proposta(categoria, campiBase, campiComuni);
     }
 
-    public List<ValidationError> validaCampo(Proposta proposta, Map<String, String> valoriCorrenti, String nomeCampo, String valore) {
-        return validationService.validaCampo(proposta, valoriCorrenti, nomeCampo, valore);
+    public List<ValidationError> validaCampo(Campo campo, Map<String, String> valori) {
+        return validationService.validaCampo(campo, valori);
     }
 
     public void pubblicaProposta(Proposta proposta) {

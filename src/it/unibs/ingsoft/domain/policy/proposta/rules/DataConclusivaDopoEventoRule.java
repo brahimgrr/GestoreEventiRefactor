@@ -10,19 +10,22 @@ import java.util.List;
 
 public final class DataConclusivaDopoEventoRule implements PropostaValidationRule {
     @Override
-    public void valida(PropostaValidationContext context, List<ValidationError> errors) {
+    public List<ValidationError> valida(PropostaValidationContext context) {
         if (!context.deveValidareRelazioneTraCampi(
                 AppConstants.CAMPO_DATA,
                 AppConstants.CAMPO_DATA_CONCLUSIVA)) {
-            return;
+            return List.of();
         }
 
-        if (context.eventDate() != null
-                && context.closingDate() != null
-                && context.closingDate().isBefore(context.eventDate())) {
-            errors.add(new ValidationError(
+        var eventDate = context.data(AppConstants.CAMPO_DATA);
+        var closingDate = context.data(AppConstants.CAMPO_DATA_CONCLUSIVA);
+        if (eventDate != null
+                && closingDate != null
+                && closingDate.isBefore(eventDate)) {
+            return List.of(new ValidationError(
                     AppConstants.CAMPO_DATA_CONCLUSIVA,
                     new PropostaValidationFailure.ClosingDateBeforeEvent()));
         }
+        return List.of();
     }
 }

@@ -5,6 +5,7 @@ import it.unibs.ingsoft.application.error.ApplicationException;
 import it.unibs.ingsoft.shared.error.Failure;
 import it.unibs.ingsoft.domain.model.utente.Configuratore;
 import it.unibs.ingsoft.domain.model.utente.Fruitore;
+import it.unibs.ingsoft.domain.model.utente.PasswordHash;
 import it.unibs.ingsoft.domain.model.utente.UtenteFactory;
 import org.junit.jupiter.api.Test;
 
@@ -27,6 +28,21 @@ class AuthenticationServiceTest {
                 () -> assertTrue(login.isPresent()),
                 () -> assertEquals("adminuno", login.get().getUsername().toLowerCase()),
                 () -> assertEquals(1, repository.saveCount())
+        );
+    }
+
+    @Test
+    void registraNuovoAccount_salvaHashSha256SempliceSenzaPasswordInChiaro() {
+        ApplicationIntegrationSupport.InMemoryCredenzialiRepository repository =
+                new ApplicationIntegrationSupport.InMemoryCredenzialiRepository();
+        AuthenticationService service = new AuthenticationService(repository);
+
+        service.registraNuovoConfiguratore("AdminUno", "pass1234");
+
+        PasswordHash hash = repository.findByUsername("adminuno").orElseThrow().passwordHash();
+        assertAll(
+                () -> assertFalse(hash.hash().isBlank()),
+                () -> assertNotEquals("pass1234", hash.hash())
         );
     }
 

@@ -6,6 +6,7 @@ import it.unibs.ingsoft.domain.policy.proposta.PropostaValidationContext;
 import it.unibs.ingsoft.domain.policy.proposta.PropostaValidationRule;
 import it.unibs.ingsoft.domain.policy.tipodato.TipoDatoValidator;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -17,14 +18,16 @@ public final class TipoDatoCampoRule implements PropostaValidationRule {
     }
 
     @Override
-    public void valida(PropostaValidationContext context, List<ValidationError> errors) {
+    public List<ValidationError> valida(PropostaValidationContext context) {
+        List<ValidationError> errors = new ArrayList<>();
         for (Campo campo : context.campiDaValidare()) {
             validaCampo(campo, context, errors);
         }
+        return errors;
     }
 
     private void validaCampo(Campo campo, PropostaValidationContext context, List<ValidationError> errors) {
-        String value = context.valoreDi(campo.getNome());
+        String value = context.valore(campo.getNome());
 
         if (value == null || value.isBlank()) {
             return;

@@ -6,5 +6,5 @@ import java.util.List;
 
 @FunctionalInterface
 public interface PropostaValidationRule {
-    void valida(PropostaValidationContext context, List<ValidationError> errors);
+    List<ValidationError> valida(PropostaValidationContext context);
 }

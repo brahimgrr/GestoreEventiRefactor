@@ -40,9 +40,6 @@ public record UserStoreDocument(List<UserRecord> users) {
             String username,
             String normalizedUsername,
             UserRole role,
-            String algorithm,
-            int iterations,
-            String salt,
             String hash) {
 
         static UserRecord fromDomain(UserAccount account) {
@@ -51,9 +48,6 @@ public record UserStoreDocument(List<UserRecord> users) {
                     account.username(),
                     account.normalizedUsername(),
                     account.role(),
-                    passwordHash.algorithm(),
-                    passwordHash.iterations(),
-                    passwordHash.salt(),
                     passwordHash.hash());
         }
 
@@ -61,7 +55,7 @@ public record UserStoreDocument(List<UserRecord> users) {
             return UserAccount.create(
                     username,
                     role,
-                    new PasswordHash(algorithm, iterations, salt, hash));
+                    new PasswordHash(hash));
         }
     }
 }

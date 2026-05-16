@@ -5,6 +5,10 @@ import it.unibs.ingsoft.domain.model.utente.*;
 import it.unibs.ingsoft.domain.repository.UserRepository;
 import it.unibs.ingsoft.shared.error.Failure;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -21,10 +25,10 @@ public final class AuthenticationService {
 
     private static final int MIN_USERNAME_LENGTH = 3;
     private static final int MIN_PASSWORD_LENGTH = 4;
+    private static final String PASSWORD_ALGORITHM = "SHA-256";
 
     private final UserRepository repo;
     private final UtenteFactory utenteFactory;
-    private final PasswordHasher passwordHasher;
 
     /**
      * @pre repo   != null
@@ -34,13 +38,8 @@ public final class AuthenticationService {
     }
 
     public AuthenticationService(UserRepository repo, UtenteFactory utenteFactory) {
-        this(repo, utenteFactory, PasswordHasher.pbkdf2());
-    }
-
-    public AuthenticationService(UserRepository repo, UtenteFactory utenteFactory, PasswordHasher passwordHasher) {
         this.repo = Objects.requireNonNull(repo);
         this.utenteFactory = Objects.requireNonNull(utenteFactory);
-        this.passwordHasher = Objects.requireNonNull(passwordHasher);
     }
 
     private static void validaCredenziali(String username, String password) {
@@ -98,7 +97,7 @@ public final class AuthenticationService {
         Optional<UserAccount> account = repo.findByUsername(username);
         if (account.isPresent() &&
                 account.get().role() == UserRole.CONFIGURATORE &&
-                passwordHasher.matches(password, account.get().passwordHash())) {
+                passwordMatches(password, account.get().passwordHash())) {
             return Optional.of(utenteFactory.creaConfiguratore(username));
         }
 
@@ -117,7 +116,7 @@ public final class AuthenticationService {
         Optional<UserAccount> account = repo.findByUsername(username);
         if (account.isPresent() &&
                 account.get().role() == UserRole.FRUITORE &&
-                passwordHasher.matches(password, account.get().passwordHash())) {
+                passwordMatches(password, account.get().passwordHash())) {
             return Optional.of(utenteFactory.creaFruitore(username));
         }
 
@@ -133,7 +132,7 @@ public final class AuthenticationService {
         validaNuovoAccount(username, password);
 
         String normalized = username.trim();
-        repo.save(UserAccount.create(normalized, UserRole.CONFIGURATORE, passwordHasher.hash(password)));
+        repo.save(UserAccount.create(normalized, UserRole.CONFIGURATORE, hashPassword(password)));
         return utenteFactory.creaConfiguratore(normalized);
     }
 
@@ -147,8 +146,27 @@ public final class AuthenticationService {
         validaNuovoAccount(username, password);
 
         String normalized = username.trim();
-        repo.save(UserAccount.create(normalized, UserRole.FRUITORE, passwordHasher.hash(password)));
+        repo.save(UserAccount.create(normalized, UserRole.FRUITORE, hashPassword(password)));
         return utenteFactory.creaFruitore(normalized);
+    }
+
+    private static PasswordHash hashPassword(String password) {
+        return new PasswordHash(digest(password));
+    }
+
+    private static boolean passwordMatches(String password, PasswordHash expected) {
+        return expected != null
+                && digest(password).equals(expected.hash());
+    }
+
+    private static String digest(String password) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance(PASSWORD_ALGORITHM);
+            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+            return Base64.getEncoder().encodeToString(hash);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("Password hashing algorithm unavailable", e);
+        }
     }
 
     private void validaNuovoAccount(String username, String password) {

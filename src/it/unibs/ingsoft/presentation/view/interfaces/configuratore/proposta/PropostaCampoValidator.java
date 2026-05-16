@@ -1,7 +1,7 @@
 package it.unibs.ingsoft.presentation.view.interfaces.configuratore.proposta;
 
 import it.unibs.ingsoft.domain.error.ValidationError;
-import it.unibs.ingsoft.domain.model.proposta.Proposta;
+import it.unibs.ingsoft.domain.model.catalogo.Campo;
 
 import java.util.List;
 import java.util.Map;
@@ -14,5 +14,5 @@ import java.util.Map;
  */
 @FunctionalInterface
 public interface PropostaCampoValidator {
-    List<ValidationError> valida(Proposta proposta, Map<String, String> valoriCorrenti, String nomeCampo, String valore);
+    List<ValidationError> valida(Campo campo, Map<String, String> valori);
 }

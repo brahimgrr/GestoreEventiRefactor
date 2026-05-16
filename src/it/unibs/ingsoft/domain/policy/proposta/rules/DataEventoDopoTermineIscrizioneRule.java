@@ -10,19 +10,22 @@ import java.util.List;
 
 public final class DataEventoDopoTermineIscrizioneRule implements PropostaValidationRule {
     @Override
-    public void valida(PropostaValidationContext context, List<ValidationError> errors) {
+    public List<ValidationError> valida(PropostaValidationContext context) {
         if (!context.deveValidareRelazioneTraCampi(
                 AppConstants.CAMPO_TERMINE_ISCRIZIONE,
                 AppConstants.CAMPO_DATA)) {
-            return;
+            return List.of();
         }
 
-        if (context.subscriptionDeadline() != null
-                && context.eventDate() != null
-                && !context.eventDate().isAfter(context.subscriptionDeadline().plusDays(1))) {
-            errors.add(new ValidationError(
+        var subscriptionDeadline = context.data(AppConstants.CAMPO_TERMINE_ISCRIZIONE);
+        var eventDate = context.data(AppConstants.CAMPO_DATA);
+        if (subscriptionDeadline != null
+                && eventDate != null
+                && !eventDate.isAfter(subscriptionDeadline.plusDays(1))) {
+            return List.of(new ValidationError(
                     AppConstants.CAMPO_DATA,
                     new PropostaValidationFailure.EventDateTooEarly()));
         }
+        return List.of();
     }
 }

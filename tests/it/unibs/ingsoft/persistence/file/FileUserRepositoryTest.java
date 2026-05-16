@@ -1,8 +1,7 @@
 package it.unibs.ingsoft.persistence.file;
 
-import it.unibs.ingsoft.application.authentication.PasswordHasher;
+import it.unibs.ingsoft.application.authentication.AuthenticationService;
 import it.unibs.ingsoft.domain.model.utente.UserAccount;
-import it.unibs.ingsoft.domain.model.utente.UserRole;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -20,19 +19,21 @@ class FileUserRepositoryTest {
     @Test
     void saveEFindByUsername_persistonoHashSenzaPasswordInChiaro() throws Exception {
         Path path = tempDir.resolve("users.json");
-        PasswordHasher hasher = PasswordHasher.pbkdf2();
         FileUserRepository repository = new FileUserRepository(path);
-        UserAccount account = UserAccount.create("Mario", UserRole.FRUITORE, hasher.hash("pass1234"));
+        AuthenticationService service = new AuthenticationService(repository);
 
-        repository.save(account);
+        service.registraNuovoFruitore("Mario", "pass1234");
 
         UserAccount loaded = repository.findByUsername("mario").orElseThrow();
         String json = Files.readString(path);
         assertAll(
                 () -> assertTrue(repository.existsByUsername("MARIO")),
-                () -> assertTrue(hasher.matches("pass1234", loaded.passwordHash())),
+                () -> assertTrue(service.loginFruitore("mario", "pass1234").isPresent()),
                 () -> assertFalse(json.contains("pass1234")),
-                () -> assertTrue(json.contains("PBKDF2WithHmacSHA256"))
+                () -> assertFalse(json.contains("algorithm")),
+                () -> assertFalse(json.contains("iterations")),
+                () -> assertFalse(json.contains("salt")),
+                () -> assertFalse(loaded.passwordHash().hash().isBlank())
         );
     }
 }

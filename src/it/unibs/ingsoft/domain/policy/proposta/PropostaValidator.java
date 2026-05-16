@@ -2,6 +2,7 @@ package it.unibs.ingsoft.domain.policy.proposta;
 
 import it.unibs.ingsoft.domain.AppConstants;
 import it.unibs.ingsoft.domain.error.ValidationError;
+import it.unibs.ingsoft.domain.model.catalogo.Campo;
 import it.unibs.ingsoft.domain.model.proposta.Proposta;
 import it.unibs.ingsoft.domain.policy.tipodato.TipoDatoValidator;
 
@@ -37,22 +38,22 @@ public final class PropostaValidator {
     public PropostaValidationOutcome valida(Proposta proposta) {
         PropostaValidationContext context = PropostaValidationContext.complete(proposta, clock);
         List<ValidationError> errors = run(context);
-        return new PropostaValidationOutcome(errors, context.subscriptionDeadline(), context.eventDate());
+        return new PropostaValidationOutcome(
+                errors,
+                context.data(AppConstants.CAMPO_TERMINE_ISCRIZIONE),
+                context.data(AppConstants.CAMPO_DATA));
     }
 
-    public List<ValidationError> validaCampo(Proposta proposta,
-                                             Map<String, String> valoriCorrenti,
-                                             String nomeCampo,
-                                             String valore) {
+    public List<ValidationError> validaCampo(Campo campo, Map<String, String> valori) {
         PropostaValidationContext context =
-                PropostaValidationContext.campoModificato(proposta, valoriCorrenti, nomeCampo, valore, clock);
+                PropostaValidationContext.campoModificato(campo, valori, clock);
         return run(context);
     }
 
     private List<ValidationError> run(PropostaValidationContext context) {
         List<ValidationError> errors = new ArrayList<>();
         for (PropostaValidationRule rule : rules) {
-            rule.valida(context, errors);
+            errors.addAll(rule.valida(context));
         }
         return errors;
     }

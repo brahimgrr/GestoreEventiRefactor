@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class UserAccountTest {
     @Test
     void create_normalizzaUsernamePerLookupMaMantieneFormaVisuale() {
-        PasswordHash hash = new PasswordHash("PBKDF2WithHmacSHA256", 120000, "salt", "hash");
+        PasswordHash hash = new PasswordHash("hash");
 
         UserAccount account = UserAccount.create("  Mario.Rossi  ", UserRole.FRUITORE, hash);
 
@@ -23,7 +23,7 @@ class UserAccountTest {
 
     @Test
     void create_conDatiInvalidi_lanciaNullPointerExceptionOIllegalArgumentException() {
-        PasswordHash hash = new PasswordHash("PBKDF2WithHmacSHA256", 120000, "salt", "hash");
+        PasswordHash hash = new PasswordHash("hash");
 
         assertThrows(IllegalArgumentException.class, () -> UserAccount.create(" ", UserRole.FRUITORE, hash));
         assertThrows(NullPointerException.class, () -> UserAccount.create("mario", null, hash));

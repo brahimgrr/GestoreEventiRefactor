@@ -6,52 +6,40 @@ import it.unibs.ingsoft.domain.model.proposta.Proposta;
 
 import java.time.Clock;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public final class PropostaValidationContext {
     private final Map<String, String> valori;
     private final List<Campo> campi;
-    private final boolean complete;
-    private final String nomeCampoModificato;
+    private final Campo campoModificato;
     private final LocalDate today;
-    private final LocalDate subscriptionDeadline;
-    private final LocalDate eventDate;
-    private final LocalDate closingDate;
 
-    private PropostaValidationContext(Proposta proposta,
+    private PropostaValidationContext(List<Campo> campi,
                                       Map<String, String> valori,
-                                      boolean complete,
-                                      String nomeCampoModificato,
+                                      Campo campoModificato,
                                       Clock clock) {
-        Objects.requireNonNull(proposta);
+        this.campi = List.copyOf(Objects.requireNonNull(campi));
         this.valori = Collections.unmodifiableMap(new LinkedHashMap<>(valori));
-        this.campi = List.copyOf(proposta.getCampi());
-        this.complete = complete;
-        this.nomeCampoModificato = nomeCampoModificato;
+        this.campoModificato = campoModificato;
         this.today = LocalDate.now(Objects.requireNonNull(clock));
-        this.subscriptionDeadline = parseDate(this.valori.get(AppConstants.CAMPO_TERMINE_ISCRIZIONE));
-        this.eventDate = parseDate(this.valori.get(AppConstants.CAMPO_DATA));
-        this.closingDate = parseDate(this.valori.get(AppConstants.CAMPO_DATA_CONCLUSIVA));
     }
 
     public static PropostaValidationContext complete(Proposta proposta, Clock clock) {
         Objects.requireNonNull(proposta);
-        return new PropostaValidationContext(proposta, proposta.getValoriCampi(), true, null, clock);
+        return new PropostaValidationContext(proposta.getCampi(), proposta.getValoriCampi(), null, clock);
     }
 
-    public static PropostaValidationContext campoModificato(Proposta proposta,
-                                                            Map<String, String> valoriCorrenti,
-                                                            String nomeCampo,
-                                                            String valore,
+    public static PropostaValidationContext campoModificato(Campo campo,
+                                                            Map<String, String> valori,
                                                             Clock clock) {
-        Objects.requireNonNull(proposta);
-        Objects.requireNonNull(nomeCampo);
-        Map<String, String> merged = new LinkedHashMap<>(proposta.getValoriCampi());
-        if (valoriCorrenti != null) {
-            merged.putAll(valoriCorrenti);
-        }
-        merged.put(nomeCampo, valore);
-        return new PropostaValidationContext(proposta, merged, false, nomeCampo, clock);
+        Objects.requireNonNull(campo);
+        Objects.requireNonNull(valori);
+        return new PropostaValidationContext(List.of(campo), valori, campo, clock);
     }
 
     private static LocalDate parseDate(String value) {
@@ -70,23 +58,21 @@ public final class PropostaValidationContext {
     }
 
     public List<Campo> campiDaValidare() {
-        if (complete) {
+        if (isComplete()) {
             return campi;
         }
-        return campo(nomeCampoModificato)
-                .map(List::of)
-                .orElseGet(List::of);
+        return List.of(campoModificato);
     }
 
     public boolean isComplete() {
-        return complete;
+        return campoModificato == null;
     }
 
     public boolean deveValidareRelazioneTraCampi(String... nomiCampo) {
-        return complete || Arrays.stream(nomiCampo).anyMatch(this::isCampoModificato);
+        return isComplete() || Arrays.stream(nomiCampo).anyMatch(this::isCampoModificato);
     }
 
-    public String valoreDi(String nomeCampo) {
+    public String valore(String nomeCampo) {
         return valori.get(nomeCampo);
     }
 
@@ -94,25 +80,11 @@ public final class PropostaValidationContext {
         return today;
     }
 
-    public LocalDate subscriptionDeadline() {
-        return subscriptionDeadline;
-    }
-
-    public LocalDate eventDate() {
-        return eventDate;
-    }
-
-    public LocalDate closingDate() {
-        return closingDate;
+    public LocalDate data(String nomeCampo) {
+        return parseDate(valore(nomeCampo));
     }
 
     private boolean isCampoModificato(String nomeCampo) {
-        return Objects.equals(nomeCampoModificato, nomeCampo);
-    }
-
-    private Optional<Campo> campo(String nomeCampo) {
-        return campi.stream()
-                .filter(campo -> campo.getNome().equals(nomeCampo))
-                .findFirst();
+        return campoModificato != null && Objects.equals(campoModificato.getNome(), nomeCampo);
     }
 }
