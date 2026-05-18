@@ -8,7 +8,6 @@ import it.unibs.ingsoft.application.catalogo.dto.CatalogoOperationResult;
 import it.unibs.ingsoft.domain.catalogo.Categoria;
 import it.unibs.ingsoft.domain.catalogo.TipoDato;
 import it.unibs.ingsoft.domain.shared.error.DomainException;
-import it.unibs.ingsoft.domain.catalogo.CampoFactory;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -20,17 +19,13 @@ class CatalogoServiceTest {
     void costruttori_conDipendenzeNull_lancianoNullPointerException() {
         ApplicationIntegrationSupport.InMemoryCatalogoRepository repo =
                 new ApplicationIntegrationSupport.InMemoryCatalogoRepository();
-        CampoCatalogoService campoService = new CampoCatalogoService(repo, CampoFactory.getInstance());
-        CategoriaCatalogoService categoriaService = new CategoriaCatalogoService(repo);
+        CatalogoService service = new CatalogoService(repo);
 
         assertAll(
                 () -> assertThrows(NullPointerException.class, () -> new CatalogoService((it.unibs.ingsoft.persistence.interfaces.ICatalogoRepository) null)),
                 () -> assertThrows(NullPointerException.class, () -> new CatalogoService(repo, null)),
-                () -> assertThrows(NullPointerException.class, () -> new CatalogoService(null, categoriaService)),
-                () -> assertThrows(NullPointerException.class, () -> new CatalogoService(campoService, null)),
-                () -> assertThrows(NullPointerException.class, () -> new CampoCatalogoService(null, CampoFactory.getInstance())),
-                () -> assertThrows(NullPointerException.class, () -> new CampoCatalogoService(repo, null)),
-                () -> assertThrows(NullPointerException.class, () -> new CategoriaCatalogoService(null))
+                () -> assertThrows(NullPointerException.class, () -> new CatalogoService(null, serviceCategoria(repo))),
+                () -> assertThrows(NullPointerException.class, () -> new CatalogoService(serviceCampo(repo), null))
         );
     }
 
@@ -223,5 +218,13 @@ class CatalogoServiceTest {
         CatalogoService service = new CatalogoService(new ApplicationIntegrationSupport.InMemoryCatalogoRepository());
         service.configuraCampiBase(List.of());
         return service;
+    }
+
+    private CampoCatalogoService serviceCampo(ApplicationIntegrationSupport.InMemoryCatalogoRepository repo) {
+        return new CampoCatalogoService(repo, it.unibs.ingsoft.domain.catalogo.CampoFactory.getInstance());
+    }
+
+    private CategoriaCatalogoService serviceCategoria(ApplicationIntegrationSupport.InMemoryCatalogoRepository repo) {
+        return new CategoriaCatalogoService(repo);
     }
 }

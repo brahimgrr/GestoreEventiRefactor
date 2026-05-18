@@ -187,9 +187,6 @@ public final class CampoCatalogoService {
                 : CatalogoOperationResult.NON_TROVATO;
     }
 
-    /*
-    MAI USATO
-     */
     public boolean setObbligatorietaCampoSpecifico(String categoria, String nome, boolean obbligatorio) {
         CatalogoDTO catalogo = repo.load();
         boolean changed = catalogo.updateCampoSpecifico(categoria, nome, obbligatorio);

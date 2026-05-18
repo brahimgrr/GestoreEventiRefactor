@@ -91,6 +91,26 @@ class FruitoreServiceTest {
     }
 
     @Test
+    void iscriviODisiscrivi_conPropostaNonPersistita_lanciaNotFoundENonSalva() {
+        ApplicationIntegrationSupport.ServiceGraph graph = ApplicationIntegrationSupport.serviceGraph();
+        Proposta proposta = propostaApertaNonPersistita(graph, "Evento assente", "2");
+        Fruitore mario = new Fruitore("mario");
+
+        DomainException iscrizione = assertThrows(DomainException.class,
+                () -> graph.fruitoreService().iscrivi(proposta, mario));
+        DomainException disiscrizione = assertThrows(DomainException.class,
+                () -> graph.fruitoreService().disiscrivi(proposta, mario));
+
+        assertAll(
+                () -> assertInstanceOf(it.unibs.ingsoft.domain.proposta.ProposalFailure.NotFound.class,
+                        iscrizione.failure()),
+                () -> assertInstanceOf(it.unibs.ingsoft.domain.proposta.ProposalFailure.NotFound.class,
+                        disiscrizione.failure()),
+                () -> assertEquals(0, graph.bachecaRepository().saveCount())
+        );
+    }
+
+    @Test
     void notifiche_possonoEssereLettereECancellateDalFruitore() {
         ApplicationIntegrationSupport.ServiceGraph graph = ApplicationIntegrationSupport.serviceGraph();
         FruitoreService fruitoreService = graph.fruitoreService();
@@ -140,6 +160,29 @@ class FruitoreServiceTest {
         propostaService.applicaValoriEValida(proposta, valoriProposta(titolo, numeroPartecipanti));
         propostaService.salvaProposta(proposta);
         propostaService.pubblicaProposta(proposta);
+        return proposta;
+    }
+
+    private Proposta propostaApertaNonPersistita(ApplicationIntegrationSupport.ServiceGraph graph,
+                                                 String titolo,
+                                                 String numeroPartecipanti) {
+        Proposta proposta = propostaNonPubblicataValida(graph, titolo, numeroPartecipanti);
+        proposta.pubblica(LocalDate.now(AppConstants.clock));
+        return proposta;
+    }
+
+    private Proposta propostaNonPubblicataValida(ApplicationIntegrationSupport.ServiceGraph graph,
+                                                 String titolo,
+                                                 String numeroPartecipanti) {
+        CatalogoService catalogoService = graph.catalogoService();
+        PropostaService propostaService = graph.propostaService();
+        catalogoService.configuraCampiBase(List.of());
+        Categoria categoria = catalogoService.createCategoria("Sport");
+        Proposta proposta = propostaService.creaProposta(
+                categoria,
+                catalogoService.getCampiBase(),
+                catalogoService.getCampiComuni());
+        propostaService.applicaValoriEValida(proposta, valoriProposta(titolo, numeroPartecipanti));
         return proposta;
     }
 

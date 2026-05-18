@@ -83,9 +83,12 @@ class AuthenticationServiceTest {
         assertAll(
                 () -> assertTrue(service.login(null, "pass1234").isEmpty()),
                 () -> assertTrue(service.login("admin", null).isEmpty()),
+                () -> assertTrue(service.login(AuthenticationService.USERNAME_PREDEFINITO, "sbagliata").isEmpty()),
+                () -> assertTrue(service.login("Assente", "pass1234").isEmpty()),
                 () -> assertTrue(service.login("AdminUno", "sbagliata").isEmpty()),
                 () -> assertTrue(service.loginFruitore(null, "pass1234").isEmpty()),
                 () -> assertTrue(service.loginFruitore("Mario", null).isEmpty()),
+                () -> assertTrue(service.loginFruitore("Assente", "pass5678").isEmpty()),
                 () -> assertTrue(service.loginFruitore("Mario", "sbagliata").isEmpty())
         );
     }
@@ -154,14 +157,24 @@ class AuthenticationServiceTest {
                 () -> assertOptionalFailure(AuthenticationFailure.UsernameTooShort.class,
                         service.validaNuovoUsername(null)),
                 () -> assertOptionalFailure(AuthenticationFailure.UsernameTooShort.class,
+                        service.validaNuovoUsername("   ")),
+                () -> assertOptionalFailure(AuthenticationFailure.UsernameTooShort.class,
                         service.validaNuovoUsername("ab")),
+                () -> assertOptionalFailure(AuthenticationFailure.UsernameTooShort.class,
+                        service.validaNuovoUsername(" a ")),
                 () -> assertOptionalFailure(AuthenticationFailure.UsernameReserved.class,
                         service.validaNuovoUsername(" config ")),
                 () -> assertOptionalFailure(AuthenticationFailure.UsernameAlreadyInUse.class,
                         service.validaNuovoUsername("mario")),
                 () -> assertTrue(service.validaNuovoUsername("Luigi").isEmpty()),
                 () -> assertOptionalFailure(AuthenticationFailure.PasswordTooShort.class,
+                        service.validaNuovaPassword(null)),
+                () -> assertOptionalFailure(AuthenticationFailure.PasswordTooShort.class,
+                        service.validaNuovaPassword("   ")),
+                () -> assertOptionalFailure(AuthenticationFailure.PasswordTooShort.class,
                         service.validaNuovaPassword("abc")),
+                () -> assertOptionalFailure(AuthenticationFailure.PasswordTooShort.class,
+                        service.validaNuovaPassword(" a  ")),
                 () -> assertTrue(service.validaNuovaPassword("abcd").isEmpty())
         );
     }
@@ -180,6 +193,8 @@ class AuthenticationServiceTest {
                 () -> assertEquals("Mario", fruitore.getUsername()),
                 () -> assertTrue(repository.load().getConfiguratori().containsKey("adminuno")),
                 () -> assertTrue(repository.load().getFruitori().containsKey("mario")),
+                () -> assertTrue(service.esisteUsername("ADMINUNO")),
+                () -> assertFalse(service.esisteUsername("nessuno")),
                 () -> assertFalse(service.esisteUsername(null)),
                 () -> assertFalse(service.isConfiguratorePredefinito(null)),
                 () -> assertFalse(service.isConfiguratorePredefinito(UtenteFactory.getInstance().creaConfiguratore("admin")))

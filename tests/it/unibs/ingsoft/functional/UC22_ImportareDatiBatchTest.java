@@ -3,17 +3,42 @@ package it.unibs.ingsoft.functional;
 import it.unibs.ingsoft.application.batch.ImportFailure;
 import it.unibs.ingsoft.application.batch.dto.ImportResult;
 import it.unibs.ingsoft.application.error.ApplicationException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class UC22_ImportareDatiBatchTest {
-    @TempDir
-    Path tempDir;
+    private Path tempDir;
+
+    @BeforeEach
+    void setUp() throws IOException {
+        Files.createDirectories(Path.of("out"));
+        tempDir = Files.createTempDirectory(Path.of("out"), "uc22-importare-dati-batch-test-");
+    }
+
+    @AfterEach
+    void tearDown() throws IOException {
+        if (tempDir != null && Files.exists(tempDir)) {
+            try (var paths = Files.walk(tempDir)) {
+                paths.sorted(Comparator.reverseOrder())
+                        .forEach(path -> {
+                            try {
+                                Files.deleteIfExists(path);
+                            } catch (IOException ignored) {
+                                // Best effort cleanup for test artifacts.
+                            }
+                        });
+            }
+        }
+    }
 
     @Test
     void scenarioPrincipale_fileJsonValido_importaElementiEProposteValide() throws Exception {

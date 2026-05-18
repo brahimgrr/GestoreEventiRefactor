@@ -3,12 +3,14 @@ package it.unibs.ingsoft.application.proposta;
 import it.unibs.ingsoft.application.ApplicationIntegrationSupport;
 import it.unibs.ingsoft.application.catalogo.CatalogoService;
 import it.unibs.ingsoft.application.proposta.dto.PropostaValidationResult;
+import it.unibs.ingsoft.domain.catalogo.Campo;
 import it.unibs.ingsoft.domain.catalogo.Categoria;
 import it.unibs.ingsoft.domain.proposta.ProposalFailure;
 import it.unibs.ingsoft.domain.proposta.Proposta;
 import it.unibs.ingsoft.domain.proposta.StatoProposta;
 import it.unibs.ingsoft.domain.shared.AppConstants;
 import it.unibs.ingsoft.domain.shared.error.DomainException;
+import it.unibs.ingsoft.domain.shared.error.ValidationError;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -113,6 +115,53 @@ class PropostaServiceTest {
                 () -> graph.propostaService().pubblicaProposta(duplicata));
 
         assertInstanceOf(ProposalFailure.Duplicate.class, exception.failure());
+    }
+
+    @Test
+    void metodiValidazione_deleganoAllaValidazioneCorrente() {
+        ApplicationIntegrationSupport.ServiceGraph graph = ApplicationIntegrationSupport.serviceGraph();
+        Categoria categoria = configuraCategoria(graph.catalogoService());
+        Proposta proposta = graph.propostaService().creaProposta(
+                categoria,
+                graph.catalogoService().getCampiBase(),
+                graph.catalogoService().getCampiComuni());
+
+        List<ValidationError> erroriProposta = graph.propostaService().validaProposta(proposta);
+        List<ValidationError> erroriCampo = graph.propostaService().validaCampo(
+                proposta,
+                valoriProposta("Validazione facciata", "4"),
+                AppConstants.CAMPO_QUOTA,
+                "non decimale");
+        List<Campo> campiConErrore = graph.propostaService().getCampiConErrore(proposta, erroriCampo);
+
+        assertAll(
+                () -> assertFalse(erroriProposta.isEmpty()),
+                () -> assertTrue(erroriCampo.stream()
+                        .anyMatch(e -> AppConstants.CAMPO_QUOTA.equals(e.fieldName()))),
+                () -> assertTrue(campiConErrore.stream()
+                        .anyMatch(c -> AppConstants.CAMPO_QUOTA.equals(c.getNome())))
+        );
+    }
+
+    @Test
+    void metodiLifecycleEPubblicazione_deleganoAiServiziInterni() {
+        ApplicationIntegrationSupport.ServiceGraph graph = ApplicationIntegrationSupport.serviceGraph();
+        Proposta daCancellare = propostaValida(graph, "Da cancellare");
+
+        assertFalse(graph.propostaService().getProposteValide().isEmpty());
+        graph.propostaService().clearProposteValide();
+
+        Proposta daIscrivere = propostaValida(graph, "Da iscrivere");
+        graph.propostaService().pubblicaProposta(daIscrivere);
+        graph.propostaService().iscrivi(daIscrivere, "anna");
+        graph.propostaService().disiscrivi(daIscrivere, "anna");
+        graph.propostaService().controllaScadenze();
+
+        assertAll(
+                () -> assertTrue(graph.propostaService().getProposteValide().isEmpty()),
+                () -> assertFalse(daIscrivere.isIscritto("anna")),
+                () -> assertFalse(graph.propostaService().getTutteLeProposte().contains(daCancellare))
+        );
     }
 
     @Test
